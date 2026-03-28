@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trilce Smart</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f6f8;
+    }
+
+    header {
+      background: #d32f2f;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 15px;
+      padding-bottom: 80px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #d32f2f;
+      color: white;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    }
+
+    .nav button {
+      background: none;
+      color: #d32f2f;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>Trilce Smart</header>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div id="home">
+    <div class="card">
+      <h3 id="welcome"></h3>
+      <p id="exam"></p>
+      <button onclick="go('edit')">✏️ Editar</button>
+    </div>
+
+    <button onclick="go('courses')">📚 Cursos</button>
+    <button onclick="go('practice')">📝 Ejercicios</button>
+    <button onclick="go('ai')">🧠 IA</button>
+  </div>
+
+  <!-- EDIT -->
+  <div id="edit" class="hidden">
+    <div class="card">
+      <h3>Editar</h3>
+      <input id="nameInput" placeholder="Tu nombre">
+      <input id="examInput" placeholder="Próximo examen">
+      <button onclick="save()">💾 Guardar</button>
+      <button onclick="go('home')">⬅ Volver</button>
+    </div>
+  </div>
+
+  <!-- COURSES -->
+  <div id="courses" class="hidden">
+    <div class="card">
+      <h3>Álgebra</h3>
+      <p>Funciones</p>
+      <button onclick="go('practice')">Ver ejercicios</button>
+    </div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div id="practice" class="hidden">
+    <div class="card">
+      <h3>Ejercicio</h3>
+      <p>¿2x = 10, x = ?</p>
+      <button onclick="answer(5)">5</button>
+      <button onclick="answer(4)">4</button>
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div id="ai" class="hidden">
+    <div class="card">
+      <h3>IA Asistente</h3>
+      <input id="question" placeholder="Preguntar...">
+      <button onclick="askAI()">Enviar</button>
+      <p id="response"></p>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button onclick="go('home')">🏠</button>
+  <button onclick="go('courses')">📚</button>
+  <button onclick="go('practice')">📝</button>
+  <button onclick="go('ai')">🧠</button>
+</div>
+
+<script>
+
+function go(id){
+  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function save(){
+  localStorage.setItem('name', document.getElementById('nameInput').value);
+  localStorage.setItem('exam', document.getElementById('examInput').value);
+  load();
+  go('home');
+}
+
+function load(){
+  const name = localStorage.getItem('name') || 'Renzo';
+  const exam = localStorage.getItem('exam') || 'Matemática - Viernes';
+
+  document.getElementById('welcome').innerText = 'Hola, ' + name + ' 👋';
+  document.getElementById('exam').innerText = '📅 ' + exam;
+}
+
+function answer(val){
+  const res = document.getElementById('result');
+  res.innerText = val === 5 ? '✅ Correcto' : '❌ Incorrecto';
+}
+
+function askAI(){
+  const q = document.getElementById('question').value.toLowerCase();
+  let r = 'Estudia con práctica diaria 📚';
+
+  if(q.includes('funcion')) r = 'Una función asigna a cada x un único valor y.';
+  if(q.includes('resumen')) r = 'Divide el tema en conceptos clave y ejemplos.';
+
+  document.getElementById('response').innerText = r;
+}
+
+load();
+
+</script>
+
+</body>
+</html>
