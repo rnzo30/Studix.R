@@ -93,6 +93,9 @@
       <button onclick="go('edit')">✏️ Editar</button>
     </div>
 
+    <button onclick="login()">🔐 Iniciar con Google</button>
+    <p id="user"></p>
+
     <button onclick="go('courses')">📚 Cursos</button>
     <button onclick="go('practice')">📝 Ejercicios</button>
     <button onclick="go('ai')">🧠 IA</button>
@@ -148,57 +151,72 @@
   <button onclick="go('ai')">🧠</button>
 </div>
 
-<script>
-
-function go(id){
-  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
-
-function save(){
-  localStorage.setItem('name', document.getElementById('nameInput').value);
-  localStorage.setItem('exam', document.getElementById('examInput').value);
-  load();
-  go('home');
-}
-
-function load(){
-  const name = localStorage.getItem('name') || 'Renzo';
-  const exam = localStorage.getItem('exam') || 'Matemática - Viernes';
-
-  document.getElementById('welcome').innerText = 'Hola, ' + name + ' 👋';
-  document.getElementById('exam').innerText = '📅 ' + exam;
-}
-
-function answer(val){
-  const res = document.getElementById('result');
-  res.innerText = val === 5 ? '✅ Correcto' : '❌ Incorrecto';
-}
-
-function askAI(){
-  const q = document.getElementById('question').value.toLowerCase();
-  let r = 'Estudia con práctica diaria 📚';
-
-  if(q.includes('funcion')) r = 'Una función asigna a cada x un único valor y.';
-  if(q.includes('resumen')) r = 'Divide el tema en conceptos clave y ejemplos.';
-
-  document.getElementById('response').innerText = r;
-}
-
-load();
-
-</script>
-
+<!-- 🔥 FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
 
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
-    authDomain:"studix-83850.firebaseapp.com",
-    projectId:  "studix-83850",
+    authDomain: "studix-83850.firebaseapp.com",
+    projectId: "studix-83850",
   };
 
   firebase.initializeApp(firebaseConfig);
-</script></body>
+
+  // 🔐 LOGIN
+  function login(){
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().signInWithPopup(provider)
+      .then(result => {
+        const user = result.user;
+        document.getElementById("user").innerText =
+          "Bienvenido " + user.displayName;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  // 📱 FUNCIONES APP
+  function go(id){
+    document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  function save(){
+    localStorage.setItem('name', document.getElementById('nameInput').value);
+    localStorage.setItem('exam', document.getElementById('examInput').value);
+    load();
+    go('home');
+  }
+
+  function load(){
+    const name = localStorage.getItem('name') || 'Renzo';
+    const exam = localStorage.getItem('exam') || 'Matemática - Viernes';
+
+    document.getElementById('welcome').innerText = 'Hola, ' + name + ' 👋';
+    document.getElementById('exam').innerText = '📅 ' + exam;
+  }
+
+  function answer(val){
+    const res = document.getElementById('result');
+    res.innerText = val === 5 ? '✅ Correcto' : '❌ Incorrecto';
+  }
+
+  function askAI(){
+    const q = document.getElementById('question').value.toLowerCase();
+    let r = 'Estudia con práctica diaria 📚';
+
+    if(q.includes('funcion')) r = 'Una función asigna a cada x un único valor y.';
+    if(q.includes('resumen')) r = 'Divide el tema en conceptos clave y ejemplos.';
+
+    document.getElementById('response').innerText = r;
+  }
+
+  load();
+</script>
+
+</body>
 </html>
