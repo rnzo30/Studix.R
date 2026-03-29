@@ -6,63 +6,30 @@
 <title>Trilce Smart</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: #f4f6f8;
-}
+body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
+header { background:#d32f2f; color:white; padding:15px; text-align:center; }
 
-header {
-  background: #d32f2f;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 15px;
-  padding-bottom: 80px;
-}
+.container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
 
 .card {
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  background:white; padding:15px; border-radius:15px;
+  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
 }
 
 button {
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #d32f2f;
-  color: white;
-  cursor: pointer;
-  margin-top: 5px;
-  width: 100%;
+  padding:12px; border:none; border-radius:10px;
+  background:#d32f2f; color:white; width:100%; margin-top:5px;
 }
 
-.hidden { display: none; }
+.hidden { display:none; }
 
 .nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  position:fixed; bottom:0; width:100%;
+  background:white; display:flex; justify-content:space-around;
+  padding:10px; box-shadow:0 -2px 8px rgba(0,0,0,0.1);
 }
 
-.nav button {
-  background: none;
-  color: #d32f2f;
-}
+.nav button { background:none; color:#d32f2f; }
 </style>
 </head>
 
@@ -74,126 +41,202 @@ button {
 
 <!-- HOME -->
 <div id="home">
-  <div class="card">
-    <h3 id="welcome">Hola 👋</h3>
-    <p id="exam">📅 Sin datos</p>
-  </div>
-
   <button onclick="login()">🔐 Iniciar con Google</button>
   <p id="user"></p>
 
-  <button onclick="go('courses')">📚 Cursos</button>
+  <button onclick="go('books')">📚 Libros</button>
+  <button onclick="go('practice')">📝 Ejercicios</button>
 
-  <!-- SOLO ADMIN -->
-  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Panel Admin</button>
+  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
 </div>
 
-<!-- CURSOS -->
-<div id="courses" class="hidden">
-  <div class="card"><h3>Álgebra</h3></div>
-  <div class="card"><h3>Aritmética</h3></div>
-  <div class="card"><h3>Geometría</h3></div>
-  <div class="card"><h3>Física</h3></div>
-  <div class="card"><h3>Química</h3></div>
-  <div class="card"><h3>Razonamiento Matemático</h3></div>
-  <div class="card"><h3>Biología</h3></div>
-  <div class="card"><h3>Lenguaje</h3></div>
-  <div class="card"><h3>Razonamiento Verbal</h3></div>
-  <div class="card"><h3>Literatura</h3></div>
-  <div class="card"><h3>Historia Universal</h3></div>
-  <div class="card"><h3>Historia del Perú</h3></div>
-  <div class="card"><h3>Geografía</h3></div>
+<!-- LIBROS -->
+<div id="books" class="hidden">
+  <h3>📚 Cursos</h3>
+  <div id="listaLibros"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
 
-  <button onclick="go('home')">⬅ Volver</button>
+<!-- EJERCICIOS -->
+<div id="practice" class="hidden">
+  <h3>📝 Cursos</h3>
+  <div id="listaEjercicios"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- CURSO -->
+<div id="cursoVista" class="hidden">
+  <h3 id="tituloCurso"></h3>
+  <div id="contenidoCurso"></div>
+
+  <div id="adminUpload" class="hidden">
+    <input type="file" id="archivo">
+    <button onclick="subirArchivo()">📤 Subir archivo</button>
+  </div>
+
+  <button onclick="volver()">⬅ Volver</button>
 </div>
 
 <!-- ADMIN -->
 <div id="admin" class="hidden">
-  <div class="card">
-    <h3>Panel de Administración 🔥</h3>
-    <p>Solo tú puedes ver esto</p>
-
-    <input id="material" placeholder="Nombre del material">
-    <button onclick="subirMaterial()">📤 Subir Material</button>
-
-    <p id="estado"></p>
-
-    <button onclick="go('home')">⬅ Volver</button>
-  </div>
+  <h3>Admin 🔥</h3>
+  <p>Solo tú puedes subir contenido desde los cursos</p>
+  <button onclick="go('home')">⬅</button>
 </div>
 
 </div>
 
 <div class="nav">
   <button onclick="go('home')">🏠</button>
-  <button onclick="go('courses')">📚</button>
 </div>
 
-<!-- 🔥 FIREBASE -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
   authDomain: "studix-83850.firebaseapp.com",
   projectId: "studix-83850",
+  storageBucket: "studix-83850.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-// ⚠️ CAMBIA ESTO POR TU CORREO
-const ADMIN_EMAIL = "TU_CORREO@gmail.com";
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+const ADMIN_EMAIL = "62934146@gmail.com";
+
+let usuarioActual = null;
+let cursoActual = "";
+let tipoActual = "";
+
+// CURSOS
+const cursos = [
+"Álgebra","Aritmética","Geometría","Física","Química",
+"Razonamiento Matemático","Biología","Lenguaje",
+"Razonamiento Verbal","Literatura",
+"Historia Universal","Historia del Perú","Geografía"
+];
 
 // LOGIN
 function login(){
   const provider = new firebase.auth.GoogleAuthProvider();
 
   firebase.auth().signInWithPopup(provider)
-    .then(result => {
-      const user = result.user;
+  .then(res=>{
+    usuarioActual = res.user;
 
-      document.getElementById("user").innerText =
-        "Bienvenido " + user.displayName;
+    document.getElementById("user").innerText =
+      "Bienvenido " + usuarioActual.displayName;
 
-      guardarUsuario(user);
-
-      // ACTIVAR ADMIN
-      if(user.email === ADMIN_EMAIL){
-        document.getElementById("adminPanel").classList.remove("hidden");
-      }
-    })
-    .catch(error => console.log(error));
-}
-
-// GUARDAR USUARIO
-function guardarUsuario(user){
-  db.collection("usuarios").doc(user.uid).set({
-    nombre: user.displayName,
-    email: user.email
+    if(usuarioActual.email === ADMIN_EMAIL){
+      document.getElementById("adminPanel").classList.remove("hidden");
+    }
   });
 }
 
-// SUBIR MATERIAL (ADMIN)
-function subirMaterial(){
-  const texto = document.getElementById("material").value;
+// MOSTRAR CURSOS
+function cargarCursos(){
+  const libros = document.getElementById("listaLibros");
+  const ejercicios = document.getElementById("listaEjercicios");
 
-  db.collection("materiales").add({
-    contenido: texto,
-    fecha: new Date()
-  })
-  .then(()=>{
-    document.getElementById("estado").innerText = "✅ Subido correctamente";
+  cursos.forEach(curso => {
+
+    let card1 = document.createElement("div");
+    card1.className="card";
+    card1.innerText=curso;
+    card1.onclick=()=>abrirCurso(curso,"libro");
+    libros.appendChild(card1);
+
+    let card2 = document.createElement("div");
+    card2.className="card";
+    card2.innerText=curso;
+    card2.onclick=()=>abrirCurso(curso,"ejercicio");
+    ejercicios.appendChild(card2);
+
   });
 }
 
-// NAVEGACIÓN
+// ABRIR CURSO
+function abrirCurso(curso,tipo){
+  cursoActual = curso;
+  tipoActual = tipo;
+
+  go("cursoVista");
+
+  document.getElementById("tituloCurso").innerText = curso;
+
+  if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+    document.getElementById("adminUpload").classList.remove("hidden");
+  }
+
+  cargarContenido();
+}
+
+// SUBIR ARCHIVO
+function subirArchivo(){
+  const file = document.getElementById("archivo").files[0];
+
+  const ref = storage.ref("materiales/"+file.name);
+
+  ref.put(file).then(()=>{
+    ref.getDownloadURL().then(url=>{
+
+      db.collection("contenido").add({
+        curso: cursoActual,
+        tipo: tipoActual,
+        url: url,
+        nombre: file.name
+      });
+
+      alert("Subido 🔥");
+      cargarContenido();
+    });
+  });
+}
+
+// CARGAR CONTENIDO
+function cargarContenido(){
+  const cont = document.getElementById("contenidoCurso");
+  cont.innerHTML="";
+
+  db.collection("contenido")
+  .where("curso","==",cursoActual)
+  .where("tipo","==",tipoActual)
+  .get()
+  .then(snapshot=>{
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+
+      let div = document.createElement("div");
+      div.className="card";
+
+      div.innerHTML = `
+        <p>${data.nombre}</p>
+        <a href="${data.url}" target="_blank">📂 Ver</a>
+      `;
+
+      cont.appendChild(div);
+    });
+  });
+}
+
+// NAV
 function go(id){
-  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
+
+function volver(){
+  go(tipoActual === "libro" ? "books" : "practice");
+}
+
+cargarCursos();
 </script>
 
 </body>
