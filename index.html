@@ -86,22 +86,38 @@ button {
   <h3>💬 Chat</h3>
   <input id="msg" placeholder="Escribe mensaje">
   <button onclick="enviarMensaje()">Enviar</button>
-  <div id="chatBox"></div>
+
+  <div id="chatBox">
+    <div class="card">El chat aparecerá aquí 💬</div>
+  </div>
+
   <button onclick="go('home')">⬅</button>
 </div>
 
 <!-- BECAS -->
 <div id="becas" class="hidden">
   <h3>🎓 Becas</h3>
-  <div class="card">Beca 18 - Estado Peruano</div>
-  <div class="card">Becas Universidades</div>
+
+  <div class="card">
+    <b>Beca 18</b><br>
+    Apoyo completo del Estado peruano.
+  </div>
+
+  <div class="card">
+    <b>Becas Universitarias</b><br>
+    Oportunidades en universidades.
+  </div>
+
   <button onclick="go('home')">⬅</button>
 </div>
 
 <!-- COMUNICADOS -->
 <div id="comunicados" class="hidden">
   <h3>📢 Comunicados</h3>
-  <div id="listaComunicados"></div>
+
+  <div id="listaComunicados">
+    <div class="card">Aquí aparecerán los comunicados 📢</div>
+  </div>
 
   <div id="adminComunicado" class="hidden">
     <input id="nuevoComunicado" placeholder="Nuevo comunicado">
@@ -173,24 +189,24 @@ function login(){
   firebase.auth().signInWithPopup(provider)
   .then(res=>{
     usuarioActual = res.user;
-    document.getElementById("user").innerText = "Bienvenido " + usuarioActual.displayName;
+
+    document.getElementById("user").innerText =
+      "Bienvenido " + usuarioActual.displayName;
 
     if(usuarioActual.email === ADMIN_EMAIL){
       document.getElementById("adminPanel").classList.remove("hidden");
       document.getElementById("adminComunicado").classList.remove("hidden");
     }
-
-    cargarChat();
-    cargarComunicados();
   });
 }
 
-// CURSOS
+// MOSTRAR CURSOS
 function cargarCursos(){
   const libros = document.getElementById("listaLibros");
   const ejercicios = document.getElementById("listaEjercicios");
 
   cursos.forEach(curso => {
+
     let c1 = document.createElement("div");
     c1.className="card";
     c1.innerText=curso;
@@ -202,6 +218,7 @@ function cargarCursos(){
     c2.innerText=curso;
     c2.onclick=()=>abrirCurso(curso,"ejercicio");
     ejercicios.appendChild(c2);
+
   });
 }
 
@@ -209,6 +226,7 @@ function cargarCursos(){
 function abrirCurso(curso,tipo){
   cursoActual = curso;
   tipoActual = tipo;
+
   go("cursoVista");
 
   document.getElementById("tituloCurso").innerText = curso;
@@ -223,16 +241,20 @@ function abrirCurso(curso,tipo){
 // SUBIR ARCHIVO
 function subirArchivo(){
   const file = document.getElementById("archivo").files[0];
+
   const ref = storage.ref("materiales/"+file.name);
 
   ref.put(file).then(()=>{
     ref.getDownloadURL().then(url=>{
+
       db.collection("contenido").add({
         curso: cursoActual,
         tipo: tipoActual,
         url: url,
         nombre: file.name
       });
+
+      alert("Subido 🔥");
       cargarContenido();
     });
   });
@@ -247,12 +269,18 @@ function cargarContenido(){
   .where("curso","==",cursoActual)
   .where("tipo","==",tipoActual)
   .get()
-  .then(snap=>{
-    snap.forEach(doc=>{
-      const d = doc.data();
+  .then(snapshot=>{
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+
       let div = document.createElement("div");
       div.className="card";
-      div.innerHTML = `<p>${d.nombre}</p><a href="${d.url}" target="_blank">Ver</a>`;
+
+      div.innerHTML = `
+        <p>${data.nombre}</p>
+        <a href="${data.url}" target="_blank">📂 Ver</a>
+      `;
+
       cont.appendChild(div);
     });
   });
@@ -299,13 +327,14 @@ function cargarComunicados(){
   });
 }
 
-// IA SIMPLE
+// IA
 function preguntarIA(){
   const q = document.getElementById("preguntaIA").value.toLowerCase();
   let r = "Estudia todos los días 📚";
 
-  if(q.includes("algebra")) r="Practica ecuaciones y funciones";
-  if(q.includes("fisica")) r="Repasa fórmulas y ejercicios";
+  if(q.includes("algebra")) r="Practica ecuaciones";
+  else if(q.includes("fisica")) r="Usa fórmulas";
+  else if(q.includes("quimica")) r="Memoriza reacciones";
 
   document.getElementById("respuestaIA").innerText=r;
 }
@@ -314,10 +343,13 @@ function preguntarIA(){
 function go(id){
   document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
+
+  if(id === "chat") cargarChat();
+  if(id === "comunicados") cargarComunicados();
 }
 
 function volver(){
-  go(tipoActual==="libro"?"books":"practice");
+  go(tipoActual === "libro" ? "books" : "practice");
 }
 
 cargarCursos();
