@@ -6,76 +6,14 @@
   <title>Trilce Smart</title>
 
   <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f6f8;
-    }
-
-    header {
-      background: #d32f2f;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 15px;
-      padding-bottom: 80px;
-    }
-
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 15px;
-      margin-bottom: 12px;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    }
-
-    button {
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #d32f2f;
-      color: white;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    }
-
-    .nav button {
-      background: none;
-      color: #d32f2f;
-    }
+    body { margin: 0; font-family: "Segoe UI"; background: #f4f6f8; }
+    header { background: #d32f2f; color: white; padding: 15px; text-align: center; }
+    .container { max-width: 600px; margin: auto; padding: 15px; padding-bottom: 80px; }
+    .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+    button { padding: 10px; border: none; border-radius: 10px; background: #d32f2f; color: white; margin-top: 5px; cursor: pointer; }
+    input, select { width: 100%; padding: 8px; border-radius: 8px; margin-top: 5px; }
+    .hidden { display: none; }
+    .nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: white; padding: 10px; }
   </style>
 </head>
 
@@ -85,153 +23,215 @@
 
 <div class="container">
 
-  <!-- HOME -->
-  <div id="home">
-    <div class="card">
-      <h3 id="welcome"></h3>
-      <p id="exam"></p>
-      <button onclick="go('edit')">✏️ Editar</button>
-    </div>
-
-    <button onclick="login()">🔐 Iniciar con Google</button>
-    <p id="user"></p>
-
-    <button onclick="go('courses')">📚 Cursos</button>
-    <button onclick="go('practice')">📝 Ejercicios</button>
-    <button onclick="go('ai')">🧠 IA</button>
+<!-- HOME -->
+<div id="home">
+  <div class="card">
+    <h3 id="welcome"></h3>
+    <p id="exam"></p>
+    <button onclick="go('edit')">Editar</button>
   </div>
 
-  <!-- EDIT -->
-  <div id="edit" class="hidden">
-    <div class="card">
-      <h3>Editar</h3>
-      <input id="nameInput" placeholder="Tu nombre">
-      <input id="examInput" placeholder="Próximo examen">
-      <button onclick="save()">💾 Guardar</button>
-      <button onclick="go('home')">⬅ Volver</button>
-    </div>
+  <button onclick="login()">Iniciar con Google</button>
+  <p id="user"></p>
+
+  <button onclick="go('courses')">Cursos</button>
+  <button onclick="go('materiales'); cargarMateriales()">Materiales</button>
+  <button onclick="go('admin')">Admin</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="hidden">
+  <div class="card">
+    <h3>Subir material</h3>
+
+    <input type="file" id="fileInput">
+    <input id="titulo" placeholder="Título">
+
+    <select id="cursoSelect">
+      <option>Algebra</option>
+      <option>Aritmetica</option>
+      <option>Geometria</option>
+      <option>Razonamiento Matemático</option>
+      <option>Fisica</option>
+      <option>Quimica</option>
+      <option>Biologia</option>
+      <option>Lenguaje</option>
+      <option>Razonamiento Verbal</option>
+      <option>Literatura</option>
+      <option>Historia Universal</option>
+      <option>Historia del Perú</option>
+      <option>Geografia</option>
+    </select>
+
+    <button onclick="subirArchivo()">Subir</button>
+    <button onclick="go('home')">Volver</button>
+  </div>
+</div>
+
+<!-- CURSOS -->
+<div id="courses" class="hidden">
+
+  <div class="card">
+    <h3>Matemáticas</h3>
+    <button onclick="abrirCurso('Algebra')">Álgebra</button>
+    <button onclick="abrirCurso('Aritmetica')">Aritmética</button>
+    <button onclick="abrirCurso('Geometria')">Geometría</button>
+    <button onclick="abrirCurso('Razonamiento Matemático')">R.M.</button>
   </div>
 
-  <!-- COURSES -->
-  <div id="courses" class="hidden">
-    <div class="card">
-      <h3>Álgebra</h3>
-      <p>Funciones</p>
-      <button onclick="go('practice')">Ver ejercicios</button>
-    </div>
+  <div class="card">
+    <h3>Ciencias</h3>
+    <button onclick="abrirCurso('Fisica')">Física</button>
+    <button onclick="abrirCurso('Quimica')">Química</button>
+    <button onclick="abrirCurso('Biologia')">Biología</button>
   </div>
 
-  <!-- PRACTICE -->
-  <div id="practice" class="hidden">
-    <div class="card">
-      <h3>Ejercicio</h3>
-      <p>¿2x = 10, x = ?</p>
-      <button onclick="answer(5)">5</button>
-      <button onclick="answer(4)">4</button>
-      <p id="result"></p>
-    </div>
+  <div class="card">
+    <h3>Letras</h3>
+    <button onclick="abrirCurso('Lenguaje')">Lenguaje</button>
+    <button onclick="abrirCurso('Razonamiento Verbal')">R.V.</button>
+    <button onclick="abrirCurso('Literatura')">Literatura</button>
   </div>
 
-  <!-- AI -->
-  <div id="ai" class="hidden">
-    <div class="card">
-      <h3>IA Asistente</h3>
-      <input id="question" placeholder="Preguntar...">
-      <button onclick="askAI()">Enviar</button>
-      <p id="response"></p>
-    </div>
+  <div class="card">
+    <h3>Sociales</h3>
+    <button onclick="abrirCurso('Historia Universal')">H. Universal</button>
+    <button onclick="abrirCurso('Historia del Perú')">H. Perú</button>
+    <button onclick="abrirCurso('Geografia')">Geografía</button>
   </div>
+
+</div>
+
+<!-- DETALLE CURSO -->
+<div id="cursoDetalle" class="hidden">
+  <div class="card">
+    <h3 id="tituloCurso"></h3>
+    <div id="listaMaterialesCurso"></div>
+    <button onclick="go('courses')">Volver</button>
+  </div>
+</div>
+
+<!-- MATERIALES -->
+<div id="materiales" class="hidden">
+  <div class="card">
+    <h3>Materiales</h3>
+    <div id="listaMateriales"></div>
+    <button onclick="go('home')">Volver</button>
+  </div>
+</div>
 
 </div>
 
 <div class="nav">
   <button onclick="go('home')">🏠</button>
   <button onclick="go('courses')">📚</button>
-  <button onclick="go('practice')">📝</button>
-  <button onclick="go('ai')">🧠</button>
 </div>
 
-<!-- 🔥 FIREBASE -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
-    authDomain: "studix-83850.firebaseapp.com",
-    projectId: "studix-83850",
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
+  authDomain: "studix-83850.firebaseapp.com",
+  projectId: "studix-83850",
+};
 
-  firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-  const db = firebase.firestore();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-  // 🔐 LOGIN
-  function login(){
-    const provider = new firebase.auth.GoogleAuthProvider();
+// LOGIN
+function login(){
+  const provider = new firebase.auth.GoogleAuthProvider();
 
-    firebase.auth().signInWithPopup(provider)
-      .then(result => {
-        const user = result.user;
+  firebase.auth().signInWithPopup(provider)
+    .then(result => {
+      const user = result.user;
 
-        // Guardar en Firestore
-        guardarUsuario(user);
+      guardarUsuario(user);
 
-        // Mostrar usuario
-        document.getElementById("user").innerText =
-          "Bienvenido " + user.displayName;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  // 💾 Guardar usuario
-  function guardarUsuario(user){
-    db.collection("usuarios").doc(user.uid).set({
-      nombre: user.displayName,
-      email: user.email
+      document.getElementById("user").innerText =
+        "Bienvenido " + user.displayName;
     });
-  }
+}
 
-  // 📱 FUNCIONES APP
-  function go(id){
-    document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-  }
+// GUARDAR USUARIO
+function guardarUsuario(user){
+  db.collection("usuarios").doc(user.uid).set({
+    nombre: user.displayName,
+    email: user.email
+  });
+}
 
-  function save(){
-    localStorage.setItem('name', document.getElementById('nameInput').value);
-    localStorage.setItem('exam', document.getElementById('examInput').value);
-    load();
-    go('home');
-  }
+// SUBIR ARCHIVO
+function subirArchivo(){
+  const file = document.getElementById("fileInput").files[0];
+  const titulo = document.getElementById("titulo").value;
+  const curso = document.getElementById("cursoSelect").value;
 
-  function load(){
-    const name = localStorage.getItem('name') || 'Renzo';
-    const exam = localStorage.getItem('exam') || 'Matemática - Viernes';
+  const ref = storage.ref("materiales/" + file.name);
 
-    document.getElementById('welcome').innerText = 'Hola, ' + name + ' 👋';
-    document.getElementById('exam').innerText = '📅 ' + exam;
-  }
+  ref.put(file)
+    .then(snapshot => snapshot.ref.getDownloadURL())
+    .then(url => {
+      db.collection("materiales").add({
+        titulo: titulo,
+        url: url,
+        curso: curso
+      });
 
-  function answer(val){
-    const res = document.getElementById('result');
-    res.innerText = val === 5 ? '✅ Correcto' : '❌ Incorrecto';
-  }
+      alert("Subido ✅");
+    });
+}
 
-  function askAI(){
-    const q = document.getElementById('question').value.toLowerCase();
-    let r = 'Estudia con práctica diaria 📚';
+// VER TODOS
+function cargarMateriales(){
+  const cont = document.getElementById("listaMateriales");
+  cont.innerHTML = "";
 
-    if(q.includes('funcion')) r = 'Una función asigna a cada x un único valor y.';
-    if(q.includes('resumen')) r = 'Divide el tema en conceptos clave y ejemplos.';
+  db.collection("materiales").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      cont.innerHTML += `<p>${data.titulo} <a href="${data.url}" target="_blank">Ver</a></p>`;
+    });
+  });
+}
 
-    document.getElementById('response').innerText = r;
-  }
+// FILTRAR POR CURSO
+function abrirCurso(curso){
+  document.getElementById("tituloCurso").innerText = curso;
+  go("cursoDetalle");
 
-  load();
+  const cont = document.getElementById("listaMaterialesCurso");
+  cont.innerHTML = "";
+
+  db.collection("materiales").where("curso","==",curso).get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        cont.innerHTML += `<p>${data.titulo} <a href="${data.url}" target="_blank">Ver</a></p>`;
+      });
+    });
+}
+
+// NAVEGACIÓN
+function go(id){
+  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// LOCAL STORAGE
+function load(){
+  const name = localStorage.getItem('name') || 'Renzo';
+  document.getElementById('welcome').innerText = 'Hola, ' + name;
+}
+
+load();
 </script>
 
 </body>
