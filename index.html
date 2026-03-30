@@ -8,7 +8,6 @@
 <style>
 body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
-/* LOGIN */
 #loginUI {
   display:flex; justify-content:center; align-items:center; height:100vh;
 }
@@ -22,7 +21,6 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   padding:12px; width:100%; border-radius:10px; margin-top:10px; cursor:pointer;
 }
 
-/* APP */
 .container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
 
 .card {
@@ -39,7 +37,6 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
 .hidden { display:none; }
 
-/* CHAT */
 #chatBox {
   height:300px;
   overflow-y:auto;
@@ -47,18 +44,11 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   padding:10px;
   border-radius:10px;
 }
-
-/* NAV */
-.nav {
-  position:fixed; bottom:0; width:100%;
-  background:white; display:flex; justify-content:space-around; padding:10px;
-}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="loginUI">
   <div class="login-card">
     <h1 class="logo">Ftudix 🚀</h1>
@@ -67,11 +57,9 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   </div>
 </div>
 
-<!-- APP -->
 <div id="app" class="hidden">
 <div class="container">
 
-<!-- HOME -->
 <div id="home">
   <div class="card">
     <h3 id="user"></h3>
@@ -88,21 +76,18 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
 </div>
 
-<!-- LIBROS -->
 <div id="books" class="hidden">
   <h3>📚 Cursos</h3>
   <div id="listaLibros"></div>
   <button onclick="go('home')">⬅</button>
 </div>
 
-<!-- EJERCICIOS -->
 <div id="practice" class="hidden">
   <h3>📝 Cursos</h3>
   <div id="listaEjercicios"></div>
   <button onclick="go('home')">⬅</button>
 </div>
 
-<!-- CURSO -->
 <div id="cursoVista" class="hidden">
   <h3 id="tituloCurso"></h3>
   <div id="contenidoCurso"></div>
@@ -115,7 +100,6 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   <button onclick="volver()">⬅</button>
 </div>
 
-<!-- CHAT PRIVADO -->
 <div id="chat" class="hidden">
   <h3>💬 Chat privado</h3>
 
@@ -132,14 +116,12 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   <button onclick="go('home')">⬅</button>
 </div>
 
-<!-- BECAS -->
 <div id="becas" class="hidden">
   <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
   <div class="card">🎓 Becas universitarias disponibles</div>
   <button onclick="go('home')">⬅</button>
 </div>
 
-<!-- COMUNICADOS -->
 <div id="comunicados" class="hidden">
   <div id="listaComunicados"></div>
 
@@ -151,7 +133,6 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   <button onclick="go('home')">⬅</button>
 </div>
 
-<!-- ADMIN -->
 <div id="admin" class="hidden">
   <h3>Panel Admin 🔥</h3>
   <p>Control total del sistema</p>
@@ -161,7 +142,6 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 </div>
 </div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -185,6 +165,8 @@ const ADMIN_EMAIL = "62934146@gmail.com";
 let usuarioActual = null;
 let cursoActual = "";
 let tipoActual = "";
+let chatActual = "";
+let unsubscribeChat = null;
 
 /* LOGIN */
 function login(){
@@ -285,14 +267,12 @@ function cargarContenido(){
   .then(snap=>{
     snap.forEach(doc=>{
       const d=doc.data();
-      cont.innerHTML+=<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>;
+      cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>`;
     });
   });
 }
 
-/* CHAT PRIVADO */
-let chatActual="";
-
+/* CHAT */
 function buscarUsuarios(){
   const texto=document.getElementById("buscarInput").value.toLowerCase();
 
@@ -315,8 +295,7 @@ function buscarUsuarios(){
 
 function abrirChat(uid){
   const uid1=usuarioActual.uid;
-  chatActual= uid1<uid ? uid1+""+uid : uid+""+uid1;
-
+  chatActual = uid1 < uid ? uid1+"_"+uid : uid+"_"+uid1;
   cargarChat();
 }
 
@@ -335,7 +314,11 @@ function enviarMensaje(){
 }
 
 function cargarChat(){
-  db.collection("chats").doc(chatActual).collection("mensajes")
+  if(unsubscribeChat) unsubscribeChat();
+
+  unsubscribeChat = db.collection("chats")
+  .doc(chatActual)
+  .collection("mensajes")
   .orderBy("fecha")
   .onSnapshot(snap=>{
     const box=document.getElementById("chatBox");
@@ -368,7 +351,7 @@ function cargarComunicados(){
     const lista=document.getElementById("listaComunicados");
     lista.innerHTML="";
     snap.forEach(doc=>{
-      lista.innerHTML+=<div class="card">${doc.data().texto}</div>;
+      lista.innerHTML += `<div class="card">${doc.data().texto}</div>`;
     });
   });
 }
