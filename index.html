@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Trilce Smart</title>
+
+<style>
+body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
+header { background:#d32f2f; color:white; padding:15px; text-align:center; }
+
+.container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
+
+.card {
+  background:white; padding:15px; border-radius:15px;
+  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+button {
+  padding:12px; border:none; border-radius:10px;
+  background:#d32f2f; color:white; width:100%; margin-top:5px;
+}
+
+.hidden { display:none; }
+
+.nav {
+  position:fixed; bottom:0; width:100%;
+  background:white; display:flex; justify-content:space-around;
+  padding:10px; box-shadow:0 -2px 8px rgba(0,0,0,0.1);
+}
+
+.nav button { background:none; color:#d32f2f; }
+</style>
+</head>
+
+<body>
+
+<header>Trilce Smart 🚀</header>
+
+<div class="container">
+
+<!-- HOME -->
+<div id="home">
+  <button onclick="login()">🔐 Iniciar con Google</button>
+  <p id="user"></p>
+
+  <button onclick="go('books')">📚 Libros</button>
+  <button onclick="go('practice')">📝 Ejercicios</button>
+  <button onclick="go('chat')">💬 Chat</button>
+  <button onclick="go('becas')">🎓 Becas</button>
+  <button onclick="go('comunicados')">📢 Comunicados</button>
+  <button onclick="go('ia')">🧠 IA</button>
+
+  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
+</div>
+
+<!-- LIBROS -->
+<div id="books" class="hidden">
+  <h3>📚 Cursos</h3>
+  <div id="listaLibros"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- EJERCICIOS -->
+<div id="practice" class="hidden">
+  <h3>📝 Cursos</h3>
+  <div id="listaEjercicios"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- CURSO -->
+<div id="cursoVista" class="hidden">
+  <h3 id="tituloCurso"></h3>
+  <div id="contenidoCurso"></div>
+
+  <div id="adminUpload" class="hidden">
+    <input type="file" id="archivo">
+    <button onclick="subirArchivo()">📤 Subir archivo</button>
+  </div>
+
+  <button onclick="volver()">⬅ Volver</button>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="hidden">
+  <h3>💬 Chat</h3>
+  <input id="msg" placeholder="Escribe mensaje">
+  <button onclick="enviarMensaje()">Enviar</button>
+
+  <div id="chatBox">
+    <div class="card">El chat aparecerá aquí 💬</div>
+  </div>
+
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- BECAS -->
+<div id="becas" class="hidden">
+  <h3>🎓 Becas</h3>
+
+  <div class="card">
+    <b>Beca 18</b><br>
+    Apoyo completo del Estado peruano.
+  </div>
+
+  <div class="card">
+    <b>Becas Universitarias</b><br>
+    Oportunidades en universidades.
+  </div>
+
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- COMUNICADOS -->
+<div id="comunicados" class="hidden">
+  <h3>📢 Comunicados</h3>
+
+  <div id="listaComunicados">
+    <div class="card">Aquí aparecerán los comunicados 📢</div>
+  </div>
+
+  <div id="adminComunicado" class="hidden">
+    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
+    <button onclick="subirComunicado()">Publicar</button>
+  </div>
+
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- IA -->
+<div id="ia" class="hidden">
+  <h3>🧠 IA</h3>
+  <input id="preguntaIA" placeholder="Pregunta...">
+  <button onclick="preguntarIA()">Enviar</button>
+  <p id="respuestaIA"></p>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="hidden">
+  <h3>Admin 🔥</h3>
+  <p>Control total del sistema</p>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+</div>
+
+<div class="nav">
+  <button onclick="go('home')">🏠</button>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
+  authDomain: "studix-83850.firebaseapp.com",
+  projectId: "studix-83850",
+  storageBucket: "studix-83850.appspot.com"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+const ADMIN_EMAIL = "62934146@gmail.com";
+
+let usuarioActual = null;
+let cursoActual = "";
+let tipoActual = "";
+
+// CURSOS
+const cursos = [
+"Álgebra","Aritmética","Geometría","Física","Química",
+"Razonamiento Matemático","Biología","Lenguaje",
+"Razonamiento Verbal","Literatura",
+"Historia Universal","Historia del Perú","Geografía"
+];
+
+// LOGIN
+function login(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  firebase.auth().signInWithPopup(provider)
+  .then(res=>{
+    usuarioActual = res.user;
+
+    document.getElementById("user").innerText =
+      "Bienvenido " + usuarioActual.displayName;
+
+    if(usuarioActual.email === ADMIN_EMAIL){
+      document.getElementById("adminPanel").classList.remove("hidden");
+      document.getElementById("adminComunicado").classList.remove("hidden");
+    }
+  });
+}
+
+// MOSTRAR CURSOS
+function cargarCursos(){
+  const libros = document.getElementById("listaLibros");
+  const ejercicios = document.getElementById("listaEjercicios");
+
+  cursos.forEach(curso => {
+
+    let c1 = document.createElement("div");
+    c1.className="card";
+    c1.innerText=curso;
+    c1.onclick=()=>abrirCurso(curso,"libro");
+    libros.appendChild(c1);
+
+    let c2 = document.createElement("div");
+    c2.className="card";
+    c2.innerText=curso;
+    c2.onclick=()=>abrirCurso(curso,"ejercicio");
+    ejercicios.appendChild(c2);
+
+  });
+}
+
+// ABRIR CURSO
+function abrirCurso(curso,tipo){
+  cursoActual = curso;
+  tipoActual = tipo;
+
+  go("cursoVista");
+
+  document.getElementById("tituloCurso").innerText = curso;
+
+  if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+    document.getElementById("adminUpload").classList.remove("hidden");
+  }
+
+  cargarContenido();
+}
+
+// SUBIR ARCHIVO
+function subirArchivo(){
+  const file = document.getElementById("archivo").files[0];
+
+  const ref = storage.ref("materiales/"+file.name);
+
+  ref.put(file).then(()=>{
+    ref.getDownloadURL().then(url=>{
+
+      db.collection("contenido").add({
+        curso: cursoActual,
+        tipo: tipoActual,
+        url: url,
+        nombre: file.name
+      });
+
+      alert("Subido 🔥");
+      cargarContenido();
+    });
+  });
+}
+
+// CARGAR CONTENIDO
+function cargarContenido(){
+  const cont = document.getElementById("contenidoCurso");
+  cont.innerHTML="";
+
+  db.collection("contenido")
+  .where("curso","==",cursoActual)
+  .where("tipo","==",tipoActual)
+  .get()
+  .then(snapshot=>{
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+
+      let div = document.createElement("div");
+      div.className="card";
+
+      div.innerHTML = `
+        <p>${data.nombre}</p>
+        <a href="${data.url}" target="_blank">📂 Ver</a>
+      `;
+
+      cont.appendChild(div);
+    });
+  });
+}
+
+// CHAT
+function enviarMensaje(){
+  const msg = document.getElementById("msg").value;
+
+  db.collection("chat").add({
+    nombre: usuarioActual.displayName,
+    mensaje: msg
+  });
+
+  document.getElementById("msg").value="";
+}
+
+function cargarChat(){
+  db.collection("chat").onSnapshot(snap=>{
+    const box = document.getElementById("chatBox");
+    box.innerHTML="";
+    snap.forEach(doc=>{
+      const d = doc.data();
+      box.innerHTML += `<div class="card">${d.nombre}: ${d.mensaje}</div>`;
+    });
+  });
+}
+
+// COMUNICADOS
+function subirComunicado(){
+  const txt = document.getElementById("nuevoComunicado").value;
+
+  db.collection("comunicados").add({texto:txt});
+  document.getElementById("nuevoComunicado").value="";
+}
+
+function cargarComunicados(){
+  db.collection("comunicados").onSnapshot(snap=>{
+    const lista = document.getElementById("listaComunicados");
+    lista.innerHTML="";
+    snap.forEach(doc=>{
+      lista.innerHTML += `<div class="card">${doc.data().texto}</div>`;
+    });
+  });
+}
+
+// IA
+function preguntarIA(){
+  const q = document.getElementById("preguntaIA").value.toLowerCase();
+  let r = "Estudia todos los días 📚";
+
+  if(q.includes("algebra")) r="Practica ecuaciones";
+  else if(q.includes("fisica")) r="Usa fórmulas";
+  else if(q.includes("quimica")) r="Memoriza reacciones";
+
+  document.getElementById("respuestaIA").innerText=r;
+}
+
+// NAV
+function go(id){
+  document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+
+  if(id === "chat") cargarChat();
+  if(id === "comunicados") cargarComunicados();
+}
+
+function volver(){
+  go(tipoActual === "libro" ? "books" : "practice");
+}
+
+cargarCursos();
+</script>
+
+</body>
+</html>
