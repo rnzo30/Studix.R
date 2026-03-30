@@ -3,53 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Trilce Smart</title>
+<title>Ftudix</title>
 
 <style>
-body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
-header { background:#d32f2f; color:white; padding:15px; text-align:center; }
-
-.container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
-
-.card {
-  background:white; padding:15px; border-radius:15px;
-  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
+body {
+  margin:0;
+  font-family:"Segoe UI";
+  background:#f4f6f8;
 }
 
-button {
-  padding:12px; border:none; border-radius:10px;
-  background:#d32f2f; color:white; width:100%; margin-top:5px;
+/* LOGIN */
+#loginUI {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.login-card {
+  background:white;
+  padding:30px;
+  border-radius:20px;
+  width:300px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  text-align:center;
+}
+
+.logo {
+  color:#ff4b2b;
+  font-size:30px;
+}
+
+.btn-primary {
+  background:#ff4b2b;
+  color:white;
+  border:none;
+  padding:12px;
+  width:100%;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+/* HOME */
+.container {
+  max-width:600px;
+  margin:auto;
+  padding:15px;
+  padding-bottom:80px;
+}
+
+.card {
+  background:white;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:12px;
+  box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.grid button {
+  padding:20px;
+  border:none;
+  border-radius:15px;
+  background:white;
+  box-shadow:0 5px 10px rgba(0,0,0,0.1);
 }
 
 .hidden { display:none; }
 
 .nav {
-  position:fixed; bottom:0; width:100%;
-  background:white; display:flex; justify-content:space-around;
-  padding:10px; box-shadow:0 -2px 8px rgba(0,0,0,0.1);
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
 }
 
-.nav button { background:none; color:#d32f2f; }
 </style>
 </head>
 
 <body>
 
-<header>Trilce Smart 🚀</header>
+<!-- LOGIN -->
+<div id="loginUI">
+  <div class="login-card">
+    <h1 class="logo">Ftudix</h1>
+    <p>Plataforma educativa</p>
+
+    <button class="btn-primary" onclick="login()">Ingresar con Google</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
 
 <div class="container">
 
 <!-- HOME -->
 <div id="home">
-  <button onclick="login()">🔐 Iniciar con Google</button>
-  <p id="user"></p>
+  <div class="card">
+    <h3 id="user"></h3>
+  </div>
 
-  <button onclick="go('books')">📚 Libros</button>
-  <button onclick="go('practice')">📝 Ejercicios</button>
-  <button onclick="go('chat')">💬 Chat</button>
-  <button onclick="go('becas')">🎓 Becas</button>
-  <button onclick="go('comunicados')">📢 Comunicados</button>
-  <button onclick="go('ia')">🧠 IA</button>
+  <div class="grid">
+    <button onclick="go('books')">📚 Libros</button>
+    <button onclick="go('practice')">📝 Ejercicios</button>
+    <button onclick="go('chat')">💬 Chat</button>
+    <button onclick="go('becas')">🎓 Becas</button>
+    <button onclick="go('comunicados')">📢 Comunicados</button>
+    <button onclick="go('ia')">🧠 IA</button>
+  </div>
 
   <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
 </div>
@@ -78,49 +148,31 @@ button {
     <button onclick="subirArchivo()">📤 Subir archivo</button>
   </div>
 
-  <button onclick="volver()">⬅ Volver</button>
+  <button onclick="volver()">⬅</button>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="hidden">
   <h3>💬 Chat</h3>
-  <input id="msg" placeholder="Escribe mensaje">
+  <input id="msg">
   <button onclick="enviarMensaje()">Enviar</button>
-
-  <div id="chatBox">
-    <div class="card">El chat aparecerá aquí 💬</div>
-  </div>
-
+  <div id="chatBox"></div>
   <button onclick="go('home')">⬅</button>
 </div>
 
 <!-- BECAS -->
 <div id="becas" class="hidden">
-  <h3>🎓 Becas</h3>
-
-  <div class="card">
-    <b>Beca 18</b><br>
-    Apoyo completo del Estado peruano.
-  </div>
-
-  <div class="card">
-    <b>Becas Universitarias</b><br>
-    Oportunidades en universidades.
-  </div>
-
+  <div class="card">Beca 18</div>
+  <div class="card">Becas universitarias</div>
   <button onclick="go('home')">⬅</button>
 </div>
 
 <!-- COMUNICADOS -->
 <div id="comunicados" class="hidden">
-  <h3>📢 Comunicados</h3>
-
-  <div id="listaComunicados">
-    <div class="card">Aquí aparecerán los comunicados 📢</div>
-  </div>
+  <div id="listaComunicados"></div>
 
   <div id="adminComunicado" class="hidden">
-    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
+    <input id="nuevoComunicado">
     <button onclick="subirComunicado()">Publicar</button>
   </div>
 
@@ -129,8 +181,7 @@ button {
 
 <!-- IA -->
 <div id="ia" class="hidden">
-  <h3>🧠 IA</h3>
-  <input id="preguntaIA" placeholder="Pregunta...">
+  <input id="preguntaIA">
   <button onclick="preguntarIA()">Enviar</button>
   <p id="respuestaIA"></p>
   <button onclick="go('home')">⬅</button>
@@ -138,15 +189,11 @@ button {
 
 <!-- ADMIN -->
 <div id="admin" class="hidden">
-  <h3>Admin 🔥</h3>
-  <p>Control total del sistema</p>
+  <h3>Admin</h3>
   <button onclick="go('home')">⬅</button>
 </div>
 
 </div>
-
-<div class="nav">
-  <button onclick="go('home')">🏠</button>
 </div>
 
 <!-- FIREBASE -->
@@ -174,7 +221,6 @@ let usuarioActual = null;
 let cursoActual = "";
 let tipoActual = "";
 
-// CURSOS
 const cursos = [
 "Álgebra","Aritmética","Geometría","Física","Química",
 "Razonamiento Matemático","Biología","Lenguaje",
@@ -190,8 +236,11 @@ function login(){
   .then(res=>{
     usuarioActual = res.user;
 
+    document.getElementById("loginUI").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+
     document.getElementById("user").innerText =
-      "Bienvenido " + usuarioActual.displayName;
+      "Hola " + usuarioActual.displayName;
 
     if(usuarioActual.email === ADMIN_EMAIL){
       document.getElementById("adminPanel").classList.remove("hidden");
@@ -200,13 +249,12 @@ function login(){
   });
 }
 
-// MOSTRAR CURSOS
+// CURSOS
 function cargarCursos(){
   const libros = document.getElementById("listaLibros");
   const ejercicios = document.getElementById("listaEjercicios");
 
   cursos.forEach(curso => {
-
     let c1 = document.createElement("div");
     c1.className="card";
     c1.innerText=curso;
@@ -218,17 +266,15 @@ function cargarCursos(){
     c2.innerText=curso;
     c2.onclick=()=>abrirCurso(curso,"ejercicio");
     ejercicios.appendChild(c2);
-
   });
 }
 
-// ABRIR CURSO
+// CURSO
 function abrirCurso(curso,tipo){
   cursoActual = curso;
   tipoActual = tipo;
 
   go("cursoVista");
-
   document.getElementById("tituloCurso").innerText = curso;
 
   if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
@@ -242,25 +288,27 @@ function abrirCurso(curso,tipo){
 function subirArchivo(){
   const file = document.getElementById("archivo").files[0];
 
+  if(!file){
+    alert("Selecciona archivo");
+    return;
+  }
+
   const ref = storage.ref("materiales/"+file.name);
 
   ref.put(file).then(()=>{
     ref.getDownloadURL().then(url=>{
-
       db.collection("contenido").add({
         curso: cursoActual,
         tipo: tipoActual,
-        url: url,
-        nombre: file.name
+        url,
+        nombre:file.name
       });
-
-      alert("Subido 🔥");
       cargarContenido();
     });
   });
 }
 
-// CARGAR CONTENIDO
+// CONTENIDO
 function cargarContenido(){
   const cont = document.getElementById("contenidoCurso");
   cont.innerHTML="";
@@ -269,25 +317,21 @@ function cargarContenido(){
   .where("curso","==",cursoActual)
   .where("tipo","==",tipoActual)
   .get()
-  .then(snapshot=>{
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-
-      let div = document.createElement("div");
-      div.className="card";
-
-      div.innerHTML = `
-        <p>${data.nombre}</p>
-        <a href="${data.url}" target="_blank">📂 Ver</a>
-      `;
-
-      cont.appendChild(div);
+  .then(snap=>{
+    snap.forEach(doc=>{
+      const d = doc.data();
+      cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>`;
     });
   });
 }
 
 // CHAT
 function enviarMensaje(){
+  if(!usuarioActual){
+    alert("Inicia sesión");
+    return;
+  }
+
   const msg = document.getElementById("msg").value;
 
   db.collection("chat").add({
@@ -312,9 +356,7 @@ function cargarChat(){
 // COMUNICADOS
 function subirComunicado(){
   const txt = document.getElementById("nuevoComunicado").value;
-
   db.collection("comunicados").add({texto:txt});
-  document.getElementById("nuevoComunicado").value="";
 }
 
 function cargarComunicados(){
@@ -329,14 +371,8 @@ function cargarComunicados(){
 
 // IA
 function preguntarIA(){
-  const q = document.getElementById("preguntaIA").value.toLowerCase();
-  let r = "Estudia todos los días 📚";
-
-  if(q.includes("algebra")) r="Practica ecuaciones";
-  else if(q.includes("fisica")) r="Usa fórmulas";
-  else if(q.includes("quimica")) r="Memoriza reacciones";
-
-  document.getElementById("respuestaIA").innerText=r;
+  const q = document.getElementById("preguntaIA").value;
+  document.getElementById("respuestaIA").innerText = "Sigue estudiando 📚";
 }
 
 // NAV
@@ -344,12 +380,12 @@ function go(id){
   document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 
-  if(id === "chat") cargarChat();
-  if(id === "comunicados") cargarComunicados();
+  if(id==="chat") cargarChat();
+  if(id==="comunicados") cargarComunicados();
 }
 
 function volver(){
-  go(tipoActual === "libro" ? "books" : "practice");
+  go(tipoActual==="libro"?"books":"practice");
 }
 
 cargarCursos();
