@@ -8,76 +8,153 @@
 <style>
 body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
-#loginUI { display:flex; justify-content:center; align-items:center; height:100vh; }
-.login-card { background:white; padding:30px; border-radius:20px; width:300px; text-align:center; }
+/* LOGIN */
+#loginUI {
+  display:flex; justify-content:center; align-items:center; height:100vh;
+}
+.login-card {
+  background:white; padding:30px; border-radius:20px;
+  width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;
+}
+.logo { color:#ff4b2b; font-size:30px; }
+.btn {
+  background:#ff4b2b; color:white; border:none;
+  padding:12px; width:100%; border-radius:10px; margin-top:10px; cursor:pointer;
+}
 
-.btn { background:#ff4b2b; color:white; border:none; padding:12px; width:100%; border-radius:10px; margin-top:10px; }
-
+/* APP */
 .container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
 
-.card { background:white; padding:15px; border-radius:15px; margin-bottom:10px; }
+.card {
+  background:white; padding:15px; border-radius:15px;
+  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
 
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-.grid button { padding:20px; border:none; border-radius:15px; background:white; }
+.grid button {
+  padding:20px; border:none; border-radius:15px;
+  background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1); cursor:pointer;
+}
 
 .hidden { display:none; }
 
-#chatBox { height:250px; overflow-y:auto; background:#f1f1f1; padding:10px; border-radius:10px; }
-
-.chat-item {
-  background:white;
+/* CHAT */
+#chatBox {
+  height:300px;
+  overflow-y:auto;
+  background:#f1f1f1;
   padding:10px;
   border-radius:10px;
-  margin-bottom:8px;
-  cursor:pointer;
 }
 
-.chat-item:hover { background:#eee; }
+/* NAV */
+.nav {
+  position:fixed; bottom:0; width:100%;
+  background:white; display:flex; justify-content:space-around; padding:10px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
 <div id="loginUI">
   <div class="login-card">
-    <h1>Ftudix 🚀</h1>
+    <h1 class="logo">Ftudix 🚀</h1>
+    <p>Plataforma educativa</p>
     <button class="btn" onclick="login()">Ingresar con Google</button>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" class="hidden">
 <div class="container">
 
+<!-- HOME -->
 <div id="home">
-  <h3 id="user"></h3>
+  <div class="card">
+    <h3 id="user"></h3>
+  </div>
 
   <div class="grid">
     <button onclick="go('books')">📚 Libros</button>
     <button onclick="go('practice')">📝 Ejercicios</button>
     <button onclick="go('chat')">💬 Chat</button>
+    <button onclick="go('becas')">🎓 Becas</button>
+    <button onclick="go('comunicados')">📢 Comunicados</button>
   </div>
+
+  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
 </div>
 
-<!-- CHAT -->
+<!-- LIBROS -->
+<div id="books" class="hidden">
+  <h3>📚 Cursos</h3>
+  <div id="listaLibros"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- EJERCICIOS -->
+<div id="practice" class="hidden">
+  <h3>📝 Cursos</h3>
+  <div id="listaEjercicios"></div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- CURSO -->
+<div id="cursoVista" class="hidden">
+  <h3 id="tituloCurso"></h3>
+  <div id="contenidoCurso"></div>
+
+  <div id="adminUpload" class="hidden">
+    <input type="file" id="archivo">
+    <button onclick="subirArchivo()">📤 Subir</button>
+  </div>
+
+  <button onclick="volver()">⬅</button>
+</div>
+
+<!-- CHAT PRIVADO -->
 <div id="chat" class="hidden">
-
-  <h3>💬 Chats</h3>
-  <div id="listaChats"></div>
-
-  <hr>
+  <h3>💬 Chat privado</h3>
 
   <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario...">
   <div id="resultados"></div>
 
   <hr>
 
-  <h4>Conversación</h4>
-  <div id="chatBox"></div>
-
   <input id="msg" placeholder="Mensaje">
   <button onclick="enviarMensaje()">Enviar</button>
 
+  <div id="chatBox"></div>
+
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- BECAS -->
+<div id="becas" class="hidden">
+  <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
+  <div class="card">🎓 Becas universitarias disponibles</div>
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- COMUNICADOS -->
+<div id="comunicados" class="hidden">
+  <div id="listaComunicados"></div>
+
+  <div id="adminComunicado" class="hidden">
+    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
+    <button onclick="subirComunicado()">Publicar</button>
+  </div>
+
+  <button onclick="go('home')">⬅</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="hidden">
+  <h3>Panel Admin 🔥</h3>
+  <p>Control total del sistema</p>
   <button onclick="go('home')">⬅</button>
 </div>
 
@@ -88,20 +165,26 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
   authDomain: "studix-83850.firebaseapp.com",
-  projectId: "studix-83850"
+  projectId: "studix-83850",
+  storageBucket: "studix-83850.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
+const storage = firebase.storage();
+
+const ADMIN_EMAIL = "62934146@trilce.edu.pe";
 
 let usuarioActual = null;
-let chatActual = "";
-let unsubscribeChat = null;
+let cursoActual = "";
+let tipoActual = "";
 
 /* LOGIN */
 function login(){
@@ -119,11 +202,13 @@ function login(){
     document.getElementById("user").innerText =
       "Hola " + usuarioActual.displayName;
 
-    cargarListaChats();
+    if(usuarioActual.email === ADMIN_EMAIL){
+      document.getElementById("adminPanel").classList.remove("hidden");
+      document.getElementById("adminComunicado").classList.remove("hidden");
+    }
   });
 }
 
-/* GUARDAR USUARIO */
 function guardarUsuario(user){
   db.collection("usuarios").doc(user.uid).set({
     nombre:user.displayName,
@@ -131,51 +216,115 @@ function guardarUsuario(user){
   },{merge:true});
 }
 
-/* BUSCAR USUARIOS */
-function buscarUsuarios(){
-  const texto=document.getElementById("buscarInput").value.toLowerCase();
-  const cont=document.getElementById("resultados");
+/* CURSOS */
+const cursos = ["Álgebra","Aritmética","Geometría","Física","Química",
+"Razonamiento Matemático","Biología","Lenguaje",
+"Razonamiento Verbal","Literatura",
+"Historia Universal","Historia del Perú","Geografía"];
+
+function cargarCursos(){
+  const libros=document.getElementById("listaLibros");
+  const ejercicios=document.getElementById("listaEjercicios");
+
+  cursos.forEach(curso=>{
+    let c1=document.createElement("div");
+    c1.className="card";
+    c1.innerText=curso;
+    c1.onclick=()=>abrirCurso(curso,"libro");
+    libros.appendChild(c1);
+
+    let c2=document.createElement("div");
+    c2.className="card";
+    c2.innerText=curso;
+    c2.onclick=()=>abrirCurso(curso,"ejercicio");
+    ejercicios.appendChild(c2);
+  });
+}
+
+function abrirCurso(curso,tipo){
+  cursoActual=curso;
+  tipoActual=tipo;
+  go("cursoVista");
+
+  document.getElementById("tituloCurso").innerText=curso;
+
+  if(usuarioActual.email===ADMIN_EMAIL){
+    document.getElementById("adminUpload").classList.remove("hidden");
+  }
+
+  cargarContenido();
+}
+
+function subirArchivo(){
+  const file=document.getElementById("archivo").files[0];
+  if(!file) return alert("Selecciona archivo");
+
+  const ref=storage.ref("materiales/"+file.name);
+
+  ref.put(file).then(()=>{
+    ref.getDownloadURL().then(url=>{
+      db.collection("contenido").add({
+        curso:cursoActual,
+        tipo:tipoActual,
+        url:url,
+        nombre:file.name
+      });
+      cargarContenido();
+    });
+  });
+}
+
+function cargarContenido(){
+  const cont=document.getElementById("contenidoCurso");
   cont.innerHTML="";
 
+  db.collection("contenido")
+  .where("curso","==",cursoActual)
+  .where("tipo","==",tipoActual)
+  .get()
+  .then(snap=>{
+    snap.forEach(doc=>{
+      const d=doc.data();
+      cont.innerHTML+=<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>;
+    });
+  });
+}
+
+/* CHAT PRIVADO */
+let chatActual="";
+
+function buscarUsuarios(){
+  const texto=document.getElementById("buscarInput").value.toLowerCase();
+
   db.collection("usuarios").get().then(snapshot=>{
+    const cont=document.getElementById("resultados");
+    cont.innerHTML="";
+
     snapshot.forEach(doc=>{
       const u=doc.data();
-
       if(u.nombre && u.nombre.toLowerCase().includes(texto)){
         let div=document.createElement("div");
         div.className="card";
         div.innerText=u.nombre;
-
-        div.onclick=()=>{
-          abrirChat(doc.id);
-        };
-
+        div.onclick=()=>abrirChat(doc.id);
         cont.appendChild(div);
       }
     });
   });
 }
 
-/* ABRIR CHAT */
 function abrirChat(uid){
   const uid1=usuarioActual.uid;
-
-  chatActual = uid1 < uid ? uid1+"_"+uid : uid+"_"+uid1;
+  chatActual= uid1<uid ? uid1+""+uid : uid+""+uid1;
 
   cargarChat();
 }
 
-/* ENVIAR MENSAJE */
 function enviarMensaje(){
-  if(!chatActual) return alert("Selecciona usuario");
-
   const msg=document.getElementById("msg").value.trim();
-  if(!msg) return;
+  if(!msg || !chatActual) return;
 
-  db.collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
-  .add({
+  db.collection("chats").doc(chatActual).collection("mensajes").add({
     uid:usuarioActual.uid,
     nombre:usuarioActual.displayName,
     mensaje:msg,
@@ -185,17 +334,10 @@ function enviarMensaje(){
   document.getElementById("msg").value="";
 }
 
-/* CHAT REALTIME */
 function cargarChat(){
-  if(unsubscribeChat) unsubscribeChat();
-
-  unsubscribeChat = db
-  .collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
+  db.collection("chats").doc(chatActual).collection("mensajes")
   .orderBy("fecha")
   .onSnapshot(snap=>{
-
     const box=document.getElementById("chatBox");
     box.innerHTML="";
 
@@ -204,52 +346,29 @@ function cargarChat(){
       const esMio=d.uid===usuarioActual.uid;
 
       box.innerHTML+=`
-        <div style="text-align:${esMio?"right":"left"}">
-          <div style="
-            display:inline-block;
-            background:${esMio?"#ff4b2b":"#ddd"};
-            color:${esMio?"white":"black"};
-            padding:8px;
-            border-radius:10px;
-            margin:4px;
-          ">
-            ${d.mensaje}
-          </div>
+      <div style="display:flex;justify-content:${esMio?"flex-end":"flex-start"}">
+        <div style="background:${esMio?"#ff4b2b":"#e4e6eb"};padding:10px;border-radius:10px;margin:5px;">
+        ${d.mensaje}
         </div>
-      `;
+      </div>`;
     });
 
     box.scrollTop=box.scrollHeight;
   });
 }
 
-/* LISTA DE CHATS */
-function cargarListaChats(){
-  db.collection("chats").onSnapshot(snapshot=>{
-    const lista=document.getElementById("listaChats");
+/* COMUNICADOS */
+function subirComunicado(){
+  const txt=document.getElementById("nuevoComunicado").value;
+  db.collection("comunicados").add({texto:txt});
+}
+
+function cargarComunicados(){
+  db.collection("comunicados").onSnapshot(snap=>{
+    const lista=document.getElementById("listaComunicados");
     lista.innerHTML="";
-
-    snapshot.forEach(doc=>{
-      const id=doc.id;
-
-      if(!id.includes(usuarioActual.uid)) return;
-
-      const otro = id.replace(usuarioActual.uid,"").replace("_","");
-
-      db.collection("usuarios").doc(otro).get().then(userDoc=>{
-        const nombre = userDoc.data()?.nombre || "Usuario";
-
-        let div=document.createElement("div");
-        div.className="chat-item";
-        div.innerText=nombre;
-
-        div.onclick=()=>{
-          chatActual=id;
-          cargarChat();
-        };
-
-        lista.appendChild(div);
-      });
+    snap.forEach(doc=>{
+      lista.innerHTML+=<div class="card">${doc.data().texto}</div>;
     });
   });
 }
@@ -258,7 +377,15 @@ function cargarListaChats(){
 function go(id){
   document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
+
+  if(id==="comunicados") cargarComunicados();
 }
+
+function volver(){
+  go(tipoActual==="libro"?"books":"practice");
+}
+
+cargarCursos();
 </script>
 
 </body>
