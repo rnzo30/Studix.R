@@ -42,6 +42,7 @@ body {
   width:100%;
   border-radius:10px;
   margin-top:10px;
+  cursor:pointer;
 }
 
 /* HOME */
@@ -72,6 +73,7 @@ body {
   border-radius:15px;
   background:white;
   box-shadow:0 5px 10px rgba(0,0,0,0.1);
+  cursor:pointer;
 }
 
 .hidden { display:none; }
@@ -85,7 +87,6 @@ body {
   justify-content:space-around;
   padding:10px;
 }
-
 </style>
 </head>
 
@@ -154,7 +155,7 @@ body {
 <!-- CHAT -->
 <div id="chat" class="hidden">
   <h3>💬 Chat</h3>
-  <input id="msg">
+  <input id="msg" placeholder="Escribe mensaje">
   <button onclick="enviarMensaje()">Enviar</button>
   <div id="chatBox"></div>
   <button onclick="go('home')">⬅</button>
@@ -162,8 +163,8 @@ body {
 
 <!-- BECAS -->
 <div id="becas" class="hidden">
-  <div class="card">Beca 18</div>
-  <div class="card">Becas universitarias</div>
+  <div class="card">🎓 Beca 18</div>
+  <div class="card">🎓 Becas universitarias</div>
   <button onclick="go('home')">⬅</button>
 </div>
 
@@ -172,7 +173,7 @@ body {
   <div id="listaComunicados"></div>
 
   <div id="adminComunicado" class="hidden">
-    <input id="nuevoComunicado">
+    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
     <button onclick="subirComunicado()">Publicar</button>
   </div>
 
@@ -181,7 +182,7 @@ body {
 
 <!-- IA -->
 <div id="ia" class="hidden">
-  <input id="preguntaIA">
+  <input id="preguntaIA" placeholder="Pregunta...">
   <button onclick="preguntarIA()">Enviar</button>
   <p id="respuestaIA"></p>
   <button onclick="go('home')">⬅</button>
@@ -246,6 +247,10 @@ function login(){
       document.getElementById("adminPanel").classList.remove("hidden");
       document.getElementById("adminComunicado").classList.remove("hidden");
     }
+  })
+  .catch(err=>{
+    alert("Error login");
+    console.log(err);
   });
 }
 
@@ -255,17 +260,8 @@ function cargarCursos(){
   const ejercicios = document.getElementById("listaEjercicios");
 
   cursos.forEach(curso => {
-    let c1 = document.createElement("div");
-    c1.className="card";
-    c1.innerText=curso;
-    c1.onclick=()=>abrirCurso(curso,"libro");
-    libros.appendChild(c1);
-
-    let c2 = document.createElement("div");
-    c2.className="card";
-    c2.innerText=curso;
-    c2.onclick=()=>abrirCurso(curso,"ejercicio");
-    ejercicios.appendChild(c2);
+    libros.innerHTML += `<div class="card" onclick="abrirCurso('${curso}','libro')">${curso}</div>`;
+    ejercicios.innerHTML += `<div class="card" onclick="abrirCurso('${curso}','ejercicio')">${curso}</div>`;
   });
 }
 
@@ -288,10 +284,7 @@ function abrirCurso(curso,tipo){
 function subirArchivo(){
   const file = document.getElementById("archivo").files[0];
 
-  if(!file){
-    alert("Selecciona archivo");
-    return;
-  }
+  if(!file) return alert("Selecciona archivo");
 
   const ref = storage.ref("materiales/"+file.name);
 
@@ -327,12 +320,10 @@ function cargarContenido(){
 
 // CHAT
 function enviarMensaje(){
-  if(!usuarioActual){
-    alert("Inicia sesión");
-    return;
-  }
+  if(!usuarioActual) return alert("Inicia sesión");
 
   const msg = document.getElementById("msg").value;
+  if(!msg) return;
 
   db.collection("chat").add({
     nombre: usuarioActual.displayName,
@@ -356,7 +347,10 @@ function cargarChat(){
 // COMUNICADOS
 function subirComunicado(){
   const txt = document.getElementById("nuevoComunicado").value;
+  if(!txt) return;
+
   db.collection("comunicados").add({texto:txt});
+  document.getElementById("nuevoComunicado").value="";
 }
 
 function cargarComunicados(){
@@ -371,8 +365,14 @@ function cargarComunicados(){
 
 // IA
 function preguntarIA(){
-  const q = document.getElementById("preguntaIA").value;
-  document.getElementById("respuestaIA").innerText = "Sigue estudiando 📚";
+  const q = document.getElementById("preguntaIA").value.toLowerCase();
+  let r = "Sigue estudiando 📚";
+
+  if(q.includes("algebra")) r="Practica ecuaciones";
+  if(q.includes("fisica")) r="Usa fórmulas";
+  if(q.includes("quimica")) r="Memoriza reacciones";
+
+  document.getElementById("respuestaIA").innerText = r;
 }
 
 // NAV
