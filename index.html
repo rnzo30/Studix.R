@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ftudix</title>
+<title>Ftudix PRO</title>
 
 <style>
 body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
+/* LOGIN */
 #loginUI {
   display:flex; justify-content:center; align-items:center; height:100vh;
 }
@@ -16,25 +17,29 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;
 }
 .logo { color:#ff4b2b; font-size:30px; }
-.btn-primary {
+.btn {
   background:#ff4b2b; color:white; border:none;
-  padding:12px; width:100%; border-radius:10px; margin-top:10px;
+  padding:12px; width:100%; border-radius:10px; margin-top:10px; cursor:pointer;
 }
 
+/* APP */
 .container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
+
 .card {
   background:white; padding:15px; border-radius:15px;
   margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
 }
+
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
 .grid button {
   padding:20px; border:none; border-radius:15px;
-  background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1);
+  background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1); cursor:pointer;
 }
 
 .hidden { display:none; }
 
+/* CHAT */
 #chatBox {
   height:300px;
   overflow-y:auto;
@@ -43,10 +48,10 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   border-radius:10px;
 }
 
+/* NAV */
 .nav {
   position:fixed; bottom:0; width:100%;
-  background:white; display:flex; justify-content:space-around;
-  padding:10px;
+  background:white; display:flex; justify-content:space-around; padding:10px;
 }
 </style>
 </head>
@@ -56,9 +61,9 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 <!-- LOGIN -->
 <div id="loginUI">
   <div class="login-card">
-    <h1 class="logo">Ftudix</h1>
+    <h1 class="logo">Ftudix 🚀</h1>
     <p>Plataforma educativa</p>
-    <button class="btn-primary" onclick="login()">Ingresar con Google</button>
+    <button class="btn" onclick="login()">Ingresar con Google</button>
   </div>
 </div>
 
@@ -104,24 +109,33 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
   <div id="adminUpload" class="hidden">
     <input type="file" id="archivo">
-    <button onclick="subirArchivo()">📤 Subir archivo</button>
+    <button onclick="subirArchivo()">📤 Subir</button>
   </div>
 
   <button onclick="volver()">⬅</button>
 </div>
 
-<!-- CHAT -->
+<!-- CHAT PRIVADO -->
 <div id="chat" class="hidden">
-  <h3>💬 Chat</h3>
+  <h3>💬 Chat privado</h3>
+
+  <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario...">
+  <div id="resultados"></div>
+
+  <hr>
+
   <input id="msg" placeholder="Mensaje">
   <button onclick="enviarMensaje()">Enviar</button>
+
   <div id="chatBox"></div>
+
   <button onclick="go('home')">⬅</button>
 </div>
 
 <!-- BECAS -->
 <div id="becas" class="hidden">
-  <div class="card">🎓 Beca 18</div>
+  <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
+  <div class="card">🎓 Becas universitarias disponibles</div>
   <button onclick="go('home')">⬅</button>
 </div>
 
@@ -130,7 +144,7 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
   <div id="listaComunicados"></div>
 
   <div id="adminComunicado" class="hidden">
-    <input id="nuevoComunicado">
+    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
     <button onclick="subirComunicado()">Publicar</button>
   </div>
 
@@ -139,8 +153,8 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
 <!-- ADMIN -->
 <div id="admin" class="hidden">
-  <h3>Admin</h3>
-  <p>Solo tú puedes subir contenido</p>
+  <h3>Panel Admin 🔥</h3>
+  <p>Control total del sistema</p>
   <button onclick="go('home')">⬅</button>
 </div>
 
@@ -166,21 +180,13 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-const ADMIN_EMAIL = "62934146@trilce.edu.pe";
+const ADMIN_EMAIL = "62934146@gmail.com";
 
 let usuarioActual = null;
 let cursoActual = "";
 let tipoActual = "";
-let chatActivo = false;
 
-const cursos = [
-"Álgebra","Aritmética","Geometría","Física","Química",
-"Razonamiento Matemático","Biología","Lenguaje",
-"Razonamiento Verbal","Literatura",
-"Historia Universal","Historia del Perú","Geografía"
-];
-
-// LOGIN
+/* LOGIN */
 function login(){
   const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -203,18 +209,22 @@ function login(){
   });
 }
 
-// GUARDAR USUARIO
 function guardarUsuario(user){
   db.collection("usuarios").doc(user.uid).set({
-    nombre: user.displayName,
-    email: user.email
-  }, { merge:true });
+    nombre:user.displayName,
+    email:user.email
+  },{merge:true});
 }
 
-// CURSOS
+/* CURSOS */
+const cursos = ["Álgebra","Aritmética","Geometría","Física","Química",
+"Razonamiento Matemático","Biología","Lenguaje",
+"Razonamiento Verbal","Literatura",
+"Historia Universal","Historia del Perú","Geografía"];
+
 function cargarCursos(){
-  const libros = document.getElementById("listaLibros");
-  const ejercicios = document.getElementById("listaEjercicios");
+  const libros=document.getElementById("listaLibros");
+  const ejercicios=document.getElementById("listaEjercicios");
 
   cursos.forEach(curso=>{
     let c1=document.createElement("div");
@@ -231,7 +241,6 @@ function cargarCursos(){
   });
 }
 
-// ABRIR CURSO
 function abrirCurso(curso,tipo){
   cursoActual=curso;
   tipoActual=tipo;
@@ -239,14 +248,13 @@ function abrirCurso(curso,tipo){
 
   document.getElementById("tituloCurso").innerText=curso;
 
-  if(usuarioActual && usuarioActual.email===ADMIN_EMAIL){
+  if(usuarioActual.email===ADMIN_EMAIL){
     document.getElementById("adminUpload").classList.remove("hidden");
   }
 
   cargarContenido();
 }
 
-// SUBIR ARCHIVO
 function subirArchivo(){
   const file=document.getElementById("archivo").files[0];
   if(!file) return alert("Selecciona archivo");
@@ -266,7 +274,6 @@ function subirArchivo(){
   });
 }
 
-// CONTENIDO
 function cargarContenido(){
   const cont=document.getElementById("contenidoCurso");
   cont.innerHTML="";
@@ -283,12 +290,41 @@ function cargarContenido(){
   });
 }
 
-// CHAT
+/* CHAT PRIVADO */
+let chatActual="";
+
+function buscarUsuarios(){
+  const texto=document.getElementById("buscarInput").value.toLowerCase();
+
+  db.collection("usuarios").get().then(snapshot=>{
+    const cont=document.getElementById("resultados");
+    cont.innerHTML="";
+
+    snapshot.forEach(doc=>{
+      const u=doc.data();
+      if(u.nombre && u.nombre.toLowerCase().includes(texto)){
+        let div=document.createElement("div");
+        div.className="card";
+        div.innerText=u.nombre;
+        div.onclick=()=>abrirChat(doc.id);
+        cont.appendChild(div);
+      }
+    });
+  });
+}
+
+function abrirChat(uid){
+  const uid1=usuarioActual.uid;
+  chatActual= uid1<uid ? uid1+"_"+uid : uid+"_"+uid1;
+
+  cargarChat();
+}
+
 function enviarMensaje(){
   const msg=document.getElementById("msg").value.trim();
-  if(!msg) return;
+  if(!msg || !chatActual) return;
 
-  db.collection("chat").add({
+  db.collection("chats").doc(chatActual).collection("mensajes").add({
     uid:usuarioActual.uid,
     nombre:usuarioActual.displayName,
     mensaje:msg,
@@ -299,20 +335,19 @@ function enviarMensaje(){
 }
 
 function cargarChat(){
-  db.collection("chat").orderBy("fecha").onSnapshot(snap=>{
+  db.collection("chats").doc(chatActual).collection("mensajes")
+  .orderBy("fecha")
+  .onSnapshot(snap=>{
     const box=document.getElementById("chatBox");
     box.innerHTML="";
 
     snap.forEach(doc=>{
       const d=doc.data();
-      if(!d.mensaje) return;
-
       const esMio=d.uid===usuarioActual.uid;
 
       box.innerHTML+=`
       <div style="display:flex;justify-content:${esMio?"flex-end":"flex-start"}">
-        <div style="background:${esMio?"#d32f2f":"#e4e6eb"};color:${esMio?"white":"black"};padding:10px;border-radius:10px;max-width:70%;margin:5px 0;">
-        ${!esMio?`<b>${d.nombre}</b><br>`:""}
+        <div style="background:${esMio?"#ff4b2b":"#e4e6eb"};padding:10px;border-radius:10px;margin:5px;">
         ${d.mensaje}
         </div>
       </div>`;
@@ -322,7 +357,7 @@ function cargarChat(){
   });
 }
 
-// COMUNICADOS
+/* COMUNICADOS */
 function subirComunicado(){
   const txt=document.getElementById("nuevoComunicado").value;
   db.collection("comunicados").add({texto:txt});
@@ -338,19 +373,12 @@ function cargarComunicados(){
   });
 }
 
-// NAV
+/* NAV */
 function go(id){
   document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 
-  if(id==="chat" && !chatActivo){
-    cargarChat();
-    chatActivo=true;
-  }
-
-  if(id==="comunicados"){
-    cargarComunicados();
-  }
+  if(id==="comunicados") cargarComunicados();
 }
 
 function volver(){
