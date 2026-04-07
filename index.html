@@ -929,8 +929,6 @@ function cargarListaChats(){
     // 🔥 LIMPIAR (UX tipo WhatsApp)
     document.getElementById("chatBox").innerHTML = "";
 
-    const data = doc.data();
-
     // 🔥 obtener UID del otro usuario
     otroUID = data.usuarios.find(u => u !== usuarioActual.uid);
 
