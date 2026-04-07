@@ -4,73 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Studix PRO</title>
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+   <style>
     body {
-        font-family: 'Inter', system-ui, sans-serif;
         margin: 0;
+        font-family: 'Segoe UI', system-ui, sans-serif;
         background: #f8fafc;
+        color: #1e2937;
     }
 
-    /* Login Screen */
+    /* Login */
+    #loginUI {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc, #e0f2fe);
+    }
+
     .login-card {
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        background: white;
+        padding: 40px 30px;
+        border-radius: 24px;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+        text-align: center;
     }
 
-    /* Tarjetas modernas */
-    .card {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    .logo {
+        font-size: 42px;
+        font-weight: 800;
+        color: #f97316;
+        letter-spacing: -2px;
     }
 
-    /* Botones Naranja Ftudix */
+    /* Botones */
+    .btn {
+        padding: 16px;
+        border: none;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 17px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
     .btn-orange {
-        background-color: #f97316;
+        background: #f97316;
         color: white;
-        transition: all 0.2s ease;
     }
     .btn-orange:hover {
-        background-color: #ea580c;
-        transform: translateY(-2px);
+        background: #ea580c;
+        transform: translateY(-3px);
     }
 
-    /* Header */
-    header {
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    .btn-black {
+        background: #1f2937;
+        color: white;
+    }
+    .btn-black:hover {
+        background: #111827;
     }
 
-    /* Accesos rápidos */
-    .quick-card {
+    /* Tarjetas */
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         transition: all 0.3s ease;
     }
-    .quick-card:hover {
-        transform: scale(1.04);
-        box-shadow: 0 25px 50px -12px rgb(249 115 22 / 0.25);
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+
+    /* Grid de accesos */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 16px;
     }
 
     /* Chat */
+    .chat-container {
+        display: flex;
+        height: 68vh;
+        gap: 12px;
+    }
+
+    .chat-list, .chat-area {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
     #chatBox {
-        scrollbar-width: thin;
-        scrollbar-color: #f97316 #f1f5f9;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 16px;
+        overflow-y: auto;
+        height: 100%;
     }
 
     /* Navegación inferior */
     nav {
-        box-shadow: 0 -4px 6px -1px rgb(0 0 0 / 0.1);
-    }
-
-    /* Animaciones suaves */
-    .section {
-        animation: fadeIn 0.4s ease forwards;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: translateY(0); }
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.08);
     }
 </style>
 </head>
