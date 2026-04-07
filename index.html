@@ -1,205 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Studix PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Studix PRO</title>
+    <style>
+        body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
+        #loginUI {
+            display:flex; justify-content:center; align-items:center; height:100vh;
+        }
+        .login-card {
+            background:white; padding:30px; border-radius:20px;
+            width:320px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;
+        }
+        .logo { color:#ff4b2b; font-size:32px; font-weight:bold; }
+        .btn {
+            background:#ff4b2b; color:white; border:none;
+            padding:14px; width:100%; border-radius:10px; margin-top:15px; cursor:pointer; font-size:16px;
+        }
+        .container { max-width:1000px; margin:auto; padding:15px; padding-bottom:80px; }
+        .card {
+            background:white; padding:15px; border-radius:15px;
+            margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
+        }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .grid button {
+            padding:20px; border:none; border-radius:15px;
+            background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1); cursor:pointer; font-size:16px;
+        }
+        .hidden { display:none; }
 
-<style>
-body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
-
-#loginUI {
-  display:flex; justify-content:center; align-items:center; height:100vh;
-}
-.login-card {
-  background:white; padding:30px; border-radius:20px;
-  width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;
-}
-.logo { color:#ff4b2b; font-size:30px; }
-.btn {
-  background:#ff4b2b; color:white; border:none;
-  padding:12px; width:100%; border-radius:10px; margin-top:10px; cursor:pointer;
-}
-
-.container { max-width:1000px; margin:auto; padding:15px; padding-bottom:80px; }
-
-.card {
-  background:white; padding:15px; border-radius:15px;
-  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
-}
-
-.grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-
-.grid button {
-  padding:20px; border:none; border-radius:15px;
-  background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1); cursor:pointer;
-}
-
-.hidden { display:none; }
-
-#listaChats .card {
-  cursor:pointer;
-  transition:0.2s;
-}
-
-#listaChats .card:hover {
-  background:#f0f0f0;
-}
-/* ================= CHAT TIPO WHATSAPP ================= */
-
-.chat-container {
-  display: flex;
-  height: 70vh;
-  gap: 10px;
-}
-
-/* 🔥 LISTA IZQUIERDA */
-.chat-list {
-  width: 35%;
-  background: white;
-  border-radius: 10px;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-/* 🔥 CHAT DERECHO */
-.chat-area {
-  width: 65%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* MENSAJES */
-#chatBox {
-  flex: 1;
-  overflow-y: auto;
-  background: #f1f1f1;
-  padding: 10px;
-  border-radius: 10px;
-  margin: 10px 0;
-}
-
-/* INPUT */
-.chat-input {
-  display: flex;
-  gap: 5px;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.chat-input button {
-  padding: 10px;
-  border: none;
-  background: #ff4b2b;
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-}
-</style>
+        /* CHAT */
+        .chat-container { display: flex; height: 70vh; gap: 10px; }
+        .chat-list {
+            width: 35%; background: white; border-radius: 10px;
+            overflow-y: auto; padding: 10px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        .chat-area { width: 65%; display: flex; flex-direction: column; }
+        #chatBox {
+            flex: 1; overflow-y: auto; background: #f1f1f1;
+            padding: 15px; border-radius: 10px; margin: 10px 0;
+        }
+        .chat-input { display: flex; gap: 8px; }
+        .chat-input input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ccc; }
+        .chat-input button {
+            padding: 12px 20px; border: none; background: #ff4b2b;
+            color: white; border-radius: 10px; cursor: pointer;
+        }
+        #listaChats .card { cursor:pointer; transition:0.2s; }
+        #listaChats .card:hover { background:#f0f0f0; }
+    </style>
 </head>
-
 <body>
 
+<!-- LOGIN -->
 <div id="loginUI">
-  <div class="login-card">
-    <h1 class="logo">Ftudix 🚀</h1>
-    <p>Plataforma educativa</p>
-    <button class="btn" onclick="login()">Ingresar con Google</button>
-  </div>
+    <div class="login-card">
+        <h1 class="logo">Ftudix 🚀</h1>
+        <p>Plataforma educativa</p>
+        <button class="btn" onclick="login()">Ingresar con Google</button>
+    </div>
 </div>
 
+<!-- APP -->
 <div id="app" class="hidden">
-<div class="container">
+    <div class="container">
+        <!-- HOME -->
+        <div id="home">
+            <div class="card"><h3 id="user"></h3></div>
+            <div class="grid">
+                <button onclick="go('resoluciones')">📄 Resoluciones</button>
+                <button onclick="go('books')">📚 Libros</button>
+                <button onclick="go('practice')">📝 Ejercicios</button>
+                <button onclick="go('chat')">💬 Chat</button>
+                <button onclick="go('becas')">🎓 Becas</button>
+                <button onclick="go('comunicados')">📢 Comunicados</button>
+            </div>
+            <button id="adminPanel" class="hidden btn" onclick="go('admin')">⚙️ Admin</button>
+        </div>
 
-<div id="home">
-  <div class="card">
-    <h3 id="user"></h3>
-  </div>
+        <!-- Otras secciones (libros, practice, cursoVista, chat, becas, resoluciones, comunicados, admin) -->
+        <!-- (Mantengo el mismo HTML que tenías, solo corrigo el JS) -->
 
-  <div class="grid">
-    <button onclick="go('books')">📚 Libros</button>
-    <button onclick="go('practice')">📝 Ejercicios</button>
-    <button onclick="go('chat')">💬 Chat</button>
-    <button onclick="go('becas')">🎓 Becas</button>
-    <button onclick="go('comunicados')">📢 Comunicados</button>
-  </div>
+        <div id="books" class="hidden">
+            <h3>📚 Cursos</h3>
+            <div id="listaLibros"></div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
-</div>
+        <div id="practice" class="hidden">
+            <h3>📝 Cursos</h3>
+            <div id="listaEjercicios"></div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-<div id="books" class="hidden">
-  <h3>📚 Cursos</h3>
-  <div id="listaLibros"></div>
-  <button onclick="go('home')">⬅</button>
-</div>
+        <div id="cursoVista" class="hidden">
+            <h3 id="tituloCurso"></h3>
+            <div id="contenidoCurso"></div>
+            <div id="adminUpload" class="hidden">
+                <input type="file" id="archivo">
+                <button onclick="subirArchivo()" class="btn">📤 Subir archivo</button>
+            </div>
+            <button onclick="volver()" class="btn">⬅ Volver</button>
+        </div>
 
-<div id="practice" class="hidden">
-  <h3>📝 Cursos</h3>
-  <div id="listaEjercicios"></div>
-  <button onclick="go('home')">⬅</button>
-</div>
+        <div id="chat" class="hidden">
+            <h3>💬 Chat Privado</h3>
+            <div class="chat-container">
+                <div class="chat-list">
+                    <h4>📨 Tus chats</h4>
+                    <div id="listaChats"></div>
+                </div>
+                <div class="chat-area">
+                    <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario..." style="margin-bottom:8px; padding:10px; width:100%; border-radius:10px;">
+                    <div id="resultados"></div>
+                    <div id="chatBox"></div>
+                    <div class="chat-input">
+                        <input id="msg" placeholder="Escribe un mensaje...">
+                        <button onclick="enviarMensaje()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-<div id="cursoVista" class="hidden">
-  <h3 id="tituloCurso"></h3>
-  <div id="contenidoCurso"></div>
+        <div id="becas" class="hidden">
+            <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
+            <div class="card">🎓 Becas universitarias disponibles</div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-  <div id="adminUpload" class="hidden">
-    <input type="file" id="archivo">
-    <button onclick="subirArchivo()">📤 Subir</button>
-  </div>
+        <div id="resoluciones" class="hidden">
+            <h3>📄 Resoluciones</h3>
+            <div class="grid">
+                <button onclick="abrirResolucion('tareas')">📚 Tareas Domiciliarias</button>
+                <button onclick="abrirResolucion('diarios')">📝 Exámenes diarios</button>
+                <button onclick="abrirResolucion('pc')">📊 Prácticas calificadas</button>
+                <button onclick="abrirResolucion('semanales')">📅 Exámenes semanales</button>
+            </div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-  <button onclick="volver()">⬅</button>
-</div>
+        <div id="comunicados" class="hidden">
+            <div id="listaComunicados"></div>
+            <div id="adminComunicado" class="hidden">
+                <input id="nuevoComunicado" placeholder="Nuevo comunicado" style="width:100%; padding:12px; margin-bottom:8px;">
+                <button onclick="subirComunicado()" class="btn">Publicar</button>
+            </div>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
 
-<div id="chat" class="hidden">
-  <h3>💬 Chat privado</h3>
-
-<h4>📨 Tus chats</h4>
-<div id="listaChats"></div>
-
-<hr>
-  <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario...">
-  <div id="resultados"></div>
-
-  <hr>
-
-  <input id="msg" placeholder="Mensaje">
-  <button onclick="enviarMensaje()">Enviar</button>
-
-  <div id="chatBox"></div>
-
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="becas" class="hidden">
-  <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
-  <div class="card">🎓 Becas universitarias disponibles</div>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="comunicados" class="hidden">
-  <div id="listaComunicados"></div>
-
-  <div id="adminComunicado" class="hidden">
-    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
-    <button onclick="subirComunicado()">Publicar</button>
-  </div>
-
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="admin" class="hidden">
-  <h3>Panel Admin 🔥</h3>
-  <p>Control total del sistema</p>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-</div>
+        <div id="admin" class="hidden">
+            <h3>Panel Admin 🔥</h3>
+            <p>Control total del sistema</p>
+            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        </div>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -209,749 +165,253 @@ body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
-  authDomain: "studix-83850.firebaseapp.com",
-  projectId: "studix-83850",
-  storageBucket: "studix-83850.appspot.com"
+    apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
+    authDomain: "studix-83850.firebaseapp.com",
+    projectId: "studix-83850",
+    storageBucket: "studix-83850.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-
 const ADMIN_EMAIL = "62934146@trilce.edu.pe";
-
 let usuarioActual = null;
 let cursoActual = "";
 let tipoActual = "";
 let chatActual = "";
 let otroUID = "";
 let unsubscribeChat = null;
+let unsubscribeListaChats = null;
 let nombreOtroUsuario = "";
 
-/* LOGIN */
+// ==================== LOGIN ====================
 function login(){
-  const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+    .then(res => {
+        usuarioActual = res.user;
+        guardarUsuario(usuarioActual);
+        document.getElementById("loginUI").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        document.getElementById("user").innerText = "Hola " + usuarioActual.displayName;
 
-  firebase.auth().signInWithPopup(provider)
-  .then(res=>{
-    usuarioActual = res.user;
-
-    guardarUsuario(usuarioActual);
-
-    document.getElementById("loginUI").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    document.getElementById("user").innerText =
-      "Hola " + usuarioActual.displayName;
-
-    if(usuarioActual.email === ADMIN_EMAIL){
-      document.getElementById("adminPanel").classList.remove("hidden");
-      document.getElementById("adminComunicado").classList.remove("hidden");
-    }
-  });
+        if(usuarioActual.email === ADMIN_EMAIL){
+            document.getElementById("adminPanel").classList.remove("hidden");
+            document.getElementById("adminComunicado").classList.remove("hidden");
+        }
+    })
+    .catch(err => alert("Error al iniciar sesión: " + err.message));
 }
 
 function guardarUsuario(user){
-  db.collection("usuarios").doc(user.uid).set({
-    nombre:user.displayName,
-    email:user.email
-  },{merge:true});
+    db.collection("usuarios").doc(user.uid).set({
+        nombre: user.displayName,
+        email: user.email
+    }, {merge: true});
 }
 
-/* CURSOS */
-const cursos = ["Álgebra","Aritmética","Geometría","Física","Química",
-"Razonamiento Matemático","Biología","Lenguaje",
-"Razonamiento Verbal","Literatura",
-"Historia Universal","Historia del Perú","Geografía"];
+// ==================== CURSOS ====================
+const cursos = ["Álgebra","Aritmética","Geometría","Física","Química","Razonamiento Matemático","Biología","Lenguaje","Razonamiento Verbal","Literatura","Historia Universal","Historia del Perú","Geografía"];
 
 function cargarCursos(){
-  const libros=document.getElementById("listaLibros");
-  const ejercicios=document.getElementById("listaEjercicios");
+    const libros = document.getElementById("listaLibros");
+    const ejercicios = document.getElementById("listaEjercicios");
+    cursos.forEach(curso => {
+        let c1 = document.createElement("div"); c1.className = "card";
+        c1.innerText = curso; c1.onclick = () => abrirCurso(curso, "libro"); libros.appendChild(c1);
 
-  cursos.forEach(curso=>{
-    let c1=document.createElement("div");
-    c1.className="card";
-    c1.innerText=curso;
-    c1.onclick=()=>abrirCurso(curso,"libro");
-    libros.appendChild(c1);
-
-    let c2=document.createElement("div");
-    c2.className="card";
-    c2.innerText=curso;
-    c2.onclick=()=>abrirCurso(curso,"ejercicio");
-    ejercicios.appendChild(c2);
-  });
+        let c2 = document.createElement("div"); c2.className = "card";
+        c2.innerText = curso; c2.onclick = () => abrirCurso(curso, "ejercicio"); ejercicios.appendChild(c2);
+    });
 }
 
-function abrirCurso(curso,tipo){
-  cursoActual=curso;
-  tipoActual=tipo;
-  go("cursoVista");
-
-  document.getElementById("tituloCurso").innerText=curso;
-
-  if(usuarioActual.email===ADMIN_EMAIL){
-    document.getElementById("adminUpload").classList.remove("hidden");
-  }
-
-  cargarContenido();
+function abrirCurso(curso, tipo){
+    cursoActual = curso; tipoActual = tipo;
+    go("cursoVista");
+    document.getElementById("tituloCurso").innerText = curso;
+    document.getElementById("adminUpload").classList.toggle("hidden", usuarioActual.email !== ADMIN_EMAIL);
+    cargarContenido();
 }
 
 function subirArchivo(){
-  const file=document.getElementById("archivo").files[0];
-  if(!file) return alert("Selecciona archivo");
-
-  const ref=storage.ref("materiales/"+file.name);
-
-  ref.put(file).then(()=>{
-    ref.getDownloadURL().then(url=>{
-      db.collection("contenido").add({
-        curso:cursoActual,
-        tipo:tipoActual,
-        url:url,
-        nombre:file.name
-      });
-      cargarContenido();
-    });
-  });
+    const file = document.getElementById("archivo").files[0];
+    if(!file) return alert("Selecciona un archivo");
+    
+    const ref = storage.ref("materiales/" + Date.now() + "_" + file.name);
+    ref.put(file)
+    .then(() => ref.getDownloadURL())
+    .then(url => {
+        return db.collection("contenido").add({
+            curso: cursoActual,
+            tipo: tipoActual,
+            url: url,
+            nombre: file.name
+        });
+    })
+    .then(() => {
+        alert("✅ Archivo subido correctamente");
+        cargarContenido();
+    })
+    .catch(err => alert("❌ Error: " + err.message));
 }
 
 function cargarContenido(){
-  const cont=document.getElementById("contenidoCurso");
-  cont.innerHTML="";
-
-  db.collection("contenido")
-  .where("curso","==",cursoActual)
-  .where("tipo","==",tipoActual)
-  .get()
-  .then(snap=>{
-    snap.forEach(doc=>{
-      const d=doc.data();
-      cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>`;
+    const cont = document.getElementById("contenidoCurso");
+    cont.innerHTML = "";
+    db.collection("contenido")
+      .where("curso","==",cursoActual)
+      .where("tipo","==",tipoActual)
+      .get()
+      .then(snap => {
+        snap.forEach(doc => {
+            const d = doc.data();
+            cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver archivo</a></div>`;
+        });
     });
-  });
 }
 
-/* CHAT */
+// ==================== CHAT (corregido) ====================
 function buscarUsuarios(){
-  const texto=document.getElementById("buscarInput").value.toLowerCase();
-
-  db.collection("usuarios").get().then(snapshot=>{
-    const cont=document.getElementById("resultados");
-    cont.innerHTML="";
-
-    snapshot.forEach(doc=>{
-      const u=doc.data();
-      if(u.nombre && u.nombre.toLowerCase().includes(texto)){
-        let div=document.createElement("div");
-        div.className="card";
-        div.innerText=u.nombre;
-        div.onclick=()=>abrirChat(doc.id);
-        cont.appendChild(div);
-      }
+    const texto = document.getElementById("buscarInput").value.trim().toLowerCase();
+    if(texto.length < 2) return;
+    
+    db.collection("usuarios").get().then(snapshot => {
+        const cont = document.getElementById("resultados");
+        cont.innerHTML = "";
+        snapshot.forEach(doc => {
+            const u = doc.data();
+            if(u.nombre && u.nombre.toLowerCase().includes(texto)){
+                let div = document.createElement("div");
+                div.className = "card";
+                div.innerText = u.nombre;
+                div.onclick = () => abrirChat(doc.id);
+                cont.appendChild(div);
+            }
+        });
     });
-  });
 }
 
 async function abrirChat(uid){
-  const uid1 = usuarioActual.uid;
-  otroUID = uid;
+    const uid1 = usuarioActual.uid;
+    otroUID = uid;
+    chatActual = uid1 < uid ? uid1 + "_" + uid : uid + "_" + uid1;
 
-  chatActual = uid1 < uid ? uid1+"_"+uid : uid+"_"+uid1;
+    const docSnap = await db.collection("usuarios").doc(uid).get();
+    if(docSnap.exists) nombreOtroUsuario = docSnap.data().nombre;
 
-  const doc = await db.collection("usuarios").doc(uid).get();
-  if(doc.exists){
-    nombreOtroUsuario = doc.data().nombre;
-  }
-
-  cargarChat();
+    cargarChat();
 }
 
 function enviarMensaje(){
-  const msg = document.getElementById("msg").value.trim();
-  if(!msg || !chatActual) return;
+    const msg = document.getElementById("msg").value.trim();
+    if(!msg || !chatActual) return;
 
-  // 🔥 Guardar info del chat (para lista tipo WhatsApp)
-  db.collection("chats").doc(chatActual).set({
-    usuarios: [usuarioActual.uid, otroUID],
-    nombres: [usuarioActual.displayName, nombreOtroUsuario],
-    ultimoMensaje: msg,
-    fecha: firebase.firestore.FieldValue.serverTimestamp()
-  }, { merge: true });
+    db.collection("chats").doc(chatActual).set({
+        usuarios: [usuarioActual.uid, otroUID],
+        nombres: [usuarioActual.displayName, nombreOtroUsuario],
+        ultimoMensaje: msg,
+        fecha: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
 
-  // 🔥 Guardar mensaje dentro del chat
-  db.collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
-  .add({
-    uid: usuarioActual.uid,
-    nombre: usuarioActual.displayName,
-    mensaje: msg,
-    fecha: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  document.getElementById("msg").value="";
-}
-function cargarChat(){
-  if(unsubscribeChat) unsubscribeChat();
-
-  unsubscribeChat = db.collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
-  .orderBy("fecha")
-  .onSnapshot(snap=>{
-    const box=document.getElementById("chatBox");
-    box.innerHTML="";
-
-    snap.forEach(doc=>{
-      const d=doc.data();
-      const esMio=d.uid===usuarioActual.uid;
-
-      box.innerHTML+=`
-      <div style="display:flex;justify-content:${esMio?"flex-end":"flex-start"}">
-        <div style="background:${esMio?"#ff4b2b":"#e4e6eb"};padding:10px;border-radius:10px;margin:5px;">
-        ${d.mensaje}
-        </div>
-      </div>`;
+    db.collection("chats").doc(chatActual).collection("mensajes").add({
+        uid: usuarioActual.uid,
+        nombre: usuarioActual.displayName,
+        mensaje: msg,
+        fecha: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    box.scrollTop=box.scrollHeight;
-  });
+    document.getElementById("msg").value = "";
 }
 
-/* COMUNICADOS */
+function cargarChat(){
+    if(unsubscribeChat) unsubscribeChat();
+    unsubscribeChat = db.collection("chats").doc(chatActual)
+        .collection("mensajes")
+        .orderBy("fecha")
+        .onSnapshot(snap => {
+            const box = document.getElementById("chatBox");
+            box.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                const esMio = d.uid === usuarioActual.uid;
+                box.innerHTML += `
+                <div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};margin:8px 0;">
+                    <div style="background:${esMio ? '#ff4b2b' : '#e4e6eb'};color:${esMio?'white':'black'};padding:12px;border-radius:12px;max-width:75%;">
+                        ${d.mensaje}
+                    </div>
+                </div>`;
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+}
+
+function cargarListaChats(){
+    if(!usuarioActual) return;
+    if(unsubscribeListaChats) unsubscribeListaChats();
+
+    unsubscribeListaChats = db.collection("chats")
+        .where("usuarios", "array-contains", usuarioActual.uid)
+        .orderBy("fecha", "desc")
+        .onSnapshot(snapshot => {
+            const lista = document.getElementById("listaChats");
+            lista.innerHTML = "";
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                let nombre = data.nombres ? data.nombres.find(n => n !== usuarioActual.displayName) : "Usuario";
+
+                const div = document.createElement("div");
+                div.className = "card";
+                div.innerHTML = `<div style="font-weight:bold">${nombre}</div><div style="font-size:13px;color:gray;">${data.ultimoMensaje || "Sin mensajes"}</div>`;
+                div.onclick = async () => {
+                    chatActual = doc.id;
+                    otroUID = data.usuarios.find(u => u !== usuarioActual.uid);
+                    const userDoc = await db.collection("usuarios").doc(otroUID).get();
+                    if(userDoc.exists) nombreOtroUsuario = userDoc.data().nombre;
+                    cargarChat();
+                };
+                lista.appendChild(div);
+            });
+        });
+}
+
+// ==================== COMUNICADOS ====================
 function subirComunicado(){
-  const txt=document.getElementById("nuevoComunicado").value;
-  db.collection("comunicados").add({texto:txt});
+    const txt = document.getElementById("nuevoComunicado").value.trim();
+    if(txt){
+        db.collection("comunicados").add({texto: txt});
+        document.getElementById("nuevoComunicado").value = "";
+    }
 }
 
 function cargarComunicados(){
-  db.collection("comunicados").onSnapshot(snap=>{
-    const lista=document.getElementById("listaComunicados");
-    lista.innerHTML="";
-    snap.forEach(doc=>{
-      lista.innerHTML += `<div class="card">${doc.data().texto}</div>`;
+    db.collection("comunicados").onSnapshot(snap => {
+        const lista = document.getElementById("listaComunicados");
+        lista.innerHTML = "";
+        snap.forEach(doc => lista.innerHTML += `<div class="card">${doc.data().texto}</div>`);
     });
-  });
 }
 
-/* NAV */
-function go(id){
-  document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+// ==================== RESOLUCIONES ====================
+function abrirResolucion(tipo){
+    alert(`Sección "${tipo}" en desarrollo.\n\nPronto podrás subir y ver resoluciones aquí.`);
+}
 
-  if(id==="chat") cargarListaChats();
-  if(id==="comunicados") cargarComunicados();
+// ==================== NAVEGACIÓN ====================
+function go(id){
+    document.querySelectorAll('.container > div').forEach(d => d.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+
+    if(id === "chat") cargarListaChats();
+    if(id === "comunicados") cargarComunicados();
 }
 
 function volver(){
-  go(tipoActual==="libro"?"books":"practice");
+    go(tipoActual === "libro" ? "books" : "practice");
 }
 
+// ==================== INICIO ====================
 cargarCursos();
-
-function cargarListaChats(){
-  if(!usuarioActual) return;
-
-  db.collection("chats")
-  .where("usuarios","array-contains", usuarioActual.uid)
-  .orderBy("fecha","desc") // 🔥 IMPORTANTE
-  .onSnapshot(snapshot=>{
-    const lista = document.getElementById("listaChats");
-    lista.innerHTML = "";
-
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-
-      let nombre = "Usuario";
-
-      nombre = (data.nombres || []).find(n => n !== usuarioActual.displayName) || "Usuario";
-
-      const div = document.createElement("div");
-      div.className = "card";
-
-      div.innerHTML = `
-        <b>${nombre}</b><br>
-        <small>${data.ultimoMensaje || ""}</small>
-      `;
-
-    <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Studix PRO</title>
-
-<style>
-body { margin:0; font-family:"Segoe UI"; background:#f4f6f8; }
-
-#loginUI {
-  display:flex; justify-content:center; align-items:center; height:100vh;
-}
-.login-card {
-  background:white; padding:30px; border-radius:20px;
-  width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;
-}
-.logo { color:#ff4b2b; font-size:30px; }
-.btn {
-  background:#ff4b2b; color:white; border:none;
-  padding:12px; width:100%; border-radius:10px; margin-top:10px; cursor:pointer;
-}
-
-.container { max-width:600px; margin:auto; padding:15px; padding-bottom:80px; }
-
-.card {
-  background:white; padding:15px; border-radius:15px;
-  margin-bottom:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1);
-}
-
-.grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-
-.grid button {
-  padding:20px; border:none; border-radius:15px;
-  background:white; box-shadow:0 5px 10px rgba(0,0,0,0.1); cursor:pointer;
-}
-
-.hidden { display:none; }
-
-#chatBox {
-  height:300px;
-  overflow-y:auto;
-  background:#f1f1f1;
-  padding:10px;
-  border-radius:10px;
-}
-
-#listaChats .card {
-  cursor:pointer;
-  transition:0.2s;
-}
-
-#listaChats .card:hover {
-  background:#f0f0f0;
-}
-</style>
-</head>
-
-<body>
-
-<div id="loginUI">
-  <div class="login-card">
-    <h1 class="logo">Ftudix 🚀</h1>
-    <p>Plataforma educativa</p>
-    <button class="btn" onclick="login()">Ingresar con Google</button>
-  </div>
-</div>
-
-<div id="app" class="hidden">
-<div class="container">
-
-<div id="home">
-  <div class="card">
-    <h3 id="user"></h3>
-  </div>
-
-  <div class="grid">
-    <button onclick="go('books')">📚 Libros</button>
-    <button onclick="go('practice')">📝 Ejercicios</button>
-    <button onclick="go('chat')">💬 Chat</button>
-    <button onclick="go('becas')">🎓 Becas</button>
-    <button onclick="go('comunicados')">📢 Comunicados</button>
-  </div>
-
-  <button id="adminPanel" class="hidden" onclick="go('admin')">⚙️ Admin</button>
-</div>
-
-<div id="books" class="hidden">
-  <h3>📚 Cursos</h3>
-  <div id="listaLibros"></div>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="practice" class="hidden">
-  <h3>📝 Cursos</h3>
-  <div id="listaEjercicios"></div>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="cursoVista" class="hidden">
-  <h3 id="tituloCurso"></h3>
-  <div id="contenidoCurso"></div>
-
-  <div id="adminUpload" class="hidden">
-    <input type="file" id="archivo">
-    <button onclick="subirArchivo()">📤 Subir</button>
-  </div>
-
-  <button onclick="volver()">⬅</button>
-</div>
-
-<div id="chat" class="hidden">
-  <h3>💬 Chat privado</h3>
-
-  <div class="chat-container">
-
-    <!-- 🔥 LADO IZQUIERDO -->
-    <div class="chat-list">
-      <h4>📨 Tus chats</h4>
-      <div id="listaChats"></div>
-    </div>
-
-    <!-- 🔥 LADO DERECHO -->
-    <div class="chat-area">
-      
-      <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario...">
-      <div id="resultados"></div>
-
-      <div id="chatBox"></div>
-
-      <div class="chat-input">
-        <input id="msg" placeholder="Mensaje">
-        <button onclick="enviarMensaje()">Enviar</button>
-      </div>
-
-    </div>
-
-  </div>
-
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="becas" class="hidden">
-  <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
-  <div class="card">🎓 Becas universitarias disponibles</div>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="comunicados" class="hidden">
-  <div id="listaComunicados"></div>
-
-  <div id="adminComunicado" class="hidden">
-    <input id="nuevoComunicado" placeholder="Nuevo comunicado">
-    <button onclick="subirComunicado()">Publicar</button>
-  </div>
-
-  <button onclick="go('home')">⬅</button>
-</div>
-
-<div id="admin" class="hidden">
-  <h3>Panel Admin 🔥</h3>
-  <p>Control total del sistema</p>
-  <button onclick="go('home')">⬅</button>
-</div>
-
-</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
-  authDomain: "studix-83850.firebaseapp.com",
-  projectId: "studix-83850",
-  storageBucket: "studix-83850.appspot.com"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-const ADMIN_EMAIL = "62934146@trilce.edu.pe";
-
-let usuarioActual = null;
-let cursoActual = "";
-let tipoActual = "";
-let chatActual = "";
-let otroUID = "";
-let unsubscribeChat = null;
-let nombreOtroUsuario = "";
-
-/* LOGIN */
-function login(){
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  firebase.auth().signInWithPopup(provider)
-  .then(res=>{
-    usuarioActual = res.user;
-
-    guardarUsuario(usuarioActual);
-
-    document.getElementById("loginUI").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    document.getElementById("user").innerText =
-      "Hola " + usuarioActual.displayName;
-
-    if(usuarioActual.email === ADMIN_EMAIL){
-      document.getElementById("adminPanel").classList.remove("hidden");
-      document.getElementById("adminComunicado").classList.remove("hidden");
-    }
-  });
-}
-
-function guardarUsuario(user){
-  db.collection("usuarios").doc(user.uid).set({
-    nombre:user.displayName,
-    email:user.email
-  },{merge:true});
-}
-
-/* CURSOS */
-const cursos = ["Álgebra","Aritmética","Geometría","Física","Química",
-"Razonamiento Matemático","Biología","Lenguaje",
-"Razonamiento Verbal","Literatura",
-"Historia Universal","Historia del Perú","Geografía"];
-
-function cargarCursos(){
-  const libros=document.getElementById("listaLibros");
-  const ejercicios=document.getElementById("listaEjercicios");
-
-  cursos.forEach(curso=>{
-    let c1=document.createElement("div");
-    c1.className="card";
-    c1.innerText=curso;
-    c1.onclick=()=>abrirCurso(curso,"libro");
-    libros.appendChild(c1);
-
-    let c2=document.createElement("div");
-    c2.className="card";
-    c2.innerText=curso;
-    c2.onclick=()=>abrirCurso(curso,"ejercicio");
-    ejercicios.appendChild(c2);
-  });
-}
-
-function abrirCurso(curso,tipo){
-  cursoActual=curso;
-  tipoActual=tipo;
-  go("cursoVista");
-
-  document.getElementById("tituloCurso").innerText=curso;
-
-  if(usuarioActual.email===ADMIN_EMAIL){
-    document.getElementById("adminUpload").classList.remove("hidden");
-  }
-
-  cargarContenido();
-}
-
-function subirArchivo(){
-  const file=document.getElementById("archivo").files[0];
-  if(!file) return alert("Selecciona archivo");
-
-  const ref=storage.ref("materiales/"+file.name);
-
-  ref.put(file).then(()=>{
-    ref.getDownloadURL().then(url=>{
-      db.collection("contenido").add({
-        curso:cursoActual,
-        tipo:tipoActual,
-        url:url,
-        nombre:file.name
-      });
-      cargarContenido();
-    });
-  });
-}
-
-function cargarContenido(){
-  const cont=document.getElementById("contenidoCurso");
-  cont.innerHTML="";
-
-  db.collection("contenido")
-  .where("curso","==",cursoActual)
-  .where("tipo","==",tipoActual)
-  .get()
-  .then(snap=>{
-    snap.forEach(doc=>{
-      const d=doc.data();
-      cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver</a></div>`;
-    });
-  });
-}
-
-/* CHAT */
-function buscarUsuarios(){
-  const texto=document.getElementById("buscarInput").value.toLowerCase();
-
-  db.collection("usuarios").get().then(snapshot=>{
-    const cont=document.getElementById("resultados");
-    cont.innerHTML="";
-
-    snapshot.forEach(doc=>{
-      const u=doc.data();
-      if(u.nombre && u.nombre.toLowerCase().includes(texto)){
-        let div=document.createElement("div");
-        div.className="card";
-        div.innerText=u.nombre;
-        div.onclick=()=>abrirChat(doc.id);
-        cont.appendChild(div);
-      }
-    });
-  });
-}
-
-async function abrirChat(uid){
-  const uid1 = usuarioActual.uid;
-  otroUID = uid;
-
-  chatActual = uid1 < uid ? uid1+"_"+uid : uid+"_"+uid1;
-
-  const doc = await db.collection("usuarios").doc(uid).get();
-  if(doc.exists){
-    nombreOtroUsuario = doc.data().nombre;
-  }
-
-  cargarChat();
-}
-
-function enviarMensaje(){
-  const msg = document.getElementById("msg").value.trim();
-  if(!msg || !chatActual) return;
-
-  // 🔥 Guardar info del chat (para lista tipo WhatsApp)
-  db.collection("chats").doc(chatActual).set({
-    usuarios: [usuarioActual.uid, otroUID],
-    nombres: [usuarioActual.displayName, nombreOtroUsuario],
-    ultimoMensaje: msg,
-    fecha: firebase.firestore.FieldValue.serverTimestamp()
-  }, { merge: true });
-
-  // 🔥 Guardar mensaje dentro del chat
-  db.collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
-  .add({
-    uid: usuarioActual.uid,
-    nombre: usuarioActual.displayName,
-    mensaje: msg,
-    fecha: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  document.getElementById("msg").value="";
-}
-function cargarChat(){
-  if(unsubscribeChat) unsubscribeChat();
-
-  unsubscribeChat = db.collection("chats")
-  .doc(chatActual)
-  .collection("mensajes")
-  .orderBy("fecha")
-  .onSnapshot(snap=>{
-    const box=document.getElementById("chatBox");
-    box.innerHTML="";
-
-    snap.forEach(doc=>{
-      const d=doc.data();
-      const esMio=d.uid===usuarioActual.uid;
-
-      box.innerHTML+=`
-      <div style="display:flex;justify-content:${esMio?"flex-end":"flex-start"}">
-        <div style="background:${esMio?"#ff4b2b":"#e4e6eb"};padding:10px;border-radius:10px;margin:5px;">
-        ${d.mensaje}
-        </div>
-      </div>`;
-    });
-
-    box.scrollTop=box.scrollHeight;
-  });
-}
-
-/* COMUNICADOS */
-function subirComunicado(){
-  const txt=document.getElementById("nuevoComunicado").value;
-  db.collection("comunicados").add({texto:txt});
-}
-
-function cargarComunicados(){
-  db.collection("comunicados").onSnapshot(snap=>{
-    const lista=document.getElementById("listaComunicados");
-    lista.innerHTML="";
-    snap.forEach(doc=>{
-      lista.innerHTML += `<div class="card">${doc.data().texto}</div>`;
-    });
-  });
-}
-
-/* NAV */
-function go(id){
-  document.querySelectorAll('.container > div').forEach(d=>d.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-
-  if(id==="chat") cargarListaChats();
-  if(id==="comunicados") cargarComunicados();
-}
-
-function volver(){
-  go(tipoActual==="libro"?"books":"practice");
-}
-
-cargarCursos();
-
-function cargarListaChats(){
-  if(!usuarioActual) return;
-
-  db.collection("chats")
-  .where("usuarios","array-contains", usuarioActual.uid)
-  .orderBy("fecha","desc") // 🔥 IMPORTANTE
-  .onSnapshot(snapshot=>{
-    const lista = document.getElementById("listaChats");
-    lista.innerHTML = "";
-
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-
-      let nombre = "Usuario";
-
-      nombre = (data.nombres || []).find(n => n !== usuarioActual.displayName) || "Usuario";
-
-      const div = document.createElement("div");
-      div.className = "card";
-
-     div.innerHTML = `
-  <div style="font-weight:bold">${nombre}</div>
-  <div style="font-size:12px;color:gray;">
-    ${data.ultimoMensaje || "Sin mensajes"}
-  </div>
-`;
-
-   div.onclick = async ()=>{
-    chatActual = doc.id;
-
-    // 🔥 LIMPIAR (UX tipo WhatsApp)
-    document.getElementById("chatBox").innerHTML = "";
-
-    // 🔥 obtener UID del otro usuario
-    otroUID = data.usuarios.find(u => u !== usuarioActual.uid);
-
-    // 🔥 obtener nombre del otro usuario
-    const userDoc = await db.collection("usuarios").doc(otroUID).get();
-    if(userDoc.exists){
-      nombreOtroUsuario = userDoc.data().nombre;
-    }
-
-    cargarChat(); // ✅ IMPORTANTE
-  };
-
-  // ✅ AQUÍ VA (dentro del forEach pero fuera del onclick)
-  lista.appendChild(div);
-
-});
-
-// ✅ cerrar onSnapshot
-});
-
-// ✅ cerrar función
-}
 </script>
-
 </body>
 </html>
