@@ -328,21 +328,25 @@ function cargarContenido(){
 // ==================== CHAT (corregido) ====================
 function buscarUsuarios(){
     const texto = document.getElementById("buscarInput").value.trim().toLowerCase();
+
+    // Si escribe poco, limpiar
     if(texto.length < 2){
-    document.getElementById("resultados").innerHTML = "";
-    return;
-}
-    
-    db.collection("usuarios")
-.where("nombreLower", ">=", texto)
-.where("nombreLower", "<=", texto + "\uf8ff")
-.get()
-.then(snapshot => {
+        document.getElementById("resultados").innerHTML = "";
+        return;
+    }
+
+    db.collection("usuarios").get().then(snapshot => {
         const cont = document.getElementById("resultados");
         cont.innerHTML = "";
+
         snapshot.forEach(doc => {
             const u = doc.data();
-            if(u.nombre){
+
+            // Evitar mostrarte a ti mismo
+            if(doc.id === usuarioActual.uid) return;
+
+            // Filtrar por nombre
+            if(u.nombre && u.nombre.toLowerCase().includes(texto)){
                 let div = document.createElement("div");
                 div.className = "card";
                 div.innerText = u.nombre;
