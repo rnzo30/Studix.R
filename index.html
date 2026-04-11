@@ -56,7 +56,7 @@
 <!-- LOGIN -->
 <div id="loginUI">
     <div class="login-card">
-        <h1 class="logo">Ftudix 🚀</h1>
+        <h1 class="logo">Studix 🚀</h1>
         <p>Plataforma educativa</p>
         <button class="btn" onclick="login()">Ingresar con Google</button>
     </div>
@@ -67,14 +67,26 @@
     <div class="container">
         <!-- HOME -->
         <div id="home">
-            <div class="card"><h3 id="user"></h3></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+  <h3 id="user"></h3>
+
+  <div style="display:flex;gap:10px;">
+    <button onclick="go('comunicados')" class="btn" style="padding:8px 12px;font-size:13px;">
+      📢
+    </button>
+
+    <button onclick="go('horario')" class="btn" style="padding:8px 12px;font-size:13px;">
+      📅
+    </button>
+  </div>
+</div>
             <div class="grid">
                 <button onclick="go('resoluciones')">📄 Resoluciones</button>
                 <button onclick="go('books')">📚 Libros</button>
                 <button onclick="go('practice')">📝 Ejercicios</button>
                 <button onclick="go('chat')">💬 Chat</button>
                 <button onclick="go('becas')">🎓 Becas</button>
-                <button onclick="go('comunicados')">📢 Comunicados</button>
+                <button onclick="go('ia')">🤖 IA Asistente</button>
             </div>
             <button id="adminPanel" class="hidden btn" onclick="go('admin')">⚙️ Admin</button>
         </div>
@@ -130,6 +142,20 @@
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
 
+<div id="ia" class="hidden">
+  <h3>🤖 Asistente IA</h3>
+
+  <div class="card">
+    <p>Haz preguntas sobre tus cursos 📚</p>
+    <input id="iaInput" placeholder="Escribe tu pregunta..." style="width:100%;padding:12px;border-radius:10px;margin-top:10px;">
+    <button onclick="responderIA()" class="btn">Preguntar</button>
+  </div>
+
+  <div id="iaRespuesta" class="card"></div>
+
+  <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
+
         <div id="resoluciones" class="hidden">
             <h3>📄 Resoluciones</h3>
             <div class="grid">
@@ -150,11 +176,21 @@
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
 
-        <div id="admin" class="hidden">
+<div id="admin" class="hidden">
             <h3>Panel Admin 🔥</h3>
             <p>Control total del sistema</p>
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
+
+        <div id="horario" class="hidden">
+  <h3>📅 Horario</h3>
+
+  <div class="card">
+    <p>Tu horario aparecerá aquí próximamente 🔥</p>
+  </div>
+
+  <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
     </div>
 </div>
 
@@ -206,9 +242,10 @@ function login(){
 
 function guardarUsuario(user){
     db.collection("usuarios").doc(user.uid).set({
-        nombre: user.displayName,
-        email: user.email
-    }, {merge: true});
+    nombre: user.displayName,
+    nombreLower: user.displayName.toLowerCase(),
+    email: user.email
+}, {merge: true});
 }
 
 // ==================== CURSOS ====================
@@ -217,12 +254,22 @@ const cursos = ["Álgebra","Aritmética","Geometría","Física","Química","Razo
 function cargarCursos(){
     const libros = document.getElementById("listaLibros");
     const ejercicios = document.getElementById("listaEjercicios");
-    cursos.forEach(curso => {
-        let c1 = document.createElement("div"); c1.className = "card";
-        c1.innerText = curso; c1.onclick = () => abrirCurso(curso, "libro"); libros.appendChild(c1);
 
-        let c2 = document.createElement("div"); c2.className = "card";
-        c2.innerText = curso; c2.onclick = () => abrirCurso(curso, "ejercicio"); ejercicios.appendChild(c2);
+    libros.innerHTML = "";
+    ejercicios.innerHTML = "";
+
+    cursos.forEach(curso => {
+        let c1 = document.createElement("div");
+        c1.className = "card";
+        c1.innerText = curso;
+        c1.onclick = () => abrirCurso(curso, "libro");
+        libros.appendChild(c1);
+
+        let c2 = document.createElement("div");
+        c2.className = "card";
+        c2.innerText = curso;
+        c2.onclick = () => abrirCurso(curso, "ejercicio");
+        ejercicios.appendChild(c2);
     });
 }
 
@@ -230,11 +277,18 @@ function abrirCurso(curso, tipo){
     cursoActual = curso; tipoActual = tipo;
     go("cursoVista");
     document.getElementById("tituloCurso").innerText = curso;
-    document.getElementById("adminUpload").classList.toggle("hidden", usuarioActual.email !== ADMIN_EMAIL);
+   if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+    document.getElementById("adminUpload").classList.remove("hidden");
+} else {
+    document.getElementById("adminUpload").classList.add("hidden");
+}
     cargarContenido();
 }
 
 function subirArchivo(){
+    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
+    return alert("No tienes permisos");
+}
     const file = document.getElementById("archivo").files[0];
     if(!file) return alert("Selecciona un archivo");
     
@@ -274,14 +328,21 @@ function cargarContenido(){
 // ==================== CHAT (corregido) ====================
 function buscarUsuarios(){
     const texto = document.getElementById("buscarInput").value.trim().toLowerCase();
-    if(texto.length < 2) return;
+    if(texto.length < 2){
+    document.getElementById("resultados").innerHTML = "";
+    return;
+}
     
-    db.collection("usuarios").get().then(snapshot => {
+    db.collection("usuarios")
+.where("nombreLower", ">=", texto)
+.where("nombreLower", "<=", texto + "\uf8ff")
+.get()
+.then(snapshot => {
         const cont = document.getElementById("resultados");
         cont.innerHTML = "";
         snapshot.forEach(doc => {
             const u = doc.data();
-            if(u.nombre && u.nombre.toLowerCase().includes(texto)){
+            if(u.nombre){
                 let div = document.createElement("div");
                 div.className = "card";
                 div.innerText = u.nombre;
@@ -293,6 +354,7 @@ function buscarUsuarios(){
 }
 
 async function abrirChat(uid){
+    if(!usuarioActual) return alert("Debes iniciar sesión");
     const uid1 = usuarioActual.uid;
     otroUID = uid;
     chatActual = uid1 < uid ? uid1 + "_" + uid : uid + "_" + uid1;
@@ -300,16 +362,22 @@ async function abrirChat(uid){
     const docSnap = await db.collection("usuarios").doc(uid).get();
     if(docSnap.exists) nombreOtroUsuario = docSnap.data().nombre;
 
+    document.getElementById("resultados").innerHTML = "";
+document.getElementById("buscarInput").value = "";
     cargarChat();
 }
 
 function enviarMensaje(){
+    if(!usuarioActual) return alert("Debes iniciar sesión");
     const msg = document.getElementById("msg").value.trim();
     if(!msg || !chatActual) return;
 
     db.collection("chats").doc(chatActual).set({
         usuarios: [usuarioActual.uid, otroUID],
-        nombres: [usuarioActual.displayName, nombreOtroUsuario],
+        nombres: [
+    usuarioActual.displayName,
+    nombreOtroUsuario || "Usuario"
+],
         ultimoMensaje: msg,
         fecha: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
@@ -328,10 +396,15 @@ function cargarChat(){
     if(unsubscribeChat) unsubscribeChat();
     unsubscribeChat = db.collection("chats").doc(chatActual)
         .collection("mensajes")
-        .orderBy("fecha")
+        .orderBy("fecha", "asc")
         .onSnapshot(snap => {
-            const box = document.getElementById("chatBox");
-            box.innerHTML = "";
+    const box = document.getElementById("chatBox");
+    box.innerHTML = "";
+
+    if(snap.empty){
+        box.innerHTML = "<p>No hay mensajes aún</p>";
+        return;
+    }
             snap.forEach(doc => {
                 const d = doc.data();
                 const esMio = d.uid === usuarioActual.uid;
@@ -358,7 +431,12 @@ function cargarListaChats(){
             lista.innerHTML = "";
             snapshot.forEach(doc => {
                 const data = doc.data();
-                let nombre = data.nombres ? data.nombres.find(n => n !== usuarioActual.displayName) : "Usuario";
+                let nombre = "Usuario";
+
+if(data.nombres && data.usuarios){
+    const index = data.usuarios.findIndex(u => u !== usuarioActual.uid);
+    nombre = data.nombres[index] || "Usuario";
+}
 
                 const div = document.createElement("div");
                 div.className = "card";
@@ -377,6 +455,9 @@ function cargarListaChats(){
 
 // ==================== COMUNICADOS ====================
 function subirComunicado(){
+    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
+    return alert("No tienes permisos");
+}
     const txt = document.getElementById("nuevoComunicado").value.trim();
     if(txt){
         db.collection("comunicados").add({texto: txt});
@@ -397,6 +478,21 @@ function abrirResolucion(tipo){
     alert(`Sección "${tipo}" en desarrollo.\n\nPronto podrás subir y ver resoluciones aquí.`);
 }
 
+// ==================== IA ====================
+function responderIA(){
+    const pregunta = document.getElementById("iaInput").value;
+
+    if(!pregunta) return;
+
+    let respuesta = "🤖 Estoy aprendiendo... pronto responderé mejor.";
+
+    if(pregunta.toLowerCase().includes("algebra")){
+        respuesta = "📘 El álgebra estudia variables y ecuaciones.";
+    }
+
+    document.getElementById("iaRespuesta").innerText = respuesta;
+}
+
 // ==================== NAVEGACIÓN ====================
 function go(id){
     document.querySelectorAll('.container > div').forEach(d => d.classList.add("hidden"));
@@ -412,6 +508,30 @@ function volver(){
 
 // ==================== INICIO ====================
 cargarCursos();
+
+// ==================== MANTENER SESIÓN ====================
+firebase.auth().onAuthStateChanged(user => {
+    if(user){
+        usuarioActual = user;
+
+        guardarUsuario(user);
+
+        document.getElementById("loginUI").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+
+        document.getElementById("user").innerText = "Hola " + user.displayName;
+
+        // Mostrar admin si corresponde
+        if(user.email === ADMIN_EMAIL){
+            document.getElementById("adminPanel").classList.remove("hidden");
+            document.getElementById("adminComunicado").classList.remove("hidden");
+        }
+    } else {
+        // Si no hay sesión
+        document.getElementById("loginUI").classList.remove("hidden");
+        document.getElementById("app").classList.add("hidden");
+    }
+});
 </script>
 </body>
 </html>
