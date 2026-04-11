@@ -183,10 +183,20 @@
         </div>
 
         <div id="horario" class="hidden">
-  <h3>📅 Horario</h3>
+  <h3>📅 Mi Calendario</h3>
+
+  <div class="card" style="text-align:center;">
+    <button onclick="cambiarMes(-1)">⬅</button>
+    <span id="mesActual" style="margin:0 15px;font-weight:bold;"></span>
+    <button onclick="cambiarMes(1)">➡</button>
+  </div>
+
+  <div id="calendario" class="card" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;"></div>
 
   <div class="card">
-    <p>Tu horario aparecerá aquí próximamente 🔥</p>
+    <h4 id="fechaSeleccionada">Selecciona un día</h4>
+    <textarea id="nota" placeholder="Escribe tu tarea o evento..." style="width:100%;padding:10px;border-radius:10px;"></textarea>
+    <button onclick="guardarNota()" class="btn">Guardar</button>
   </div>
 
   <button onclick="go('home')" class="btn">⬅ Volver</button>
@@ -220,6 +230,8 @@ let otroUID = "";
 let unsubscribeChat = null;
 let unsubscribeListaChats = null;
 let nombreOtroUsuario = "";
+let fechaActual = new Date();
+let fechaSeleccionadaGlobal = "";
 
 // ==================== LOGIN ====================
 function login(){
@@ -497,6 +509,86 @@ function responderIA(){
     document.getElementById("iaRespuesta").innerText = respuesta;
 }
 
+function generarCalendario(){
+    const cont = document.getElementById("calendario");
+    cont.innerHTML = "";
+    const diasSemana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+diasSemana.forEach(d => {
+    cont.innerHTML += `<div style="font-weight:bold;text-align:center;">${d}</div>`;
+});
+
+    const mes = fechaActual.getMonth();
+    const año = fechaActual.getFullYear();
+
+    let primerDia = new Date(año, mes, 1).getDay();
+primerDia = (primerDia === 0) ? 6 : primerDia - 1;
+    const diasMes = new Date(año, mes + 1, 0).getDate();
+
+    document.getElementById("mesActual").innerText =
+        fechaActual.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+
+    // Espacios vacíos
+    for(let i=0; i<primerDia; i++){
+        cont.innerHTML += `<div style="visibility:hidden;"></div>`;
+    }
+
+    for(let d=1; d<=diasMes; d++){
+        let fechaStr = `${año}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+        let div = document.createElement("div");
+        div.className = "card";
+        div.style.cursor = "pointer";
+        div.innerText = d;
+
+        div.onclick = () => seleccionarFecha(fechaStr);
+        
+        if(fechaStr === fechaSeleccionadaGlobal){
+    div.style.background = "#ff4b2b";
+    div.style.color = "white";
+}
+        cont.appendChild(div);
+    }
+}
+
+function cambiarMes(valor){
+    fechaActual.setMonth(fechaActual.getMonth() + valor);
+    generarCalendario();
+}
+
+function seleccionarFecha(fecha){
+    if(!usuarioActual) return;
+    fechaSeleccionadaGlobal = fecha;
+    document.getElementById("fechaSeleccionada").innerText = "📅 " + fecha;
+
+    // Cargar nota
+    db.collection("calendarios")
+      .doc(usuarioActual.uid)
+      .collection("notas")
+      .doc(fecha)
+      .get()
+      .then(doc => {
+          document.getElementById("nota").value = doc.exists ? doc.data().texto : "";
+      });
+    generarCalendario();
+}
+
+function guardarNota(){
+    if(!usuarioActual) return;
+    if(!fechaSeleccionadaGlobal) return alert("Selecciona una fecha");
+
+    const texto = document.getElementById("nota").value;
+
+    db.collection("calendarios")
+      .doc(usuarioActual.uid)
+      .collection("notas")
+      .doc(fechaSeleccionadaGlobal)
+      .set({
+          texto: texto
+      });
+
+    alert("✅ Guardado");
+}
+
 // ==================== NAVEGACIÓN ====================
 function go(id){
     document.querySelectorAll('.container > div').forEach(d => d.classList.add("hidden"));
@@ -504,6 +596,8 @@ function go(id){
 
     if(id === "chat") cargarListaChats();
     if(id === "comunicados") cargarComunicados();
+
+    if(id === "horario") generarCalendario();
 }
 
 function volver(){
