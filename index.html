@@ -80,6 +80,11 @@
     </button>
   </div>
 </div>
+
+<div class="card" style="margin-bottom:15px;">
+    <h4>📌 Próximas tareas</h4>
+    <div id="proximasTareas"></div>
+  </div>
             <div class="grid">
                 <button onclick="go('resoluciones')">📄 Resoluciones</button>
                 <button onclick="go('books')">📚 Libros</button>
@@ -631,7 +636,71 @@ function guardarNota(){
         notasCalendario[fechaSeleccionadaGlobal] = texto;
     generarCalendario();
 
+cargarProximasTareas();
+
     alert("✅ Guardado");
+}
+
+function cargarProximasTareas(){
+    if(!usuarioActual) return;
+
+    const hoy = new Date();
+hoy.setHours(0,0,0,0);
+
+    db.collection("calendarios")
+      .doc(usuarioActual.uid)
+      .collection("notas")
+      .get()
+      .then(snap => {
+
+        let tareas = [];
+
+        snap.forEach(doc => {
+            const data = doc.data();
+
+            if(!data.fecha || !data.texto) return;
+
+            const fechaTarea = new Date(data.fecha);
+fechaTarea.setHours(0,0,0,0);
+
+            // Solo futuras o hoy
+            if(fechaTarea >= hoy){
+                tareas.push({
+                    fecha: data.fecha,
+                    texto: data.texto
+                });
+            }
+        });
+
+        // Ordenar por fecha más cercana
+        tareas.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+
+        // Tomar solo 3
+        tareas = tareas.slice(0,3);
+
+        mostrarProximasTareas(tareas);
+    });
+}
+
+function mostrarProximasTareas(lista){
+    const cont = document.getElementById("proximasTareas");
+    cont.innerHTML = "";
+
+    if(lista.length === 0){
+        cont.innerHTML = "<p>No tienes tareas próximas 🎉</p>";
+        return;
+    }
+
+    lista.forEach(t => {
+    cont.innerHTML += `
+        <div style="padding:10px;border-bottom:1px solid #eee;">
+            <div style="font-size:12px;color:gray;">📅 ${t.fecha}</div>
+            <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${t.texto}
+            </div>
+        </div>
+    `;
+});
 }
 
 // ==================== NAVEGACIÓN ====================
@@ -644,6 +713,10 @@ function go(id){
 
     if(id === "horario") {
         cargarNotasCalendario();
+    }
+
+    if(id === "home") {
+    cargarProximasTareas();
     }
 }
 
@@ -665,6 +738,7 @@ firebase.auth().onAuthStateChanged(user => {
         document.getElementById("app").classList.remove("hidden");
 
         document.getElementById("user").innerText = "Hola " + user.displayName;
+        cargarProximasTareas();
 
         // Mostrar admin si corresponde
         if(user.email === ADMIN_EMAIL){
