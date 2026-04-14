@@ -232,6 +232,7 @@ let unsubscribeListaChats = null;
 let nombreOtroUsuario = "";
 let fechaActual = new Date();
 let fechaSeleccionadaGlobal = "";
+let notasCalendario = {};
 
 // ==================== LOGIN ====================
 function login(){
@@ -533,21 +534,61 @@ primerDia = (primerDia === 0) ? 6 : primerDia - 1;
     }
 
     for(let d=1; d<=diasMes; d++){
-        let fechaStr = `${año}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let fechaStr = `${año}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
-        let div = document.createElement("div");
-        div.className = "card";
-        div.style.cursor = "pointer";
-        div.innerText = d;
+    let div = document.createElement("div");
+    div.className = "card";
+    div.style.cursor = "pointer";
+    div.style.minHeight = "80px";
+    div.style.display = "flex";
+    div.style.flexDirection = "column";
+    div.style.justifyContent = "flex-start";
 
-        div.onclick = () => seleccionarFecha(fechaStr);
-        
-        if(fechaStr === fechaSeleccionadaGlobal){
-    div.style.background = "#ff4b2b";
-    div.style.color = "white";
+    div.onclick = () => seleccionarFecha(fechaStr);
+
+    // Número del día
+    let numero = document.createElement("div");
+    numero.style.fontWeight = "bold";
+    numero.innerText = d;
+
+    // Texto de la tarea
+    let tarea = document.createElement("div");
+    tarea.style.fontSize = "12px";
+    tarea.style.marginTop = "5px";
+    tarea.style.color = "gray";
+
+    if(notasCalendario[fechaStr]){
+    tarea.innerText = notasCalendario[fechaStr];
 }
-        cont.appendChild(div);
+
+    div.appendChild(numero);
+    div.appendChild(tarea);
+
+    if(fechaStr === fechaSeleccionadaGlobal){
+        div.style.background = "#ff4b2b";
+        div.style.color = "white";
+        tarea.style.color = "white";
     }
+
+    cont.appendChild(div);
+}
+}
+
+function cargarNotasCalendario(){
+    if(!usuarioActual) return;
+
+    db.collection("calendarios")
+      .doc(usuarioActual.uid)
+      .collection("notas")
+      .get()
+      .then(snap => {
+          notasCalendario = {};
+          snap.forEach(doc => {
+              notasCalendario[doc.id] = doc.data().texto;
+          });
+
+          generarCalendario(); // 🔥 refresca calendario
+      });
 }
 
 function cambiarMes(valor){
@@ -583,8 +624,12 @@ function guardarNota(){
       .collection("notas")
       .doc(fechaSeleccionadaGlobal)
       .set({
-          texto: texto
+          texto: texto,
+          fecha: fechaSeleccionadaGlobal
       });
+
+        notasCalendario[fechaSeleccionadaGlobal] = texto;
+    generarCalendario();
 
     alert("✅ Guardado");
 }
@@ -597,7 +642,9 @@ function go(id){
     if(id === "chat") cargarListaChats();
     if(id === "comunicados") cargarComunicados();
 
-    if(id === "horario") generarCalendario();
+    if(id === "horario") {
+        cargarNotasCalendario();
+    }
 }
 
 function volver(){
