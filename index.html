@@ -173,13 +173,36 @@
         </div>
 
         <div id="comunicados" class="hidden">
-            <div id="listaComunicados"></div>
-            <div id="adminComunicado" class="hidden">
-                <input id="nuevoComunicado" placeholder="Nuevo comunicado" style="width:100%; padding:12px; margin-bottom:8px;">
-                <button onclick="subirComunicado()" class="btn">Publicar</button>
-            </div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
+    <h3>📢 Comunicados</h3>
+
+    <!-- Tabs -->
+    <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <button onclick="cambiarSeccion('tareas')" class="btn" style="padding:8px;">📚 Tareas</button>
+        <button onclick="cambiarSeccion('examenes')" class="btn" style="padding:8px;">📝 Exámenes</button>
+        <button onclick="cambiarSeccion('otros')" class="btn" style="padding:8px;">📌 Otros</button>
+    </div>
+
+    <!-- Lista -->
+    <div id="listaComunicados"></div>
+
+    <!-- ADMIN -->
+    <div id="adminComunicado" class="hidden">
+        <textarea id="nuevoComunicado" placeholder="Nuevo comunicado..." style="width:100%; padding:10px; margin-top:10px;"></textarea>
+        
+        <select id="tipoComunicado" style="width:100%; padding:10px; margin-top:5px;">
+            <option value="tareas">📚 Tareas</option>
+            <option value="examenes">📝 Exámenes</option>
+            <option value="otros">📌 Otros</option>
+        </select>
+
+        <input type="file" id="archivoComunicado" style="margin-top:10px;">
+
+        <button onclick="subirComunicado()" class="btn">Publicar</button>
+    </div>
+
+    <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
+
 
 <div id="admin" class="hidden">
             <h3>Panel Admin 🔥</h3>
@@ -238,6 +261,8 @@ let nombreOtroUsuario = "";
 let fechaActual = new Date();
 let fechaSeleccionadaGlobal = "";
 let notasCalendario = {};
+let seccionActual = "tareas";
+let unsubscribeComunicados = null;
 
 // ==================== LOGIN ====================
 function login(){
@@ -478,20 +503,81 @@ if(data.nombres && data.usuarios){
 // ==================== COMUNICADOS ====================
 function subirComunicado(){
     if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
-    return alert("No tienes permisos");
-}
+        return alert("No tienes permisos");
+    }
+
     const txt = document.getElementById("nuevoComunicado").value.trim();
-    if(txt){
-        db.collection("comunicados").add({texto: txt});
-        document.getElementById("nuevoComunicado").value = "";
+    const tipo = document.getElementById("tipoComunicado").value;
+    const file = document.getElementById("archivoComunicado").files[0];
+
+    if(txt.length < 3 && !file) return alert("Escribe algo más completo o sube un archivo");
+
+    // Si hay archivo
+    if(file){
+        const ref = storage.ref("comunicados/" + Date.now() + "_" + file.name);
+
+        ref.put(file)
+        .then(() => ref.getDownloadURL())
+        .then(url => {
+            return db.collection("comunicados").add({
+                texto: txt,
+                tipo: tipo,
+                archivo: url,
+                nombreArchivo: file.name,
+                fecha: new Date()
+            });
+        })
+        .then(() => {
+            document.getElementById("nuevoComunicado").value = "";
+            document.getElementById("archivoComunicado").value = "";
+            cargarComunicados();
+        });
+
+    } else {
+        db.collection("comunicados").add({
+            texto: txt,
+            tipo: tipo,
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            document.getElementById("nuevoComunicado").value = "";
+            cargarComunicados();
+        });
     }
 }
 
+function cambiarSeccion(tipo){
+    seccionActual = tipo;
+
+    document.getElementById("listaComunicados").innerHTML = "Cargando...";
+
+    cargarComunicados();
+}
+
 function cargarComunicados(){
-    db.collection("comunicados").onSnapshot(snap => {
+    if(unsubscribeComunicados) unsubscribeComunicados();
+
+    unsubscribeComunicados = db.collection("comunicados")
+      .where("tipo", "==", seccionActual)
+      .orderBy("fecha", "desc")
+      .onSnapshot(snap => {
+
         const lista = document.getElementById("listaComunicados");
         lista.innerHTML = "";
-        snap.forEach(doc => lista.innerHTML += `<div class="card">${doc.data().texto}</div>`);
+
+        snap.forEach(doc => {
+            const data = doc.data();
+
+            let html = `<div class="card">
+                <p>${data.texto || ""}</p>`;
+
+            if(data.archivo){
+                html += `<a href="${data.archivo}" target="_blank">📎 Ver archivo (${data.nombreArchivo})</a>`;
+            }
+
+            html += `</div>`;
+
+            lista.innerHTML += html;
+        });
     });
 }
 
@@ -717,7 +803,8 @@ function go(id){
 
     if(id === "home") {
     cargarProximasTareas();
-    }
+    console.log("Bienvenido 🚀");
+}
 }
 
 function volver(){
