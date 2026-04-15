@@ -142,10 +142,23 @@
         </div>
 
         <div id="becas" class="hidden">
-            <div class="card">🎓 Beca 18 - Apoyo completo del Estado</div>
-            <div class="card">🎓 Becas universitarias disponibles</div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
+    <h3>🎓 Becas</h3>
+
+    <!-- BOTONES -->
+    <div style="display:flex;gap:10px;margin-bottom:15px;">
+        <button onclick="mostrarBecas('peru')" class="btn" style="padding:10px;font-size:14px;">
+            🇵🇪 Becas en Perú
+        </button>
+        <button onclick="mostrarBecas('extranjero')" class="btn" style="padding:10px;font-size:14px;">
+            🌎 Becas en el extranjero
+        </button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div id="contenidoBecas"></div>
+
+    <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
 
 <div id="ia" class="hidden">
   <h3>🤖 Asistente IA</h3>
@@ -367,6 +380,89 @@ function cargarContenido(){
         });
     });
 }
+
+function mostrarBecas(tipo){
+    const cont = document.getElementById("contenidoBecas");
+    cont.innerHTML = "";
+
+    // ================= PERÚ =================
+    if(tipo === "peru"){
+        cont.innerHTML = `
+
+        <div class="card">
+            <h4>🏛 Universidad Nacional de Ingeniería (UNI)</h4>
+            <p>
+            Una de las mejores universidades del Perú en ingeniería y ciencias. 
+            Destaca por su alto nivel académico y exigencia.
+            </p>
+            <b>🎯 Becas para escolares:</b>
+            <ul>
+                <li>Ingreso directo por alto rendimiento</li>
+                <li>Olimpiadas de matemáticas y ciencias</li>
+                <li>Programas de preparación preuniversitaria</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h4>🏛 Pontificia Universidad Católica del Perú (PUCP)</h4>
+            <p>
+            Universidad privada de alto prestigio en diversas áreas como ingeniería,
+            derecho, ciencias sociales y arte.
+            </p>
+            <b>🎯 Becas para escolares:</b>
+            <ul>
+                <li>Beca Talento Académico</li>
+                <li>Becas socioeconómicas</li>
+                <li>Ingreso por tercio superior</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h4>🏛 Universidad Nacional Mayor de San Marcos (UNMSM)</h4>
+            <p>
+            La universidad más antigua de América. Destaca en medicina,
+            derecho, ciencias e investigación.
+            </p>
+            <b>🎯 Becas para escolares:</b>
+            <ul>
+                <li>Ingreso por examen de admisión</li>
+                <li>Programas de apoyo académico</li>
+                <li>Becas del Estado como Beca 18</li>
+            </ul>
+        </div>
+        `;
+    }
+
+    // ================= EXTRANJERO =================
+    if(tipo === "extranjero"){
+        cont.innerHTML = `
+
+        <div class="card">
+            <h4>🌎 Becas Internacionales</h4>
+            <p>
+            Existen múltiples oportunidades para estudiar en el extranjero con financiamiento completo o parcial.
+            </p>
+
+            <b>🎯 Principales opciones:</b>
+            <ul>
+                <li>🌍 Beca Fulbright (EE.UU.)</li>
+                <li>🇬🇧 Becas Chevening (Reino Unido)</li>
+                <li>🇪🇺 Erasmus+ (Europa)</li>
+                <li>🇯🇵 Becas MEXT (Japón)</li>
+            </ul>
+
+            <b>📌 Requisitos comunes:</b>
+            <ul>
+                <li>Buen rendimiento académico</li>
+                <li>Inglés (TOEFL o IELTS)</li>
+                <li>Cartas de recomendación</li>
+                <li>Ensayos personales</li>
+            </ul>
+        </div>
+        `;
+    }
+}
+
 
 // ==================== CHAT (corregido) ====================
 function buscarUsuarios(){
@@ -833,6 +929,9 @@ function go(id){
     if(id === "home") {
     cargarProximasTareas();
     console.log("Bienvenido 🚀");
+}
+    if(id === "becas"){
+    mostrarBecas('peru'); // abre Perú por defecto
 }
 }
 
