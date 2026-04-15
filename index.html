@@ -570,6 +570,14 @@ function cargarComunicados(){
             let html = `<div class="card">
                 <p>${data.texto || ""}</p>`;
 
+// 🔥 SOLO ADMIN VE EL BOTÓN
+if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+    html += `<br><button onclick="eliminarComunicado('${doc.id}', '${data.archivo || ""}')" 
+    style="margin-top:10px;background:#e74c3c;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;">
+    🗑 Eliminar
+    </button>`;
+}
+
             if(data.archivo){
                 html += `<a href="${data.archivo}" target="_blank">📎 Ver archivo (${data.nombreArchivo})</a>`;
             }
@@ -579,6 +587,27 @@ function cargarComunicados(){
             lista.innerHTML += html;
         });
     });
+}
+
+function eliminarComunicado(id, archivoURL){
+    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
+        return alert("No tienes permisos");
+    }
+
+    if(!confirm("¿Eliminar este comunicado?")) return;
+
+    // 🔥 eliminar de Firestore
+    db.collection("comunicados").doc(id).delete()
+    .then(() => {
+
+        // 🔥 eliminar archivo si existe
+        if(archivoURL){
+            const ref = storage.refFromURL(archivoURL);
+            ref.delete().catch(err => console.log("Error borrando archivo:", err));
+        }
+
+    })
+    .catch(err => alert("Error: " + err.message));
 }
 
 // ==================== RESOLUCIONES ====================
