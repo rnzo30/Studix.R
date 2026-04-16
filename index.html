@@ -387,51 +387,96 @@ function mostrarBecas(tipo){
 
     // ================= PERÚ =================
     if(tipo === "peru"){
-        cont.innerHTML = `
+    cont.innerHTML = `
 
-        <div class="card">
-            <h4>🏛 Universidad Nacional de Ingeniería (UNI)</h4>
-            <p>
-            Una de las mejores universidades del Perú en ingeniería y ciencias. 
-            Destaca por su alto nivel académico y exigencia.
-            </p>
-            <b>🎯 Becas para escolares:</b>
-            <ul>
-                <li>Ingreso directo por alto rendimiento</li>
-                <li>Olimpiadas de matemáticas y ciencias</li>
-                <li>Programas de preparación preuniversitaria</li>
-            </ul>
-        </div>
+    <!-- ================= UNI ================= -->
+    <div class="card">
+        <h3>🏛 Universidad Nacional de Ingeniería (UNI)</h3>
+        <p>
+        Cuna de los mejores ingenieros del país, la UNI destaca por su exigencia y excelencia académica, 
+        formando profesionales capaces de liderar los grandes proyectos del Perú.
+        </p>
 
-        <div class="card">
-            <h4>🏛 Pontificia Universidad Católica del Perú (PUCP)</h4>
-            <p>
-            Universidad privada de alto prestigio en diversas áreas como ingeniería,
-            derecho, ciencias sociales y arte.
-            </p>
-            <b>🎯 Becas para escolares:</b>
-            <ul>
-                <li>Beca Talento Académico</li>
-                <li>Becas socioeconómicas</li>
-                <li>Ingreso por tercio superior</li>
-            </ul>
-        </div>
+        <b>🟠 1. Beca 18 (PRONABEC)</b>
+        <p>Es la beca más importante del Estado peruano. Cubre matrícula, alimentación, transporte, laptop y más.</p>
+        <ul>
+            <li>5° secundaria o egresado</li>
+            <li>Alto rendimiento</li>
+            <li>Pobreza o pobreza extrema</li>
+            <li>Ingresar a la UNI</li>
+        </ul>
 
-        <div class="card">
-            <h4>🏛 Universidad Nacional Mayor de San Marcos (UNMSM)</h4>
-            <p>
-            La universidad más antigua de América. Destaca en medicina,
-            derecho, ciencias e investigación.
-            </p>
-            <b>🎯 Becas para escolares:</b>
-            <ul>
-                <li>Ingreso por examen de admisión</li>
-                <li>Programas de apoyo académico</li>
-                <li>Becas del Estado como Beca 18</li>
-            </ul>
-        </div>
-        `;
-    }
+        <b>🔵 2. Beca Permanencia</b>
+        <p>Apoyo económico mensual para estudiantes ya dentro de la UNI.</p>
+        <ul>
+            <li>Ser estudiante UNI</li>
+            <li>Buen rendimiento</li>
+            <li>Situación económica vulnerable</li>
+        </ul>
+
+        <b>🟢 3. Apoyos internos UNI</b>
+        <p>Comedor, residencia, atención médica y apoyo económico.</p>
+
+        <b>🟣 4. Becas preuniversitarias</b>
+        <p>Academias ofrecen becas para preparación intensiva.</p>
+
+        <br>
+        <a href="https://portal.uni.edu.pe/" target="_blank">🌐 Página oficial UNI</a>
+    </div>
+
+
+    <!-- ================= PUCP ================= -->
+    <div class="card">
+        <h3>🏛 Pontificia Universidad Católica del Perú (PUCP)</h3>
+        <p>
+        Una de las universidades más prestigiosas del Perú, reconocida por su innovación e investigación.
+        </p>
+
+        <b>🟠 1. Becas PRONABEC</b>
+        <p>Permite estudiar con todos los gastos cubiertos.</p>
+
+        <b>🔵 2. Escala diferenciada</b>
+        <p>Pensión ajustada según ingresos familiares.</p>
+
+        <b>🟢 3. Becas PUCP</b>
+        <p>Ayudas económicas y becas parciales.</p>
+
+        <b>🟣 4. Excelencia académica</b>
+        <p>Beneficios por alto rendimiento.</p>
+
+        <b>🟡 5. Becas externas</b>
+        <p>Convenios con empresas e instituciones.</p>
+
+        <br>
+        <a href="https://www.pucp.edu.pe/" target="_blank">🌐 Página oficial PUCP</a>
+    </div>
+
+
+    <!-- ================= SAN MARCOS ================= -->
+    <div class="card">
+        <h3>🏛 Universidad Nacional Mayor de San Marcos (UNMSM)</h3>
+        <p>
+        La universidad más antigua de América y símbolo de excelencia en el Perú.
+        </p>
+
+        <b>🥇 1. Beca 18</b>
+        <p>Estudia con todos los gastos cubiertos.</p>
+
+        <b>🥈 2. Becas internas</b>
+        <p>Apoyo económico para estudiantes.</p>
+
+        <b>🥉 3. Comedor y residencia</b>
+        <p>Alimentación y alojamiento subvencionado.</p>
+
+        <b>🌍 4. Intercambios</b>
+        <p>Programas internacionales.</p>
+
+        <br>
+        <a href="https://www.unmsm.edu.pe/" target="_blank">🌐 Página oficial UNMSM</a>
+    </div>
+
+    `;
+}
 
     // ================= EXTRANJERO =================
     if(tipo === "extranjero"){
