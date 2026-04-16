@@ -178,11 +178,105 @@
 <div id="ia" class="hidden">
   <h3>🤖 Asistente IA</h3>
 
+  <!-- INTRO -->
   <div class="card">
-    <p>Haz preguntas sobre tus cursos 📚</p>
-    <input id="iaInput" placeholder="Escribe tu pregunta..." style="width:100%;padding:12px;border-radius:10px;margin-top:10px;">
-    <button onclick="responderIA()" class="btn">Preguntar</button>
+    <h2>👋 Hola, soy Astra IA</h2>
+
+    <p style="color:#555; line-height:1.6;">
+      Soy un tutor inteligente diseñado especialmente para estudiantes. 
+      No solo te doy respuestas, te ayudo a <b>entender, aprender y mejorar</b> de verdad.
+    </p>
+
+    <div style="margin-top:15px;">
+
+      <p><b>🎯 Aprendes, no solo respondes</b><br>
+      Te guío paso a paso para que entiendas el proceso y puedas resolverlo tú mismo en un examen.</p>
+
+      <p><b>🧠 Herramientas avanzadas</b><br>
+      Incluyo funciones especializadas en matemáticas y ciencias para resolver problemas complejos.</p>
+
+      <p><b>📚 Material de estudio automático</b><br>
+      Puedo convertir cualquier tema en quizzes, resúmenes o flashcards para ayudarte a memorizar mejor.</p>
+
+      <p><b>💬 Explicaciones claras y directas</b><br>
+      Explico como un estudiante real: sin palabras complicadas ni rodeos innecesarios.</p>
+
+      <p><b>🚀 Pensamiento independiente</b><br>
+      Mi objetivo no es hacer tu tarea, sino prepararte para que puedas hacerlo solo.</p>
+
+    </div>
   </div>
+
+  <!-- BENEFICIOS -->
+  <div class="card">
+    <h3>📈 ¿Cómo te ayuda a mejorar tus notas?</h3>
+
+    <p><b>⚡ Retroalimentación instantánea</b><br>
+    Detecto tus errores al momento y te explico cómo corregirlos.</p>
+
+    <p><b>🧠 Aprendizaje tipo examen</b><br>
+    Te hago pensar con preguntas clave para que desarrolles lógica real.</p>
+
+    <p><b>📊 Estudio personalizado</b><br>
+    Transformo lo que aprendes en herramientas prácticas para recordar mejor.</p>
+
+    <p><b>😌 Sin presión</b><br>
+    Puedes preguntar lo mismo mil veces sin miedo ni vergüenza.</p>
+
+    <p><b>🎯 Enfoque en tus objetivos</b><br>
+    Te ayudo a dividir metas grandes (como ingresar a la UNI) en pasos diarios.</p>
+  </div>
+
+  <!-- INSTRUCCIONES -->
+  <div class="card">
+    <h3>📌 Instrucciones para usar Astra IA</h3>
+
+    <ul style="line-height:1.7; color:#444;">
+
+<li><b>1. No pidas solo la respuesta</b><br>
+Si solo copias el problema y pides la respuesta, podrás hacer la tarea… pero no rendir bien en un examen.<br>
+👉 Mejor di: <i>“Ayúdame paso a paso”</i> o <i>“me quedé en este paso”</i>.
+</li>
+
+<li><b>2. Pide explicaciones simples</b><br>
+Si algo suena complicado, dilo.<br>
+👉 Prueba: <i>“Explícalo como si tuviera 14 años”</i> o <i>“dame un ejemplo real”</i>.
+</li>
+
+<li><b>3. Usa tus propios materiales</b><br>
+La IA funciona mejor si sabe cómo te enseñan.<br>
+👉 Sube fotos de tareas, apuntes o guías.
+</li>
+
+<li><b>4. Termina con práctica</b><br>
+No te quedes solo leyendo.<br>
+👉 Pide: <i>“hazme un quiz”</i> o <i>“dame flashcards”</i>.
+</li>
+
+<li><b>5. Sé claro con tus objetivos</b><br>
+Mientras más específico seas, mejor te ayudará.<br>
+👉 Ejemplo: <i>“Tengo examen de historia el viernes”</i>.
+</li>
+
+<li><b>6. Corrige a la IA</b><br>
+Si algo está mal, dilo.<br>
+👉 Eso mejora la precisión de la explicación.
+</li>
+
+</ul>
+  </div>
+
+  <!-- BOTÓN FINAL -->
+  <div class="card" style="text-align:center;">
+    <h3>🚀 Empieza a estudiar con IA</h3>
+
+    <button onclick="abrirAstra()" class="btn">
+      Ir a Astra IA
+    </button>
+  </div>
+
+  <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
 
   <div id="iaRespuesta" class="card"></div>
 
@@ -857,18 +951,8 @@ function abrirResolucion(tipo){
 }
 
 // ==================== IA ====================
-function responderIA(){
-    const pregunta = document.getElementById("iaInput").value;
-
-    if(!pregunta) return;
-
-    let respuesta = "🤖 Estoy aprendiendo... pronto responderé mejor.";
-
-    if(pregunta.toLowerCase().includes("algebra")){
-        respuesta = "📘 El álgebra estudia variables y ecuaciones.";
-    }
-
-    document.getElementById("iaRespuesta").innerText = respuesta;
+function abrirAstra(){
+    window.open("https://astra.ai", "_blank");
 }
 
 function generarCalendario(){
