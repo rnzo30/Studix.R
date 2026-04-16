@@ -49,6 +49,21 @@
         }
         #listaChats .card { cursor:pointer; transition:0.2s; }
         #listaChats .card:hover { background:#f0f0f0; }
+        .beca-subtitle {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #ff4b2b;
+}
+
+.beca-list {
+    margin-top: 5px;
+    padding-left: 18px;
+}
+
+.beca-list li {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
     </style>
 </head>
 <body>
@@ -480,32 +495,117 @@ function mostrarBecas(tipo){
 
     // ================= EXTRANJERO =================
     if(tipo === "extranjero"){
-        cont.innerHTML = `
+    cont.innerHTML = `
 
-        <div class="card">
-            <h4>🌎 Becas Internacionales</h4>
-            <p>
-            Existen múltiples oportunidades para estudiar en el extranjero con financiamiento completo o parcial.
-            </p>
+    <!-- BICENTENARIO -->
+    <div class="beca-card">
+        <div class="beca-header">🟠 Beca Generación del Bicentenario</div>
 
-            <b>🎯 Principales opciones:</b>
-            <ul>
-                <li>🌍 Beca Fulbright (EE.UU.)</li>
-                <li>🇬🇧 Becas Chevening (Reino Unido)</li>
-                <li>🇪🇺 Erasmus+ (Europa)</li>
-                <li>🇯🇵 Becas MEXT (Japón)</li>
-            </ul>
+        <p>
+        Es la beca más importante del Perú para estudiar en el extranjero.
+        Permite hacer maestría o doctorado en universidades top con TODO cubierto.
+        </p>
 
-            <b>📌 Requisitos comunes:</b>
-            <ul>
-                <li>Buen rendimiento académico</li>
-                <li>Inglés (TOEFL o IELTS)</li>
-                <li>Cartas de recomendación</li>
-                <li>Ensayos personales</li>
-            </ul>
-        </div>
-        `;
-    }
+        <div class="beca-subtitle">🎯 Beneficios</div>
+        <ul class="beca-list">
+            <li>Matrícula completa</li>
+            <li>Pasajes internacionales</li>
+            <li>Alojamiento y manutención</li>
+            <li>Seguro médico</li>
+            <li>Materiales de estudio</li>
+        </ul>
+
+        <div class="beca-subtitle">📌 Requisitos</div>
+        <ul class="beca-list">
+            <li>Alto rendimiento académico</li>
+            <li>Haber sido admitido en universidad extranjera</li>
+            <li>Buen perfil académico o profesional</li>
+            <li>No contar con suficientes recursos económicos</li>
+        </ul>
+    </div>
+
+
+    <!-- COOPERACIÓN -->
+    <div class="beca-card">
+        <div class="beca-header">🔵 Becas de Cooperación Internacional</div>
+
+        <p>
+        Conjunto de becas ofrecidas por distintos países como Japón, Alemania,
+        Francia y otros. Incluyen múltiples oportunidades de estudio.
+        </p>
+
+        <div class="beca-subtitle">🎯 Beneficios</div>
+        <ul class="beca-list">
+            <li>Becas completas o parciales</li>
+            <li>Programas en varios países</li>
+            <li>Pregrado, maestría y cursos</li>
+        </ul>
+
+        <div class="beca-subtitle">📌 Requisitos</div>
+        <ul class="beca-list">
+            <li>Buen rendimiento académico</li>
+            <li>Dominio de idioma (inglés u otro)</li>
+            <li>Cumplir requisitos del país</li>
+            <li>Postulación a convocatorias específicas</li>
+        </ul>
+    </div>
+
+
+    <!-- CHEVENING -->
+    <div class="beca-card">
+        <div class="beca-header">🟢 Beca Chevening (Reino Unido)</div>
+
+        <p>
+        Una de las becas más prestigiosas del mundo. Forma líderes globales
+        mediante estudios en el Reino Unido.
+        </p>
+
+        <div class="beca-subtitle">🎯 Beneficios</div>
+        <ul class="beca-list">
+            <li>Maestría completa en Reino Unido</li>
+            <li>Pasajes internacionales</li>
+            <li>Estipendio mensual</li>
+            <li>Alojamiento</li>
+        </ul>
+
+        <div class="beca-subtitle">📌 Requisitos</div>
+        <ul class="beca-list">
+            <li>Título universitario</li>
+            <li>Experiencia de liderazgo</li>
+            <li>Buen nivel de inglés</li>
+            <li>Buen perfil académico</li>
+        </ul>
+    </div>
+
+
+    <!-- FULBRIGHT -->
+    <div class="beca-card">
+        <div class="beca-header">🟣 Beca Fulbright (Estados Unidos)</div>
+
+        <p>
+        Programa internacional financiado por EE.UU. para estudiar maestrías
+        o realizar investigación en universidades de alto nivel.
+        </p>
+
+        <div class="beca-subtitle">🎯 Beneficios</div>
+        <ul class="beca-list">
+            <li>Estudios en Estados Unidos</li>
+            <li>Manutención</li>
+            <li>Seguro médico</li>
+            <li>Pasajes</li>
+        </ul>
+
+        <div class="beca-subtitle">📌 Requisitos</div>
+        <ul class="beca-list">
+            <li>Alto rendimiento académico</li>
+            <li>Inglés avanzado</li>
+            <li>Perfil académico sólido</li>
+            <li>Liderazgo o impacto social</li>
+        </ul>
+    </div>
+
+    `;
+}
 }
 
 
