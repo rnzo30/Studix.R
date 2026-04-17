@@ -1232,23 +1232,24 @@ function mostrarProximasTareas(lista){
 
 // ==================== NAVEGACIÓN ====================
 function go(id){
-    document.querySelectorAll('#app .container > div').forEach(d => d.classList.add("hidden"));
+    const vistas = [
+        "home","books","practice","cursoVista","chat",
+        "becas","ia","resoluciones","resolucionVista",
+        "comunicados","admin","horario"
+    ];
+
+    vistas.forEach(v => {
+        const el = document.getElementById(v);
+        if(el) el.classList.add("hidden");
+    });
+
     document.getElementById(id).classList.remove("hidden");
 
     if(id === "chat") cargarListaChats();
     if(id === "comunicados") cargarComunicados();
-
-    if(id === "horario") {
-        cargarNotasCalendario();
-    }
-
-    if(id === "home") {
-    cargarProximasTareas();
-    console.log("Bienvenido 🚀");
-}
-    if(id === "becas"){
-    mostrarBecas('peru'); // abre Perú por defecto
-}
+    if(id === "horario") cargarNotasCalendario();
+    if(id === "home") cargarProximasTareas();
+    if(id === "becas") mostrarBecas('peru');
 }
 
 function volver(){
