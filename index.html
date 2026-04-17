@@ -506,10 +506,7 @@ function cargarContenido(){
                 <div class="card">
                     <b>${d.nombre}</b><br>
 
-                    <button onclick="verArchivo('${d.url}')" 
-                    class="btn" style="margin-top:8px;">
-                        👁 Ver archivo
-                    </button>
+                    <a href="${d.url}" target="_blank">Ver archivo</a>
                 </div>
             `;
         });
@@ -1033,28 +1030,11 @@ function cargarResoluciones(){
             cont.innerHTML += `
                 <div class="card">
                     ${d.nombre}<br>
-                    <button onclick="verArchivo('${d.url}')" class="btn" style="margin-top:8px;">
-    👁 Ver archivo
-</button>
+                    <a href="${d.url}" target="_blank">Ver archivo</a>
                 </div>
             `;
         });
     });
-}
-
-function verArchivo(url){
-    const visor = document.getElementById("visorArchivo");
-    const frame = document.getElementById("frameArchivo");
-
-    // 🔥 Google viewer (sirve para PDF + Word)
-    frame.src = "https://docs.google.com/gview?url=" + encodeURIComponent(url) + "&embedded=true";
-
-    visor.classList.remove("hidden");
-}
-
-function cerrarVisor(){
-    document.getElementById("visorArchivo").classList.add("hidden");
-    document.getElementById("frameArchivo").src = "";
 }
 
 // ==================== IA ====================
