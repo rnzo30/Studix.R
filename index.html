@@ -284,11 +284,24 @@ Si algo está mal, dilo.<br>
             <div class="grid">
                 <button onclick="abrirResolucion('tareas')">📚 Tareas Domiciliarias</button>
                 <button onclick="abrirResolucion('diarios')">📝 Exámenes diarios</button>
-                <button onclick="abrirResolucion('pc')">📊 Prácticas calificadas</button>
                 <button onclick="abrirResolucion('semanales')">📅 Exámenes semanales</button>
             </div>
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
+        
+        <div id="resolucionVista" class="hidden">
+    <h3 id="tituloResolucion"></h3>
+
+    <div id="contenidoResoluciones" style="margin-top:10px;"></div>
+
+    <!-- ADMIN -->
+    <div id="adminResolucion" class="hidden">
+        <input type="file" id="archivoResolucion" style="margin-top:10px;">
+        <button onclick="subirResolucion()" class="btn">📤 Subir resolución</button>
+    </div>
+
+    <button onclick="go('resoluciones')" class="btn">⬅ Volver</button>
+</div>
 
         <div id="comunicados" class="hidden">
     <h3>📢 Comunicados</h3>
@@ -943,7 +956,71 @@ function eliminarComunicado(id, archivoURL){
 
 // ==================== RESOLUCIONES ====================
 function abrirResolucion(tipo){
-    alert(`Sección "${tipo}" en desarrollo.\n\nPronto podrás subir y ver resoluciones aquí.`);
+    tipoActual = tipo;
+    go("resolucionVista");
+    cargarResoluciones();
+}
+
+function subirResolucion(){
+    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
+        return alert("No tienes permisos");
+    }
+
+    const file = document.getElementById("archivoResolucion").files[0];
+    if(!file) return alert("Selecciona un archivo");
+
+    const ref = storage.ref("resoluciones/" + Date.now() + "_" + file.name);
+
+    ref.put(file)
+    .then(() => ref.getDownloadURL())
+    .then(url => {
+        return db.collection("resoluciones").add({
+            tipo: tipoActual,
+            url: url,
+            nombre: file.name
+        });
+    })
+    .then(() => {
+        alert("✅ Subido");
+        cargarResoluciones();
+    })
+    .catch(err => alert("Error: " + err.message));
+}
+
+function cargarResoluciones(){
+    const cont = document.getElementById("contenidoResoluciones");
+    cont.innerHTML = "";
+
+    document.getElementById("tituloResolucion").innerText =
+        tipoActual === "tareas" ? "📚 Tareas Domiciliarias" :
+        tipoActual === "diarios" ? "📝 Exámenes diarios" :
+        "📅 Exámenes semanales";
+
+    if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+        document.getElementById("adminResolucion").classList.remove("hidden");
+    } else {
+        document.getElementById("adminResolucion").classList.add("hidden");
+    }
+
+    db.collection("resoluciones")
+      .where("tipo","==",tipoActual)
+      .get()
+      .then(snap => {
+        if(snap.empty){
+            cont.innerHTML = "<p>No hay archivos aún</p>";
+            return;
+        }
+
+        snap.forEach(doc => {
+            const d = doc.data();
+            cont.innerHTML += `
+                <div class="card">
+                    ${d.nombre}<br>
+                    <a href="${d.url}" target="_blank">📄 Ver archivo</a>
+                </div>
+            `;
+        });
+    });
 }
 
 // ==================== IA ====================
