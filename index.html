@@ -487,14 +487,31 @@ function subirArchivo(){
 function cargarContenido(){
     const cont = document.getElementById("contenidoCurso");
     cont.innerHTML = "";
+
     db.collection("contenido")
       .where("curso","==",cursoActual)
       .where("tipo","==",tipoActual)
       .get()
       .then(snap => {
+
+        if(snap.empty){
+            cont.innerHTML = "<p style='color:gray;'>No hay archivos aún</p>";
+            return;
+        }
+
         snap.forEach(doc => {
             const d = doc.data();
-            cont.innerHTML += `<div class="card">${d.nombre}<br><a href="${d.url}" target="_blank">Ver archivo</a></div>`;
+
+            cont.innerHTML += `
+                <div class="card">
+                    <b>${d.nombre}</b><br>
+
+                    <button onclick="verArchivo('${d.url}')" 
+                    class="btn" style="margin-top:8px;">
+                        👁 Ver archivo
+                    </button>
+                </div>
+            `;
         });
     });
 }
@@ -1016,11 +1033,28 @@ function cargarResoluciones(){
             cont.innerHTML += `
                 <div class="card">
                     ${d.nombre}<br>
-                    <a href="${d.url}" target="_blank">📄 Ver archivo</a>
+                    <button onclick="verArchivo('${d.url}')" class="btn" style="margin-top:8px;">
+    👁 Ver archivo
+</button>
                 </div>
             `;
         });
     });
+}
+
+function verArchivo(url){
+    const visor = document.getElementById("visorArchivo");
+    const frame = document.getElementById("frameArchivo");
+
+    // 🔥 Google viewer (sirve para PDF + Word)
+    frame.src = "https://docs.google.com/gview?url=" + encodeURIComponent(url) + "&embedded=true";
+
+    visor.classList.remove("hidden");
+}
+
+function cerrarVisor(){
+    document.getElementById("visorArchivo").classList.add("hidden");
+    document.getElementById("frameArchivo").src = "";
 }
 
 // ==================== IA ====================
@@ -1269,5 +1303,25 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 </script>
+<div id="visorArchivo" class="hidden" style="
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:white;
+z-index:9999;
+display:flex;
+flex-direction:column;
+">
+
+    <div style="padding:10px;background:#ff4b2b;color:white;display:flex;justify-content:space-between;">
+        <b>📄 Vista previa</b>
+        <button onclick="cerrarVisor()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">
+            ✖
+        </button>
+    </div>
+
+    <iframe id="frameArchivo" style="flex:1;border:none;"></iframe>
+
+</div>
 </body>
 </html>
