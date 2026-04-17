@@ -1252,7 +1252,7 @@ function mostrarProximasTareas(lista){
 
 // ==================== NAVEGACIÓN ====================
 function go(id){
-    document.querySelectorAll('.container > div').forEach(d => d.classList.add("hidden"));
+    document.querySelectorAll('#app .container > div').forEach(d => d.classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
 
     if(id === "chat") cargarListaChats();
@@ -1303,25 +1303,5 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 </script>
-<div id="visorArchivo" class="hidden" style="
-position:fixed;
-top:0;left:0;
-width:100%;height:100%;
-background:white;
-z-index:9999;
-display:flex;
-flex-direction:column;
-">
-
-    <div style="padding:10px;background:#ff4b2b;color:white;display:flex;justify-content:space-between;">
-        <b>📄 Vista previa</b>
-        <button onclick="cerrarVisor()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">
-            ✖
-        </button>
-    </div>
-
-    <iframe id="frameArchivo" style="flex:1;border:none;"></iframe>
-
-</div>
 </body>
 </html>
