@@ -129,10 +129,6 @@
         <div id="cursoVista" class="hidden">
             <h3 id="tituloCurso"></h3>
             <div id="contenidoCurso"></div>
-            <div id="adminUpload" class="hidden">
-                <input type="file" id="archivo">
-                <button onclick="subirArchivo()" class="btn">📤 Subir archivo</button>
-            </div>
             <button onclick="volver()" class="btn">⬅ Volver</button>
         </div>
 
@@ -424,6 +420,29 @@ function guardarUsuario(user){
 
 // ==================== CURSOS ====================
 const cursos = ["Álgebra","Aritmética","Geometría","Física","Química","Razonamiento Matemático","Biología","Lenguaje","Razonamiento Verbal","Literatura","Historia Universal","Historia del Perú","Geografía"];
+const estructuraEjercicios = {
+  "Álgebra": {
+    "1er Bimestre": [
+      "Ecuaciones",
+      "Inecuaciones",
+      "Problemas con edades"
+    ]
+  },
+  "Aritmética": {
+    "1er Bimestre": [
+      "Fracciones",
+      "Porcentajes",
+      "Razones y proporciones"
+    ]
+  },
+  "Geometría": {
+    "1er Bimestre": [
+      "Ángulos",
+      "Triángulos",
+      "Perímetros"
+    ]
+  }
+};
 
 function cargarCursos(){
     const libros = document.getElementById("listaLibros");
@@ -447,70 +466,88 @@ function cargarCursos(){
     });
 }
 
-function abrirCurso(curso, tipo){
-    cursoActual = curso; tipoActual = tipo;
+function mostrarBimestres(curso){
     go("cursoVista");
-    document.getElementById("tituloCurso").innerText = curso;
-   if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
-    document.getElementById("adminUpload").classList.remove("hidden");
-} else {
-    document.getElementById("adminUpload").classList.add("hidden");
-}
-    cargarContenido();
-}
 
-function subirArchivo(){
-    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
-    return alert("No tienes permisos");
-}
-    const file = document.getElementById("archivo").files[0];
-    if(!file) return alert("Selecciona un archivo");
-    
-    const ref = storage.ref("materiales/" + Date.now() + "_" + file.name);
-    ref.put(file)
-    .then(() => ref.getDownloadURL())
-    .then(url => {
-        return db.collection("contenido").add({
-            curso: cursoActual,
-            tipo: tipoActual,
-            url: url,
-            nombre: file.name
-        });
-    })
-    .then(() => {
-        alert("✅ Archivo subido correctamente");
-        cargarContenido();
-    })
-    .catch(err => alert("❌ Error: " + err.message));
-}
-
-function cargarContenido(){
     const cont = document.getElementById("contenidoCurso");
+    const titulo = document.getElementById("tituloCurso");
+
+    titulo.innerText = curso + " - Ejercicios";
     cont.innerHTML = "";
 
-    db.collection("contenido")
-      .where("curso","==",cursoActual)
-      .where("tipo","==",tipoActual)
-      .get()
-      .then(snap => {
+    const bimestres = estructuraEjercicios[curso];
 
-        if(snap.empty){
-            cont.innerHTML = "<p style='color:gray;'>No hay archivos aún</p>";
-            return;
-        }
+if(!bimestres){
+    cont.innerHTML = `
+        <div class="card">
+            <h4>🚧 Próximamente</h4>
+            <p>Estamos agregando ejercicios para este curso.</p>
+        </div>
+        <button onclick="go('practice')" class="btn">⬅ Volver</button>
+    `;
+    return;
+}
 
-        snap.forEach(doc => {
-            const d = doc.data();
+    for(let bimestre in bimestres){
+        cont.innerHTML += `
+            <div class="card" onclick="mostrarTemas('${curso}','${bimestre}')">
+                📘 ${bimestre}
+            </div>
+        `;
+    }
+}
 
-            cont.innerHTML += `
-                <div class="card">
-                    <b>${d.nombre}</b><br>
+function mostrarTemas(curso, bimestre){
+    const cont = document.getElementById("contenidoCurso");
+    const titulo = document.getElementById("tituloCurso");
 
-                    <a href="${d.url}" target="_blank">Ver archivo</a>
-                </div>
-            `;
-        });
+    titulo.innerText = curso + " - " + bimestre;
+    cont.innerHTML = "";
+
+    const temas = estructuraEjercicios[curso][bimestre];
+
+    temas.forEach(tema => {
+        cont.innerHTML += `
+            <div class="card" onclick="abrirTema('${curso}','${bimestre}','${tema}')">
+                📄 ${tema}
+            </div>
+        `;
     });
+
+    cont.innerHTML += `<button onclick="mostrarBimestres('${curso}')" class="btn">⬅ Volver</button>`;
+}
+
+function abrirTema(curso, bimestre, tema){
+    const cont = document.getElementById("contenidoCurso");
+    const titulo = document.getElementById("tituloCurso");
+
+    titulo.innerText = tema;
+
+    cont.innerHTML = `
+        <div class="card">
+            <h4>${tema}</h4>
+            <p>Aquí irán los ejercicios 👇</p>
+        </div>
+
+        <button onclick="mostrarTemas('${curso}','${bimestre}')" class="btn">⬅ Volver</button>
+    `;
+}
+
+function abrirCurso(curso, tipo){
+    cursoActual = curso; 
+    tipoActual = tipo;
+
+    if(tipo === "ejercicio"){
+        mostrarBimestres(curso);
+    } else {
+        go("cursoVista");
+        document.getElementById("tituloCurso").innerText = curso;
+        document.getElementById("contenidoCurso").innerHTML = `
+            <div class="card">
+                <p>Próximamente contenido de libros 📚</p>
+            </div>
+        `;
+    }
 }
 
 function mostrarBecas(tipo){
