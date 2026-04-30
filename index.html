@@ -131,6 +131,18 @@ h4 {
     background:white;
     border-radius:15px;
     padding:10px;
+
+    height: 400px;       /* 🔥 ajusta según tu diseño */
+    overflow-y: auto;    /* 🔥 activa scroll */
+}
+
+.chat-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
 }
 
 .chat-area {
