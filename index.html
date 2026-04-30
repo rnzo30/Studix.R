@@ -71,6 +71,7 @@ body {
     max-width:1100px;
     margin:auto;
     padding:20px;
+    padding-top:10px;
 }
 
 /* CARDS */
@@ -164,6 +165,42 @@ input, textarea {
     padding:10px;
 }
 
+#topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.top-left {
+    font-weight: bold;
+    color: #ff4b2b;
+    font-size: 18px;
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logout-btn {
+    border: none;
+    background: #f3f4f6;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #e5e7eb;
+}
+
 /* ANIMACIONES */
 @keyframes fadeIn {
     from {opacity:0; transform:translateY(10px);}
@@ -173,6 +210,8 @@ input, textarea {
 /* HIDDEN */
 .hidden {
     display:none;
+    opacity:0;
+    transform: translateY(10px);
 }
 
 html {
@@ -193,6 +232,19 @@ html {
 
 <!-- APP -->
 <div id="app" class="hidden">
+<div id="topbar">
+    <div class="top-left">
+        🚀 <b>Studix</b>
+    </div>
+
+    <div class="top-right">
+        <span id="userMini"></span>
+
+        <button onclick="logout()" class="logout-btn">
+            ⎋
+        </button>
+    </div>
+</div>
     <div class="container">
         <!-- HOME -->
         <div id="home">
@@ -507,6 +559,7 @@ let unsubscribeComunicados = null;
 
 // ==================== LOGIN ====================
 function login(){
+    document.getElementById("userMini").innerText = usuarioActual.displayName;
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider)
     .then(res => {
@@ -522,6 +575,13 @@ function login(){
         }
     })
     .catch(err => alert("Error al iniciar sesión: " + err.message));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function logout(){
+    firebase.auth().signOut().then(() => {
+        location.reload(); // reinicia todo limpio
+    });
 }
 
 function guardarUsuario(user){
@@ -1306,60 +1366,81 @@ function go(id){
         "comunicados","admin","horario"
     ];
 
+    // 🔹 Ocultar todas las vistas
     vistas.forEach(v => {
         const el = document.getElementById(v);
-        if(el) el.classList.add("hidden");
+        if(el){
+            el.classList.add("hidden");
+            el.style.opacity = 0;
+            el.style.transform = "translateY(10px)";
+        }
     });
 
-    document.getElementById(id).classList.remove("hidden");
+    // 🔹 Mostrar la vista seleccionada
+    const target = document.getElementById(id);
+    if(!target) return;
 
+    target.classList.remove("hidden");
+
+    // 🔹 Animación suave
+    setTimeout(() => {
+        target.style.opacity = 1;
+        target.style.transform = "translateY(0)";
+        target.style.transition = "all 0.3s ease";
+    }, 50);
+
+    // 🔹 Scroll automático arriba (UX PRO)
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    // 🔹 Cargas dinámicas según sección
     if(id === "chat") cargarListaChats();
     if(id === "comunicados") cargarComunicados();
     if(id === "horario") cargarNotasCalendario();
     if(id === "home") cargarProximasTareas();
     if(id === "becas") mostrarBecas('peru');
 
-if(id === "books"){
-    document.getElementById("listaLibros").innerHTML = `
-        <div class="card">
-            <h3>📚 Biblioteca digital</h3>
-            <p>
-            Toda la información completa para exámenes y prácticas en tu nueva biblioteca virtual
-            que contiene la información de manera exacta y precisa sin relleno e información util al momento de estudiar.
-            Con este nuevo material actualizado no tendras que luchar por buscar la información ademas de otorgarte
-            material preuniversitario para seguir estudiando y llenarte de mas conocimientos.
-            </p>
-        </div>
+    // 🔹 CONTENIDO LIBROS
+    if(id === "books"){
+        document.getElementById("listaLibros").innerHTML = `
+            <div class="card">
+                <h3>📚 Biblioteca digital</h3>
+                <p>
+                Toda la información completa para exámenes y prácticas en tu nueva biblioteca virtual.
+                Material claro, directo y sin relleno para estudiar mejor y más rápido.
+                Incluye contenido preuniversitario actualizado para potenciar tu aprendizaje.
+                </p>
+            </div>
 
-        <div class="card" style="text-align:center;">
-            <a href="https://drive.google.com/drive/folders/1eXxS4Vk17GsCkOBwb5jtSyhhxMvUOIX_?usp=drive_link" target="_blank">
-                <button class="btn">📂 Ver todos los libros</button>
-            </a>
-        </div>
-    `;
-}
+            <div class="card" style="text-align:center;">
+                <a href="https://drive.google.com/drive/folders/1eXxS4Vk17GsCkOBwb5jtSyhhxMvUOIX_?usp=drive_link" target="_blank">
+                    <button class="btn">📂 Ver todos los libros</button>
+                </a>
+            </div>
+        `;
+    }
 
-if(id === "practice"){
-    document.getElementById("listaEjercicios").innerHTML = `
-        <div class="card">
-            <h3>📝 Zona de práctica</h3>
-            <p>
-            Aquí podrás practicar con ejercicios seleccionados para mejorar tu rendimiento.
-            Incluye material de todos los cursos para que desarrolles habilidades clave
-            y te prepares para exámenes de alto nivel.
-            Estos ejercicios no son solo una práctica mas son ejercicios de alto nivel para
-            que puedas reforzar tus conocimientos y llevarlos mas allá y estar preparado
-            para examenes futuros con ejercicios de las mejores universidades.
-            </p>
-        </div>
+    // 🔹 CONTENIDO EJERCICIOS
+    if(id === "practice"){
+        document.getElementById("listaEjercicios").innerHTML = `
+            <div class="card">
+                <h3>📝 Zona de práctica</h3>
+                <p>
+                Practica con ejercicios seleccionados de alto nivel para mejorar tu rendimiento.
+                Incluye problemas tipo examen de universidades exigentes.
+                Perfecto para reforzar y llevar tus conocimientos al siguiente nivel.
+                </p>
+            </div>
 
-        <div class="card" style="text-align:center;">
-            <a href="https://drive.google.com/drive/folders/1P0uoEeX9SSCH7mL7WF8daO_DnP4UfKVv?usp=drive_link" target="_blank">
-                <button class="btn">📂 Ver todos los ejercicios</button>
-            </a>
-        </div>
-    `;
-}
+            <div class="card" style="text-align:center;">
+                <a href="https://drive.google.com/drive/folders/1P0uoEeX9SSCH7mL7WF8daO_DnP4UfKVv?usp=drive_link" target="_blank">
+                    <button class="btn">📂 Ver todos los ejercicios</button>
+                </a>
+            </div>
+        `;
+    }
 }
 
 function volver(){
@@ -1378,6 +1459,7 @@ firebase.auth().onAuthStateChanged(user => {
 
         document.getElementById("loginUI").classList.add("hidden");
         document.getElementById("app").classList.remove("hidden");
+        document.getElementById("userMini").innerText = user.displayName;
 
         document.getElementById("user").innerText = "Hola " + user.displayName;
         cargarProximasTareas();
@@ -1391,6 +1473,7 @@ firebase.auth().onAuthStateChanged(user => {
         // Si no hay sesión
         document.getElementById("loginUI").classList.remove("hidden");
         document.getElementById("app").classList.add("hidden");
+        window.scrollTo({ top: 0 });
     }
 });
 </script>
