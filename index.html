@@ -570,25 +570,13 @@ let unsubscribeComunicados = null;
 
 // ==================== LOGIN ====================
 function login(){
-    document.getElementById("userMini").innerText = usuarioActual.displayName;
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider)
-    .then(res => {
-        usuarioActual = res.user;
-        guardarUsuario(usuarioActual);
-        document.getElementById("loginUI").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-        document.getElementById("user").innerText = "Hola " + usuarioActual.displayName;
-
-        if(usuarioActual.email === ADMIN_EMAIL){
-            document.getElementById("adminPanel").classList.remove("hidden");
-            document.getElementById("adminComunicado").classList.remove("hidden");
-        }
-    })
-    .catch(err => alert("Error al iniciar sesión: " + err.message));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    .catch(err => {
+        console.error(err);
+        alert("Error al iniciar sesión");
+    });
 }
-
 function logout(){
     firebase.auth().signOut().then(() => {
         location.reload(); // reinicia todo limpio
