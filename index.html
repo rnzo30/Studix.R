@@ -207,6 +207,28 @@ input, textarea {
     to {opacity:1;}
 }
 
+html, body {
+    height: 100%;
+    overflow: hidden; /* 🔥 elimina scroll global */
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+#loginUI {
+    position: fixed;  /* 🔥 clave */
+    inset: 0;         /* ocupa toda la pantalla */
+}
+
 /* HIDDEN */
 .hidden {
     display:none;
