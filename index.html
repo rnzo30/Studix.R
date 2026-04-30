@@ -420,29 +420,6 @@ function guardarUsuario(user){
 
 // ==================== CURSOS ====================
 const cursos = ["Álgebra","Aritmética","Geometría","Física","Química","Razonamiento Matemático","Biología","Lenguaje","Razonamiento Verbal","Literatura","Historia Universal","Historia del Perú","Geografía"];
-const estructuraEjercicios = {
-  "Álgebra": {
-    "1er Bimestre": [
-      "Ecuaciones",
-      "Inecuaciones",
-      "Problemas con edades"
-    ]
-  },
-  "Aritmética": {
-    "1er Bimestre": [
-      "Fracciones",
-      "Porcentajes",
-      "Razones y proporciones"
-    ]
-  },
-  "Geometría": {
-    "1er Bimestre": [
-      "Ángulos",
-      "Triángulos",
-      "Perímetros"
-    ]
-  }
-};
 
 function cargarCursos(){
     const libros = document.getElementById("listaLibros");
@@ -466,80 +443,10 @@ function cargarCursos(){
     });
 }
 
-function mostrarBimestres(curso){
-    go("cursoVista");
-
-    const cont = document.getElementById("contenidoCurso");
-    const titulo = document.getElementById("tituloCurso");
-
-    titulo.innerText = curso + " - Ejercicios";
-    cont.innerHTML = "";
-
-    const bimestres = estructuraEjercicios[curso];
-
-if(!bimestres){
-    cont.innerHTML = `
-        <div class="card">
-            <h4>🚧 Próximamente</h4>
-            <p>Estamos agregando ejercicios para este curso.</p>
-        </div>
-        <button onclick="go('practice')" class="btn">⬅ Volver</button>
-    `;
-    return;
-}
-
-    for(let bimestre in bimestres){
-        cont.innerHTML += `
-            <div class="card" onclick="mostrarTemas('${curso}','${bimestre}')">
-                📘 ${bimestre}
-            </div>
-        `;
-    }
-}
-
-function mostrarTemas(curso, bimestre){
-    const cont = document.getElementById("contenidoCurso");
-    const titulo = document.getElementById("tituloCurso");
-
-    titulo.innerText = curso + " - " + bimestre;
-    cont.innerHTML = "";
-
-    const temas = estructuraEjercicios[curso][bimestre];
-
-    temas.forEach(tema => {
-        cont.innerHTML += `
-            <div class="card" onclick="abrirTema('${curso}','${bimestre}','${tema}')">
-                📄 ${tema}
-            </div>
-        `;
-    });
-
-    cont.innerHTML += `<button onclick="mostrarBimestres('${curso}')" class="btn">⬅ Volver</button>`;
-}
-
-function abrirTema(curso, bimestre, tema){
-    const cont = document.getElementById("contenidoCurso");
-    const titulo = document.getElementById("tituloCurso");
-
-    titulo.innerText = tema;
-
-    cont.innerHTML = `
-        <div class="card">
-            <h4>${tema}</h4>
-            <p>Aquí irán los ejercicios 👇</p>
-        </div>
-
-        <button onclick="mostrarTemas('${curso}','${bimestre}')" class="btn">⬅ Volver</button>
-    `;
-}
-
 function abrirCurso(curso, tipo){
     cursoActual = curso; 
-    tipoActual = tipo;
+    tipoActual = tipo
 
-    if(tipo === "ejercicio"){
-        mostrarBimestres(curso);
-    } else {
         go("cursoVista");
         document.getElementById("tituloCurso").innerText = curso;
         document.getElementById("contenidoCurso").innerHTML = `
@@ -1287,6 +1194,44 @@ function go(id){
     if(id === "horario") cargarNotasCalendario();
     if(id === "home") cargarProximasTareas();
     if(id === "becas") mostrarBecas('peru');
+
+if(id === "books"){
+    document.getElementById("listaLibros").innerHTML = `
+        <div class="card">
+            <h3>📚 Biblioteca digital</h3>
+            <p>
+            Aquí encontrarás todo el material teórico organizado para reforzar tu aprendizaje.
+            Este apartado incluye contenido completo para todos los cursos en un solo lugar,
+            facilitando el acceso rápido y eficiente.
+            </p>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <a href="https://drive.google.com/TU_LINK_GENERAL_LIBROS" target="_blank">
+                <button class="btn">📂 Ver todos los libros</button>
+            </a>
+        </div>
+    `;
+}
+
+if(id === "practice"){
+    document.getElementById("listaEjercicios").innerHTML = `
+        <div class="card">
+            <h3>📝 Zona de práctica</h3>
+            <p>
+            Aquí podrás practicar con ejercicios seleccionados para mejorar tu rendimiento.
+            Incluye material de todos los cursos para que desarrolles habilidades clave
+            y te prepares para exámenes de alto nivel.
+            </p>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <a href="https://drive.google.com/TU_LINK_GENERAL_EJERCICIOS" target="_blank">
+                <button class="btn">📂 Ver todos los ejercicios</button>
+            </a>
+        </div>
+    `;
+}
 }
 
 function volver(){
