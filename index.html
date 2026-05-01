@@ -372,6 +372,14 @@ button:active {
                 <button onclick="go('becas')">🎓 Becas</button>
                 <button onclick="go('ia')">🤖 IA Asistente</button>
             </div>
+
+            <div class="admin-section">
+        <button id="adminPanel" class="hidden btn secondary" onclick="go('admin')">
+            ⚙️ Panel Admin
+        </button>
+    </div>
+
+</div>
                     <!-- Otras secciones (libros, practice, cursoVista, chat, becas, resoluciones, comunicados, admin) -->
         <!-- (Mantengo el mismo HTML que tenías, solo corrigo el JS) -->
 
@@ -387,7 +395,7 @@ button:active {
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
 
-        <div id="cursoVista" class="hidden">
+        <div id="cursoVista" class="view">
             <h3 id="tituloCurso"></h3>
             <div id="contenidoCurso"></div>
             <button onclick="volver()" class="btn">⬅ Volver</button>
@@ -589,14 +597,6 @@ Si algo está mal, dilo.<br>
     </div>
 
     <button onclick="go('home')" class="btn">⬅ Volver</button>
-</div>
-
-<div class="admin-section">
-        <button id="adminPanel" class="hidden btn secondary" onclick="go('admin')">
-            ⚙️ Panel Admin
-        </button>
-    </div>
-
 </div>
 
 <div id="admin" class="view">
@@ -1142,28 +1142,42 @@ function cargarComunicados(){
 
     unsubscribeComunicados = db.collection("comunicados")
       .where("tipo", "==", seccionActual)
-      .orderBy("fecha", "desc")
       .onSnapshot(snap => {
 
         const lista = document.getElementById("listaComunicados");
         lista.innerHTML = "";
 
+        if(snap.empty){
+            lista.innerHTML = "<p>No hay comunicados aún</p>";
+            return;
+        }
+
+        let docs = [];
+
         snap.forEach(doc => {
-            const data = doc.data();
+            docs.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 🔥 ordenar manualmente (evita errores de Firestore)
+        docs.sort((a,b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+
+        docs.forEach(data => {
 
             let html = `<div class="card">
                 <p>${data.texto || ""}</p>`;
 
-// 🔥 SOLO ADMIN VE EL BOTÓN
-if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
-    html += `<br><button onclick="eliminarComunicado('${doc.id}', '${data.archivo || ""}')" 
-    style="margin-top:10px;background:#e74c3c;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;">
-    🗑 Eliminar
-    </button>`;
-}
+            // ADMIN
+            if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
+                html += `<br><button onclick="eliminarComunicado('${data.id}', '${data.archivo || ""}')"
+                style="margin-top:10px;background:#e74c3c;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;">
+                🗑 Eliminar
+                </button>`;
+            }
 
             if(data.archivo){
-                html += `<a href="${data.archivo}" target="_blank">📎 Ver archivo (${data.nombreArchivo})</a>`;
+                html += `<br><a href="${data.archivo}" target="_blank">
+                📎 Ver archivo (${data.nombreArchivo})
+                </a>`;
             }
 
             html += `</div>`;
