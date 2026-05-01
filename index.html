@@ -63,8 +63,10 @@ html, body {
 
 .container {
     flex: 1;
-    overflow-y: auto;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 🔥 clave */
+    padding: 15px;
 }
 
 /* TOPBAR */
@@ -172,13 +174,15 @@ h4 {
 
 /* CHAT */
 .chat-container {
-    display:flex;
-    gap:15px;
-    height: calc(100vh - 180px); /* ajusta según tu topbar */
+    display: flex;
+    gap: 15px;
+    flex: 1; /* 🔥 ocupa espacio real */
+    min-height: 0; /* 🔥 evita overflow */
 }
 
 .chat-list {
-    width:30%;
+     flex: 0 0 280px;   /* tamaño fijo */
+    max-width: 280px;
     background:white;
     border-radius:15px;
     padding:10px;
@@ -196,21 +200,35 @@ h4 {
 }
 
 .chat-area {
-    width:70%;
+    flex: 1;           /* ocupa TODO el espacio restante */
+    min-width: 0;      /* 🔥 evita desborde horizontal */
     display:flex;
     flex-direction:column;
     height:100%;
 }
 
 #chatBox {
-    flex: 1; /* 🔥 ocupa todo el espacio disponible */
+    flex: 1;
     overflow-y: auto;
-    background:#f9fafb;
-    padding:15px;
-    border-radius:12px;
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 12px;
 
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    min-height: 0; /* 🔥 evita que rompa el layout */
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.chat-input input {
+    flex: 1;
 }
 
 /* INPUT */
@@ -279,7 +297,7 @@ html {
 
 /* ===== NAVBAR ===== */
 #navbar {
-    position: fixed;
+    position: relative;
     bottom: 0;
     width: 100%;
     background: white;
@@ -297,14 +315,13 @@ html {
     cursor: pointer;
 }
 
-/* espacio para navbar */
-.container {
-    padding-bottom: 70px;
-}
-
 /* micro interacción */
 button:active {
     transform: scale(0.95);
+}
+
+body {
+    overflow-x: hidden;
 }
 </style>
 </head>
