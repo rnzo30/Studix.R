@@ -21,6 +21,7 @@ html, body {
     font-family: 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
+    overflow: hidden; /* 🔥 elimina scroll global */
 }
 
 /* LOGIN */
@@ -28,11 +29,9 @@ html, body {
     position: fixed;
     inset: 0;
     z-index: 2000;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     background: linear-gradient(135deg, #ff4b2b, #ff7a5c);
 }
 
@@ -54,23 +53,21 @@ html, body {
 
 /* APP LAYOUT */
 #app {
-    height: 100vh;
+    height: 100dvh; /* 🔥 mejor que 100vh */
     display: flex;
     flex-direction: column;
-    position: relative;
-    z-index: 1;
+    overflow: hidden;
 }
 
 .container {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* 🔥 clave */
+    overflow-y: auto; /* 🔥 único scroll */
     padding: 15px;
 }
 
 /* TOPBAR */
 #topbar {
+    flex-shrink: 0;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -172,63 +169,37 @@ h4 {
     margin-bottom:5px;
 }
 
-/* CHAT */
+/* ===== CHAT ===== */
 .chat-container {
-    display: flex;
-    gap: 15px;
-    flex: 1; /* 🔥 ocupa espacio real */
-    min-height: 0; /* 🔥 evita overflow */
+    flex: 1;
+    display:flex;
+    gap:15px;
+    overflow: hidden; /* 🔥 evita doble scroll */
 }
 
 .chat-list {
-     flex: 0 0 280px;   /* tamaño fijo */
-    max-width: 280px;
+    width:30%;
     background:white;
     border-radius:15px;
     padding:10px;
-    height:100%;
     overflow-y:auto;
 }
 
-.chat-list::-webkit-scrollbar {
-    width:6px;
-}
-
-.chat-list::-webkit-scrollbar-thumb {
-    background:#ccc;
-    border-radius:10px;
-}
-
 .chat-area {
-    flex: 1;           /* ocupa TODO el espacio restante */
-    min-width: 0;      /* 🔥 evita desborde horizontal */
+    width:70%;
     display:flex;
     flex-direction:column;
-    height:100%;
+    overflow: hidden;
 }
 
 #chatBox {
     flex: 1;
     overflow-y: auto;
-    background: #f9fafb;
-    padding: 15px;
-    border-radius: 12px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    min-height: 0; /* 🔥 evita que rompa el layout */
-}
-
-.chat-input {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.chat-input input {
-    flex: 1;
+    background:#f9fafb;
+    padding:15px;
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
 }
 
 /* INPUT */
@@ -249,26 +220,14 @@ input, textarea {
     display: none !important;
 }
 
-/* SUAVIDAD */
-html {
-    scroll-behavior: smooth;
-}
-
-/* ===== TRANSICIONES ===== */
+/* ===== VISTAS (ARREGLADO) ===== */
 .view {
-    opacity: 0;
-    transform: translateX(20px);
-    pointer-events: none;
-    position: absolute;
+    display: none;
     width: 100%;
 }
 
 .view.active {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-    position: relative;
-    transition: all 0.3s ease;
+    display: block;
 }
 
 /* ===== LOADER ===== */
@@ -295,33 +254,9 @@ html {
     to { transform: rotate(360deg); }
 }
 
-/* ===== NAVBAR ===== */
-#navbar {
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    background: white;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
-    z-index: 1000;
-}
-
-#navbar button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/* micro interacción */
+/* MICRO INTERACCIÓN */
 button:active {
     transform: scale(0.95);
-}
-
-body {
-    overflow-x: hidden;
 }
 </style>
 </head>
@@ -367,13 +302,6 @@ body {
     </button>
   </div>
 </div>
-
-<div id="navbar">
-        <button onclick="go('home')">🏠</button>
-        <button onclick="go('chat')">💬</button>
-        <button onclick="go('books')">📚</button>
-        <button onclick="go('horario')">📅</button>
-    </div>
 
 <div class="card" style="margin-bottom:15px;">
     <h4>📌 Próximas tareas</h4>
@@ -616,7 +544,7 @@ Si algo está mal, dilo.<br>
             <button onclick="go('home')" class="btn">⬅ Volver</button>
         </div>
 
-        <div id="horario" class="hidden">
+        <div id="horario" class="view">
   <h3>📅 Mi Calendario</h3>
 
   <div class="card" style="text-align:center;">
