@@ -302,6 +302,19 @@ input, textarea {
 button:active {
     transform: scale(0.97);
 }
+.admin-section {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+#adminPanel {
+    opacity: 0.7;
+}
+
+#adminPanel:hover {
+    opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -359,10 +372,7 @@ button:active {
                 <button onclick="go('becas')">🎓 Becas</button>
                 <button onclick="go('ia')">🤖 IA Asistente</button>
             </div>
-            <button id="adminPanel" class="hidden btn" onclick="go('admin')">⚙️ Admin</button>
-        </div>
-
-        <!-- Otras secciones (libros, practice, cursoVista, chat, becas, resoluciones, comunicados, admin) -->
+                    <!-- Otras secciones (libros, practice, cursoVista, chat, becas, resoluciones, comunicados, admin) -->
         <!-- (Mantengo el mismo HTML que tenías, solo corrigo el JS) -->
 
         <div id="books" class="view">
@@ -564,7 +574,7 @@ Si algo está mal, dilo.<br>
     <div id="listaComunicados"></div>
 
     <!-- ADMIN -->
-    <div id="adminComunicado" class="view">
+    <div id="adminComunicado" class="hidden">
         <textarea id="nuevoComunicado" placeholder="Nuevo comunicado..." style="width:100%; padding:10px; margin-top:10px;"></textarea>
         
         <select id="tipoComunicado" style="width:100%; padding:10px; margin-top:5px;">
@@ -581,12 +591,26 @@ Si algo está mal, dilo.<br>
     <button onclick="go('home')" class="btn">⬅ Volver</button>
 </div>
 
+<div class="admin-section">
+        <button id="adminPanel" class="hidden btn secondary" onclick="go('admin')">
+            ⚙️ Panel Admin
+        </button>
+    </div>
+
+</div>
 
 <div id="admin" class="view">
-            <h3>Panel Admin 🔥</h3>
-            <p>Control total del sistema</p>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
+    <h3>⚙️ Panel Admin</h3>
+
+    <div class="card">
+        <h4>👨‍💻 Creadores</h4>
+
+        <p><b>Creador:</b> Renzo R.</p>
+        <p><b>Co-creadores:</b> Jheicob C. y Jair E.</p>
+    </div>
+
+    <button onclick="go('home')" class="btn">⬅ Volver</button>
+</div>
 
         <div id="horario" class="view">
   <h3>📅 Mi Calendario</h3>
