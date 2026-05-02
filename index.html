@@ -1,1585 +1,1683 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Studix PRO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Studix PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ============================================================
+   VARIABLES & BASE
+============================================================ */
 :root {
-    --primary: #ff5a3c;
-    --primary-soft: #fff2ef;
+  --red:        #ff4433;
+  --red-soft:   #fff1f0;
+  --red-mid:    #ffe0dd;
 
-    --bg: #f5f6f8;
-    --card: #ffffff;
+  --bg:         #f4f5f7;
+  --card:       #ffffff;
+  --card2:      #fafafa;
 
-    --text: #111827;
-    --subtext: #6b7280;
+  --text:       #0d0d0d;
+  --sub:        #6b7280;
+  --hint:       #b0b7c3;
 
-    --border: #e5e7eb;
+  --border:     #e8eaed;
+  --radius:     18px;
+  --radius-sm:  12px;
 
-    --radius: 16px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.06);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.12);
+
+  --nav-h:      68px;
+  --top-h:      58px;
 }
 
-/* ===== BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 html, body {
-    margin: 0;
-    height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow: hidden; /* 🔥 evita scroll global */
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ===== APP ===== */
-#app {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+/* Loader fijo arriba en el DOM */
+#loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+  transition: opacity .35s;
 }
-
-.container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
+#loader.hidden { display: none; }
+.spinner {
+  width: 42px; height: 42px;
+  border: 3px solid #eee;
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ===== TOPBAR (iOS STYLE) ===== */
-#topbar {
-    flex-shrink: 0;
-
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(10px);
-
-    border-bottom: 1px solid var(--border);
-
-    padding: 14px 20px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.top-left {
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 18px;
-}
-
-.top-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logout-btn {
-    border: none;
-    background: #f3f4f6;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-/* ===== CARDS (NOTION STYLE) ===== */
-.card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 18px;
-    margin-bottom: 15px;
-
-    border: 1px solid var(--border);
-
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    transition: all 0.2s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-}
-
-/* ===== BOTONES ===== */
-.btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-
-    padding: 14px;
-    width: 100%;
-
-    border-radius: 12px;
-
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn:hover {
-    opacity: 0.9;
-}
-
-.btn.secondary {
-    background: var(--primary-soft);
-    color: var(--primary);
-}
-
-/* ===== HOME GRID ===== */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-}
-
-.grid button {
-    background: white;
-    border-radius: 16px;
-    padding: 22px;
-
-    border: 1px solid var(--border);
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-
-    font-weight: 600;
-    font-size: 15px;
-
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.grid button span {
-    font-size: 13px;
-    color: var(--subtext);
-}
-
-.grid button:hover {
-    background: #fafafa;
-}
-
-/* ===== TITULOS ===== */
-h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-h4 {
-    font-size: 15px;
-    color: var(--subtext);
-    margin-bottom: 5px;
-}
-
-/* ===== INPUT ===== */
-input, textarea {
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    padding: 12px;
-    background: white;
-}
-
-/* ===== CHAT (WHATSAPP STYLE) ===== */
-.chat-container {
-    flex: 1;
-    display: flex;
-    gap: 15px;
-    overflow: hidden;
-}
-
-.chat-list {
-    width: 30%;
-    background: white;
-    border-radius: 16px;
-    padding: 10px;
-    overflow-y: auto;
-    border: 1px solid var(--border);
-}
-
-.chat-area {
-    width: 70%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-#chatBox {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* MENSAJES */
-.msg {
-    max-width: 70%;
-    padding: 12px 14px;
-    border-radius: 14px;
-    font-size: 14px;
-}
-
-.msg.me {
-    background: var(--primary);
-    color: white;
-    align-self: flex-end;
-}
-
-.msg.other {
-    background: #f1f1f1;
-    align-self: flex-start;
-}
-
-/* ===== VISTAS ===== */
-.view {
-    display: none;
-    width: 100%;
-}
-
-.view.active {
-    display: block;
-}
-
-/* ===== LOGIN ===== */
+/* ============================================================
+   LOGIN
+============================================================ */
 #loginUI {
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    background: linear-gradient(135deg, #ff5a3c, #ff7a5c);
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #ff4433 0%, #ff6b5b 100%);
 }
+#loginUI.hidden { display: none; }
 
 .login-card {
-    background:white;
-    padding:35px;
-    border-radius:20px;
-    width:340px;
-    text-align:center;
-    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  background: #fff;
+  padding: 40px 36px;
+  border-radius: 24px;
+  width: min(360px, 92vw);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.login-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 36px; font-weight: 800;
+  color: var(--red); letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+.login-sub {
+  font-size: 14px; color: var(--sub); margin-bottom: 30px;
+}
+.google-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px;
+  background: #fff; color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.google-btn:hover { background: var(--bg); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.google-btn svg { width: 20px; height: 20px; }
+
+/* ============================================================
+   APP SHELL
+============================================================ */
+#app {
+  display: none;
+  height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+}
+#app.visible { display: flex; }
+
+/* TOP BAR */
+#topbar {
+  flex-shrink: 0;
+  height: var(--top-h);
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  position: relative; z-index: 100;
+}
+.top-brand {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px; font-weight: 800;
+  color: var(--red); letter-spacing: -.5px;
+}
+.top-right { display: flex; align-items: center; gap: 8px; }
+#userAvatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--red-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--red);
+}
+.logout-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: .2s;
+}
+.logout-btn:hover { background: var(--red-soft); }
+
+/* SCROLL AREA */
+#pageArea {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-h) + 16px);
 }
 
-.logo {
-    font-size:34px;
-    font-weight:bold;
-    color:var(--primary);
+/* BOTTOM NAV */
+#bottomNav {
+  flex-shrink: 0;
+  height: var(--nav-h);
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 4px;
+  cursor: pointer; transition: .2s;
+  border: none; background: transparent;
+  font-family: inherit;
+}
+.nav-item .nav-icon { font-size: 22px; line-height: 1; transition: transform .2s; }
+.nav-item .nav-label { font-size: 10px; font-weight: 600; color: var(--hint); letter-spacing: .3px; transition: color .2s; }
+.nav-item.active .nav-label { color: var(--red); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+.nav-item:active { transform: scale(.93); }
+
+/* ============================================================
+   VIEWS
+============================================================ */
+.view { display: none; padding: 16px; }
+.view.active { display: block; }
+.view-header {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -.5px;
+  margin-bottom: 16px;
 }
 
-/* ===== LOADER ===== */
-.loader {
-    position: fixed;
-    inset: 0;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3000;
+/* ============================================================
+   CARDS
+============================================================ */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.card-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px; font-weight: 700; margin-bottom: 6px;
+}
+.card-sub { font-size: 13px; color: var(--sub); }
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 13px 20px;
+  background: var(--red); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: .2s; width: 100%;
+}
+.btn:hover { opacity: .88; transform: translateY(-1px); }
+.btn:active { transform: scale(.97); opacity: 1; }
+.btn.secondary {
+  background: var(--red-soft); color: var(--red); border: 1.5px solid var(--red-mid);
+}
+.btn.ghost {
+  background: var(--bg); color: var(--text); border: 1px solid var(--border);
+}
+.btn.sm { padding: 9px 14px; font-size: 13px; width: auto; border-radius: 10px; }
+
+/* ============================================================
+   HOME
+============================================================ */
+.home-greeting {
+  background: linear-gradient(135deg, var(--red) 0%, #ff7055 100%);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  margin-bottom: 14px;
+  color: #fff;
+  position: relative; overflow: hidden;
+}
+.home-greeting::after {
+  content: '🏀';
+  position: absolute; right: -8px; bottom: -8px;
+  font-size: 72px; opacity: .15;
+}
+.home-greeting h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px; font-weight: 800; margin-bottom: 4px;
+}
+.home-greeting p { font-size: 13px; opacity: .85; }
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.quick-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  cursor: pointer; transition: .2s;
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+}
+.quick-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.quick-btn:active { transform: scale(.96); }
+.quick-btn .q-icon { font-size: 26px; }
+.quick-btn .q-label { font-size: 14px; font-weight: 700; color: var(--text); }
+.quick-btn .q-sub { font-size: 12px; color: var(--sub); }
+
+/* Tareas widget */
+.tarea-row {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tarea-row:last-child { border-bottom: none; }
+.tarea-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red); margin-top: 5px; flex-shrink: 0;
+}
+.tarea-fecha { font-size: 11px; color: var(--sub); }
+.tarea-texto { font-size: 14px; font-weight: 500; }
+
+/* ============================================================
+   CHAT
+============================================================ */
+.chat-wrap {
+  display: flex; flex-direction: column;
+  height: calc(100dvh - var(--top-h) - var(--nav-h) - 40px);
+}
+.chat-tabs {
+  display: flex; gap: 8px; margin-bottom: 12px;
+}
+.tab-btn {
+  flex: 1; padding: 9px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: .2s;
+  font-family: inherit;
+}
+.tab-btn.active {
+  background: var(--red); color: #fff; border-color: var(--red);
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #eee;
-    border-top: 4px solid var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.chat-list-panel, .chat-messages-panel {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.chat-list-panel { flex-shrink: 0; margin-bottom: 12px; max-height: 220px; overflow-y: auto; }
+.chat-messages-panel { flex: 1; display: flex; flex-direction: column; min-height: 200px; }
+
+.chat-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: .15s;
+}
+.chat-item:last-child { border-bottom: none; }
+.chat-item:hover { background: var(--bg); }
+.chat-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--red-mid); color: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; flex-shrink: 0;
+}
+.chat-name { font-size: 14px; font-weight: 600; }
+.chat-preview { font-size: 12px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#chatBox {
+  flex: 1; overflow-y: auto;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.msg {
+  max-width: 76%; padding: 10px 13px;
+  border-radius: 14px; font-size: 14px; line-height: 1.45;
+  word-break: break-word;
+}
+.msg.me {
+  background: var(--red); color: #fff;
+  align-self: flex-end; border-bottom-right-radius: 4px;
+}
+.msg.other {
+  background: var(--bg); color: var(--text);
+  align-self: flex-start; border-bottom-left-radius: 4px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.chat-input-row {
+  display: flex; gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+.chat-input-row input {
+  flex: 1; padding: 10px 14px;
+  border: 1px solid var(--border); border-radius: 20px;
+  font-family: inherit; font-size: 14px; outline: none;
+  transition: border-color .2s;
+}
+.chat-input-row input:focus { border-color: var(--red); }
+.send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--red); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: .2s; flex-shrink: 0;
+}
+.send-btn:hover { opacity: .85; }
+
+/* Búsqueda resultados */
+.search-result-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: .15s;
+  background: var(--card);
+}
+.search-result-item:hover { background: var(--bg); }
+.search-result-item:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+.search-result-item:last-child { border-bottom: none; border-radius: 0 0 var(--radius) var(--radius); }
+
+/* ============================================================
+   BECAS
+============================================================ */
+.beca-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.beca-pill.national { background: #fff4e6; color: #c47c00; }
+.beca-pill.international { background: #e8f4ff; color: #0065c2; }
+
+.beca-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: .2s;
+}
+.beca-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.beca-card-header {
+  background: linear-gradient(135deg, var(--red), #ff7055);
+  padding: 16px 18px; color: #fff;
+}
+.beca-card-header h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 17px; font-weight: 800;
+}
+.beca-card-header p { font-size: 13px; opacity: .85; margin-top: 3px; }
+.beca-card-body { padding: 16px 18px; }
+.beca-section { margin-bottom: 14px; }
+.beca-section-title {
+  font-size: 13px; font-weight: 700; color: var(--sub);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 8px;
+}
+.beca-section ul { padding-left: 16px; }
+.beca-section li { font-size: 14px; margin-bottom: 4px; color: var(--text); }
+.beca-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 9px 14px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--red); font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: .2s;
+}
+.beca-link:hover { background: var(--red-soft); border-color: var(--red); }
+
+/* ============================================================
+   COMUNICADOS
+============================================================ */
+.seccion-tabs {
+  display: flex; gap: 8px; margin-bottom: 14px;
+}
+.sec-tab {
+  flex: 1; padding: 9px 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: .2s; font-family: inherit; text-align: center;
+}
+.sec-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+.comunicado-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: .2s;
+}
+.comunicado-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.comunicado-fecha { font-size: 11px; color: var(--hint); margin-bottom: 5px; }
+.comunicado-texto { font-size: 14px; line-height: 1.55; }
+.comunicado-file {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px;
+  padding: 7px 12px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--red); font-size: 13px; text-decoration: none;
 }
 
-/* ===== UTILIDAD ===== */
-.hidden {
-    display: none !important;
+/* ============================================================
+   HORARIO / CALENDARIO
+============================================================ */
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-month {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px; font-weight: 800;
+}
+.cal-nav {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: .2s;
+}
+.cal-nav:hover { background: var(--red-soft); }
+
+.cal-days-header {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 4px; margin-bottom: 8px;
+}
+.cal-day-name {
+  text-align: center; font-size: 11px;
+  font-weight: 700; color: var(--hint);
+  text-transform: uppercase;
 }
 
-button:active {
-    transform: scale(0.97);
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 5px; margin-bottom: 18px;
 }
-.admin-section {
-    margin-top: 30px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border);
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 5px 3px;
+  cursor: pointer; transition: .2s;
+  position: relative; overflow: hidden;
+}
+.cal-cell:hover { border-color: var(--red); }
+.cal-cell.selected { background: var(--red); border-color: var(--red); }
+.cal-cell.has-note::after {
+  content: ''; position: absolute; bottom: 4px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--red);
+}
+.cal-cell.selected.has-note::after { background: #fff; }
+.cal-day-num {
+  font-size: 12px; font-weight: 600;
+  color: var(--text);
+}
+.cal-cell.selected .cal-day-num { color: #fff; }
+.cal-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+.cal-cell.empty:hover { border-color: transparent; }
+
+.nota-box {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.nota-box-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Sora', sans-serif;
+  font-size: 14px; font-weight: 700;
+}
+.nota-textarea {
+  width: 100%; min-height: 90px;
+  border: none; outline: none;
+  padding: 14px 16px;
+  font-family: inherit; font-size: 14px; color: var(--text);
+  resize: none; background: transparent;
+}
+.nota-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
 }
 
-#adminPanel {
-    opacity: 0.7;
+/* ============================================================
+   IA / RESOLUCIONES / ADMIN
+============================================================ */
+.ia-feature {
+  display: flex; gap: 13px; align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ia-feature:last-child { border-bottom: none; }
+.ia-feature-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--red-soft); border: 1px solid var(--red-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.ia-feature-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.ia-feature-desc { font-size: 13px; color: var(--sub); line-height: 1.45; }
+
+.res-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 14px; }
+.res-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  cursor: pointer; transition: .2s;
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+}
+.res-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.res-btn .r-icon { font-size: 26px; }
+.res-btn .r-label { font-size: 14px; font-weight: 700; }
+
+/* Admin textarea */
+.admin-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: inherit; font-size: 14px;
+  resize: vertical; outline: none;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+.admin-textarea:focus { border-color: var(--red); }
+.admin-select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 14px;
+  margin-bottom: 10px; outline: none;
+  background: var(--card);
+  cursor: pointer;
+}
+.admin-select:focus { border-color: var(--red); }
+.file-label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: .2s;
+  margin-bottom: 10px;
+  font-size: 14px; color: var(--sub);
+}
+.file-label:hover { border-color: var(--red); color: var(--red); }
+.file-label input { display: none; }
+
+/* Toasts */
+#toast {
+  position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #111; color: #fff;
+  padding: 12px 22px; border-radius: 30px;
+  font-size: 14px; font-weight: 500;
+  opacity: 0; transition: .3s; pointer-events: none; white-space: nowrap;
+  z-index: 500;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--hint);
+}
+.empty-state .e-icon { font-size: 44px; margin-bottom: 10px; }
+.empty-state p { font-size: 14px; }
+
+/* Badges */
+.badge {
+  display: inline-block; padding: 3px 9px;
+  border-radius: 20px; font-size: 11px; font-weight: 700;
+}
+.badge.red { background: var(--red-soft); color: var(--red); }
+
+/* Inputs generales */
+input[type="text"], input:not([type="file"]):not([type="range"]):not([type="checkbox"]):not([type="radio"]) {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 14px;
+  outline: none; transition: border-color .2s;
+  background: var(--card);
+}
+input:focus { border-color: var(--red); }
+
+/* Divider */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* Back row */
+.back-row { margin-bottom: 16px; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: .2s; font-family: inherit;
+}
+.back-btn:hover { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+
+/* Resolución archivo row */
+.archivo-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.archivo-row:last-child { border-bottom: none; }
+.archivo-nombre { font-size: 14px; font-weight: 500; }
+.archivo-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 12px; border-radius: 8px;
+  background: var(--red-soft); color: var(--red);
+  font-size: 12px; font-weight: 700;
+  text-decoration: none; transition: .2s;
+}
+.archivo-link:hover { background: var(--red); color: #fff; }
+
+/* Admin section */
+.admin-box {
+  background: var(--card);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-top: 16px;
+}
+.admin-box-title {
+  font-size: 13px; font-weight: 700; color: var(--sub);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 12px;
 }
 
-#adminPanel:hover {
-    opacity: 1;
+/* Delete btn */
+.del-btn {
+  padding: 7px 12px; border-radius: 8px;
+  background: #fff1f0; color: #c0392b;
+  border: 1px solid #ffc5c2;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: .2s;
 }
+.del-btn:hover { background: #c0392b; color: #fff; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ============ LOADER ============ -->
+<div id="loader">
+  <div class="spinner"></div>
+  <span style="font-size:13px;color:var(--sub)">Cargando…</span>
+</div>
+
+<!-- ============ LOGIN ============ -->
 <div id="loginUI">
-    <div class="login-card">
-        <h1 class="logo">Studix 🚀</h1>
-        <p>Plataforma educativa</p>
-        <button class="btn" onclick="login()">Ingresar con Google</button>
-    </div>
+  <div class="login-card">
+    <div class="login-logo">Studix 🚀</div>
+    <p class="login-sub">Tu plataforma educativa</p>
+    <button class="google-btn" onclick="login()">
+      <!-- Google icon -->
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continuar con Google
+    </button>
+  </div>
 </div>
 
-<!-- APP -->
-<div id="app" class="hidden">
-<div id="topbar">
-    <div class="top-left">
-        🚀 <b>Studix</b>
-    </div>
+<!-- ============ TOAST ============ -->
+<div id="toast"></div>
 
+<!-- ============ APP ============ -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="top-brand">🚀 Studix</div>
     <div class="top-right">
-        <span id="userMini"></span>
+      <div id="userAvatar">?</div>
+      <button class="logout-btn" onclick="logout()" title="Cerrar sesión">⎋</button>
+    </div>
+  </div>
 
-        <button onclick="logout()" class="logout-btn">
-            ⎋
+  <!-- SCROLL AREA -->
+  <div id="pageArea">
+
+    <!-- ===== HOME ===== -->
+    <div id="home" class="view active">
+      <div class="home-greeting">
+        <h2 id="greetingName">¡Hola!</h2>
+        <p id="greetingDate"></p>
+      </div>
+
+      <div class="card" style="padding:14px 18px;">
+        <div class="card-title" style="font-size:14px;margin-bottom:10px;">📌 Próximas tareas</div>
+        <div id="proximasTareas">
+          <div class="empty-state" style="padding:16px 0;">
+            <div class="e-icon">📭</div>
+            <p>Sin tareas próximas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-grid">
+        <button class="quick-btn" onclick="go('resoluciones')">
+          <span class="q-icon">📄</span>
+          <span class="q-label">Resoluciones</span>
+          <span class="q-sub">Tareas y exámenes</span>
         </button>
-    </div>
-</div>
-    <div class="container">
-        <!-- HOME -->
-        <div id="home" class="view active">
-            <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
-  <h3 id="user"></h3>
-
-  <div style="display:flex;gap:10px;">
-    <button onclick="go('comunicados')" class="btn" style="padding:8px 12px;font-size:13px;">
-      📢
-    </button>
-
-    <button onclick="go('horario')" class="btn" style="padding:8px 12px;font-size:13px;">
-      📅
-    </button>
-  </div>
-</div>
-
-<div class="card" style="margin-bottom:15px;">
-    <h4>📌 Próximas tareas</h4>
-    <div id="proximasTareas"></div>
-  </div>
-            <div class="grid" style="margin-top:15px;">
-                <button onclick="go('resoluciones')">📄 Resoluciones</button>
-                <button onclick="go('books')">📚 Libros</button>
-                <button onclick="go('practice')">📝 Ejercicios</button>
-                <button onclick="go('chat')">💬 Chat</button>
-                <button onclick="go('becas')">🎓 Becas</button>
-                <button onclick="go('ia')">🤖 IA Asistente</button>
-            </div>
-
-            <div class="admin-section">
-        <button id="adminPanel" class="hidden btn secondary" onclick="go('admin')">
-            ⚙️ Panel Admin
+        <button class="quick-btn" onclick="go('books')">
+          <span class="q-icon">📚</span>
+          <span class="q-label">Libros</span>
+          <span class="q-sub">Biblioteca digital</span>
         </button>
-    </div>
-
-</div>
-                    <!-- Otras secciones (libros, practice, cursoVista, chat, becas, resoluciones, comunicados, admin) -->
-        <!-- (Mantengo el mismo HTML que tenías, solo corrigo el JS) -->
-
-        <div id="books" class="view">
-            <h3>📚 Cursos</h3>
-            <div id="listaLibros"></div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
-
-        <div id="practice" class="view">
-            <h3>📝 Cursos</h3>
-            <div id="listaEjercicios"></div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
-
-        <div id="cursoVista" class="view">
-            <h3 id="tituloCurso"></h3>
-            <div id="contenidoCurso"></div>
-            <button onclick="volver()" class="btn">⬅ Volver</button>
-        </div>
-
-        <div id="chat" class="view">
-            <h3>💬 Chat Privado</h3>
-            <div class="chat-container">
-                <div class="chat-list">
-                    <h4>📨 Tus chats</h4>
-                    <div id="listaChats"></div>
-                </div>
-                <div class="chat-area">
-                    <input id="buscarInput" onkeyup="buscarUsuarios()" placeholder="Buscar usuario..." style="margin-bottom:8px; padding:10px; width:100%; border-radius:10px;">
-                    <div id="resultados"></div>
-                    <div id="chatBox"></div>
-                    <div class="chat-input">
-                        <input id="msg" placeholder="Escribe un mensaje...">
-                        <button onclick="enviarMensaje()">Enviar</button>
-                    </div>
-                </div>
-            </div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
-        </div>
-
-        <div id="becas" class="view">
-    <h3>🎓 Becas</h3>
-
-    <!-- BOTONES -->
-    <div style="display:flex;gap:10px;margin-bottom:15px;">
-        <button onclick="mostrarBecas('peru')" class="btn" style="padding:10px;font-size:14px;">
-            🇵🇪 Becas en Perú
+        <button class="quick-btn" onclick="go('practice')">
+          <span class="q-icon">📝</span>
+          <span class="q-label">Ejercicios</span>
+          <span class="q-sub">Práctica activa</span>
         </button>
-        <button onclick="mostrarBecas('extranjero')" class="btn" style="padding:10px;font-size:14px;">
-            🌎 Becas en el extranjero
+        <button class="quick-btn" onclick="go('ia')">
+          <span class="q-icon">🤖</span>
+          <span class="q-label">Astra IA</span>
+          <span class="q-sub">Tu tutor IA</span>
         </button>
+        <button class="quick-btn" onclick="go('becas')">
+          <span class="q-icon">🎓</span>
+          <span class="q-label">Becas</span>
+          <span class="q-sub">Oportunidades</span>
+        </button>
+        <button id="adminHomeBtn" class="quick-btn" onclick="go('admin')" style="display:none;">
+          <span class="q-icon">⚙️</span>
+          <span class="q-label">Admin</span>
+          <span class="q-sub">Panel de control</span>
+        </button>
+      </div>
     </div>
 
-    <!-- CONTENIDO -->
-    <div id="contenidoBecas"></div>
-
-    <button onclick="go('home')" class="btn">⬅ Volver</button>
-</div>
-
-<div id="ia" class="view">
-  <h3 style="font-size:22px;">🤖 Asistente IA</h3>
-<p style="color:gray;">Tu tutor inteligente para aprender mejor</p>
-
-  <!-- INTRO -->
-  <div class="card">
-    <h2>👋 Hola, soy Astra IA</h2>
-
-    <p style="color:#555; line-height:1.6;">
-      Soy un tutor inteligente diseñado especialmente para estudiantes. 
-      No solo te doy respuestas, te ayudo a <b>entender, aprender y mejorar</b> de verdad.
-    </p>
-
-    <div style="margin-top:15px;">
-
-      <p><b>🎯 Aprendes, no solo respondes</b><br>
-      Te guío paso a paso para que entiendas el proceso y puedas resolverlo tú mismo en un examen.</p>
-
-      <p><b>🧠 Herramientas avanzadas</b><br>
-      Incluyo funciones especializadas en matemáticas y ciencias para resolver problemas complejos.</p>
-
-      <p><b>📚 Material de estudio automático</b><br>
-      Puedo convertir cualquier tema en quizzes, resúmenes o flashcards para ayudarte a memorizar mejor.</p>
-
-      <p><b>💬 Explicaciones claras y directas</b><br>
-      Explico como un estudiante real: sin palabras complicadas ni rodeos innecesarios.</p>
-
-      <p><b>🚀 Pensamiento independiente</b><br>
-      Mi objetivo no es hacer tu tarea, sino prepararte para que puedas hacerlo solo.</p>
-
+    <!-- ===== BOOKS ===== -->
+    <div id="books" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">📚 Biblioteca</div>
+      <div class="card">
+        <div class="card-title">Biblioteca digital</div>
+        <p class="card-sub" style="line-height:1.6;margin-bottom:14px;">
+          Material preuniversitario actualizado para todos los cursos. Claro, directo y sin relleno.
+        </p>
+        <a href="https://drive.google.com/drive/folders/1eXxS4Vk17GsCkOBwb5jtSyhhxMvUOIX_?usp=drive_link" target="_blank" style="text-decoration:none;">
+          <button class="btn">📂 Ver todos los libros</button>
+        </a>
+      </div>
     </div>
-  </div>
 
-  <!-- BENEFICIOS -->
-  <div class="card">
-    <h3>📈 ¿Cómo te ayuda a mejorar tus notas?</h3>
+    <!-- ===== PRACTICE ===== -->
+    <div id="practice" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">📝 Ejercicios</div>
+      <div class="card">
+        <div class="card-title">Zona de práctica</div>
+        <p class="card-sub" style="line-height:1.6;margin-bottom:14px;">
+          Ejercicios tipo examen de alto nivel. Perfecto para reforzar y llevar tus conocimientos al siguiente nivel.
+        </p>
+        <a href="https://drive.google.com/drive/folders/1P0uoEeX9SSCH7mL7WF8daO_DnP4UfKVv?usp=drive_link" target="_blank" style="text-decoration:none;">
+          <button class="btn">📂 Ver todos los ejercicios</button>
+        </a>
+      </div>
+    </div>
 
-    <p><b>⚡ Retroalimentación instantánea</b><br>
-    Detecto tus errores al momento y te explico cómo corregirlos.</p>
+    <!-- ===== CHAT ===== -->
+    <div id="chat" class="view">
+      <div class="view-header">💬 Chat</div>
+      <div class="chat-wrap">
+        <!-- Búsqueda -->
+        <input type="text" id="buscarInput" onkeyup="buscarUsuarios()" placeholder="🔍 Buscar usuario...">
+        <div id="resultados" style="margin-top:8px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);display:none;"></div>
 
-    <p><b>🧠 Aprendizaje tipo examen</b><br>
-    Te hago pensar con preguntas clave para que desarrolles lógica real.</p>
-
-    <p><b>📊 Estudio personalizado</b><br>
-    Transformo lo que aprendes en herramientas prácticas para recordar mejor.</p>
-
-    <p><b>😌 Sin presión</b><br>
-    Puedes preguntar lo mismo mil veces sin miedo ni vergüenza.</p>
-
-    <p><b>🎯 Enfoque en tus objetivos</b><br>
-    Te ayudo a dividir metas grandes (como ingresar a la UNI) en pasos diarios.</p>
-  </div>
-
-  <!-- INSTRUCCIONES -->
-  <div class="card">
-    <h3>📌 Instrucciones para usar Astra IA</h3>
-
-    <ul style="line-height:1.7; color:#444;">
-
-<li><b>1. No pidas solo la respuesta</b><br>
-Si solo copias el problema y pides la respuesta, podrás hacer la tarea… pero no rendir bien en un examen.<br>
-👉 Mejor di: <i>“Ayúdame paso a paso”</i> o <i>“me quedé en este paso”</i>.
-</li>
-
-<li><b>2. Pide explicaciones simples</b><br>
-Si algo suena complicado, dilo.<br>
-👉 Prueba: <i>“Explícalo como si tuviera 14 años”</i> o <i>“dame un ejemplo real”</i>.
-</li>
-
-<li><b>3. Usa tus propios materiales</b><br>
-La IA funciona mejor si sabe cómo te enseñan.<br>
-👉 Sube fotos de tareas, apuntes o guías.
-</li>
-
-<li><b>4. Termina con práctica</b><br>
-No te quedes solo leyendo.<br>
-👉 Pide: <i>“hazme un quiz”</i> o <i>“dame flashcards”</i>.
-</li>
-
-<li><b>5. Sé claro con tus objetivos</b><br>
-Mientras más específico seas, mejor te ayudará.<br>
-👉 Ejemplo: <i>“Tengo examen de historia el viernes”</i>.
-</li>
-
-<li><b>6. Corrige a la IA</b><br>
-Si algo está mal, dilo.<br>
-👉 Eso mejora la precisión de la explicación.
-</li>
-
-</ul>
-  </div>
-
-  <!-- BOTÓN FINAL -->
-  <div class="card" style="text-align:center;">
-    <h3>🚀 Empieza a estudiar con IA</h3>
-
-    <button onclick="abrirAstra()" class="btn">
-      Ir a Astra IA
-    </button>
-  </div>
-
-  <button onclick="go('home')" class="btn">⬅ Volver</button>
-  </div>
-
-        <div id="resoluciones" class="view">
-            <h3>📄 Resoluciones</h3>
-            <div class="grid">
-                <button onclick="abrirResolucion('tareas')">📚 Tareas Domiciliarias</button>
-                <button onclick="abrirResolucion('diarios')">📝 Exámenes diarios</button>
-                <button onclick="abrirResolucion('semanales')">📅 Exámenes semanales</button>
-            </div>
-            <button onclick="go('home')" class="btn">⬅ Volver</button>
+        <!-- Lista de chats recientes -->
+        <div class="card-title" style="margin:14px 0 8px;font-size:13px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;">Conversaciones</div>
+        <div class="chat-list-panel" id="listaChats">
+          <div class="empty-state"><div class="e-icon">💬</div><p>Sin chats aún</p></div>
         </div>
-        
-        <div id="resolucionVista" class="view">
-    <h3 id="tituloResolucion"></h3>
 
-    <div id="contenidoResoluciones" style="margin-top:10px;"></div>
-
-    <!-- ADMIN -->
-    <div id="adminResolucion" class="view">
-        <input type="file" id="archivoResolucion" style="margin-top:10px;">
-        <button onclick="subirResolucion()" class="btn">📤 Subir resolución</button>
+        <!-- Área de mensajes -->
+        <div class="chat-messages-panel" id="chatPanel" style="display:none;">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+            <div class="chat-avatar" id="chatAvatarHeader">?</div>
+            <span style="font-size:14px;font-weight:700;" id="chatNameHeader">-</span>
+          </div>
+          <div id="chatBox"></div>
+          <div class="chat-input-row">
+            <input type="text" id="msg" placeholder="Escribe aquí..." onkeydown="if(event.key==='Enter') enviarMensaje()">
+            <button class="send-btn" onclick="enviarMensaje()">➤</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <button onclick="go('resoluciones')" class="btn">⬅ Volver</button>
-</div>
+    <!-- ===== COMUNICADOS ===== -->
+    <div id="comunicados" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">📢 Comunicados</div>
+      <div class="seccion-tabs">
+        <button class="sec-tab active" onclick="cambiarSeccion('tareas')">📚 Tareas</button>
+        <button class="sec-tab" onclick="cambiarSeccion('examenes')">📝 Exámenes</button>
+        <button class="sec-tab" onclick="cambiarSeccion('otros')">📌 Otros</button>
+      </div>
+      <div id="listaComunicados"></div>
 
-        <div id="comunicados" class="view">
-    <h3>📢 Comunicados</h3>
-
-    <!-- Tabs -->
-    <div style="display:flex; gap:10px; margin-bottom:10px;">
-        <button onclick="cambiarSeccion('tareas')" class="btn" style="padding:8px;">📚 Tareas</button>
-        <button onclick="cambiarSeccion('examenes')" class="btn" style="padding:8px;">📝 Exámenes</button>
-        <button onclick="cambiarSeccion('otros')" class="btn" style="padding:8px;">📌 Otros</button>
-    </div>
-
-    <!-- Lista -->
-    <div id="listaComunicados"></div>
-
-    <!-- ADMIN -->
-    <div id="adminComunicado" class="hidden">
-        <textarea id="nuevoComunicado" placeholder="Nuevo comunicado..." style="width:100%; padding:10px; margin-top:10px;"></textarea>
-        
-        <select id="tipoComunicado" style="width:100%; padding:10px; margin-top:5px;">
-            <option value="tareas">📚 Tareas</option>
-            <option value="examenes">📝 Exámenes</option>
-            <option value="otros">📌 Otros</option>
+      <!-- ADMIN -->
+      <div id="adminComunicado" class="admin-box hidden">
+        <div class="admin-box-title">⚙️ Publicar comunicado</div>
+        <textarea id="nuevoComunicado" class="admin-textarea" placeholder="Escribe el comunicado..."></textarea>
+        <select id="tipoComunicado" class="admin-select">
+          <option value="tareas">📚 Tareas</option>
+          <option value="examenes">📝 Exámenes</option>
+          <option value="otros">📌 Otros</option>
         </select>
-
-        <input type="file" id="archivoComunicado" style="margin-top:10px;">
-
-        <button onclick="subirComunicado()" class="btn">Publicar</button>
+        <label class="file-label">
+          📎 Adjuntar archivo
+          <input type="file" id="archivoComunicado">
+        </label>
+        <button class="btn sm" style="width:100%;" onclick="subirComunicado()">Publicar</button>
+      </div>
     </div>
 
-    <button onclick="go('home')" class="btn">⬅ Volver</button>
-</div>
-
-<div id="admin" class="view">
-    <h3>⚙️ Panel Admin</h3>
-
-    <div class="card">
-        <h4>👨‍💻 Creadores</h4>
-
-        <p><b>Creador:</b> Renzo R.</p>
-        <p><b>Co-creadores:</b> Jheicob C. y Jair E.</p>
+    <!-- ===== BECAS ===== -->
+    <div id="becas" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">🎓 Becas</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="btn secondary" onclick="mostrarBecas('peru')" style="flex:1;">🇵🇪 Perú</button>
+        <button class="btn ghost" onclick="mostrarBecas('extranjero')" style="flex:1;">🌎 Extranjero</button>
+      </div>
+      <div id="contenidoBecas"></div>
     </div>
 
-    <button onclick="go('home')" class="btn">⬅ Volver</button>
-</div>
+    <!-- ===== IA ===== -->
+    <div id="ia" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">🤖 Astra IA</div>
 
-        <div id="horario" class="view">
-  <h3>📅 Mi Calendario</h3>
+      <div style="background:linear-gradient(135deg,var(--red),#ff7055);border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:14px;">
+        <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;">Tu tutor inteligente</div>
+        <p style="font-size:13px;opacity:.88;line-height:1.5;">No solo te doy respuestas: te ayudo a entender, aprender y mejorar de verdad.</p>
+      </div>
 
-  <div class="card" style="text-align:center;">
-    <button onclick="cambiarMes(-1)">⬅</button>
-    <span id="mesActual" style="margin:0 15px;font-weight:bold;"></span>
-    <button onclick="cambiarMes(1)">➡</button>
-  </div>
+      <div class="card">
+        <div class="ia-feature">
+          <div class="ia-feature-icon">🎯</div>
+          <div><div class="ia-feature-title">Aprendes, no solo respondes</div><div class="ia-feature-desc">Te guío paso a paso para que entiendas el proceso.</div></div>
+        </div>
+        <div class="ia-feature">
+          <div class="ia-feature-icon">🧠</div>
+          <div><div class="ia-feature-title">Herramientas avanzadas</div><div class="ia-feature-desc">Funciones especializadas en matemáticas y ciencias.</div></div>
+        </div>
+        <div class="ia-feature">
+          <div class="ia-feature-icon">📚</div>
+          <div><div class="ia-feature-title">Material de estudio automático</div><div class="ia-feature-desc">Convierto cualquier tema en quizzes, resúmenes o flashcards.</div></div>
+        </div>
+        <div class="ia-feature">
+          <div class="ia-feature-icon">💬</div>
+          <div><div class="ia-feature-title">Explicaciones claras</div><div class="ia-feature-desc">Como un estudiante real: sin rodeos ni palabras complicadas.</div></div>
+        </div>
+        <div class="ia-feature">
+          <div class="ia-feature-icon">🚀</div>
+          <div><div class="ia-feature-title">Pensamiento independiente</div><div class="ia-feature-desc">Mi objetivo no es hacer tu tarea, sino prepararte para hacerla solo.</div></div>
+        </div>
+      </div>
 
-  <div id="calendario" class="card" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;"></div>
-
-  <div class="card">
-    <h4 id="fechaSeleccionada">Selecciona un día</h4>
-    <textarea id="nota" placeholder="Escribe tu tarea o evento..." style="width:100%;padding:10px;border-radius:10px;"></textarea>
-    <button onclick="guardarNota()" class="btn">Guardar</button>
-  </div>
-
-  <button onclick="go('home')" class="btn">⬅ Volver</button>
-</div>
+      <button class="btn" onclick="abrirAstra()">🚀 Abrir Astra IA</button>
     </div>
-</div>
 
+    <!-- ===== RESOLUCIONES ===== -->
+    <div id="resoluciones" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">📄 Resoluciones</div>
+      <div class="res-grid">
+        <button class="res-btn" onclick="abrirResolucion('tareas')">
+          <span class="r-icon">📚</span>
+          <span class="r-label">Tareas Dom.</span>
+        </button>
+        <button class="res-btn" onclick="abrirResolucion('diarios')">
+          <span class="r-icon">📝</span>
+          <span class="r-label">Exámenes diarios</span>
+        </button>
+        <button class="res-btn" onclick="abrirResolucion('semanales')">
+          <span class="r-icon">📅</span>
+          <span class="r-label">Semanales</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== RESOLUCIÓN VISTA ===== -->
+    <div id="resolucionVista" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('resoluciones')">← Volver</button></div>
+      <div class="view-header" id="tituloResolucion"></div>
+      <div class="card">
+        <div id="contenidoResoluciones"></div>
+      </div>
+      <div id="adminResolucion" class="admin-box hidden">
+        <div class="admin-box-title">⚙️ Subir archivo</div>
+        <label class="file-label">
+          📎 Seleccionar archivo
+          <input type="file" id="archivoResolucion">
+        </label>
+        <button class="btn sm" style="width:100%;" onclick="subirResolucion()">📤 Subir</button>
+      </div>
+    </div>
+
+    <!-- ===== HORARIO ===== -->
+    <div id="horario" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">📅 Calendario</div>
+
+      <div class="cal-header">
+        <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
+        <span class="cal-month" id="mesActual"></span>
+        <button class="cal-nav" onclick="cambiarMes(1)">›</button>
+      </div>
+
+      <div class="cal-days-header">
+        <div class="cal-day-name">Lun</div>
+        <div class="cal-day-name">Mar</div>
+        <div class="cal-day-name">Mié</div>
+        <div class="cal-day-name">Jue</div>
+        <div class="cal-day-name">Vie</div>
+        <div class="cal-day-name">Sáb</div>
+        <div class="cal-day-name">Dom</div>
+      </div>
+
+      <div id="calendario" class="cal-grid"></div>
+
+      <div class="nota-box">
+        <div class="nota-box-header" id="fechaSeleccionada">Selecciona un día para añadir nota</div>
+        <textarea class="nota-textarea" id="nota" placeholder="Escribe aquí tu tarea o evento..."></textarea>
+        <div class="nota-footer">
+          <button class="btn sm" onclick="guardarNota()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN ===== -->
+    <div id="admin" class="view">
+      <div class="back-row"><button class="back-btn" onclick="go('home')">← Volver</button></div>
+      <div class="view-header">⚙️ Panel Admin</div>
+      <div class="card">
+        <div class="card-title">👨‍💻 Equipo creador</div>
+        <p style="margin-top:8px;font-size:14px;line-height:1.7;">
+          <strong>Creador:</strong> Renzo R.<br>
+          <strong>Co-creadores:</strong> Jheicob C. y Jair E.
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /pageArea -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottomNav">
+    <button class="nav-item active" onclick="navGo('home', this)">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Inicio</span>
+    </button>
+    <button class="nav-item" onclick="navGo('comunicados', this)">
+      <span class="nav-icon">📢</span>
+      <span class="nav-label">Avisos</span>
+    </button>
+    <button class="nav-item" onclick="navGo('chat', this)">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Chat</span>
+    </button>
+    <button class="nav-item" onclick="navGo('horario', this)">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Agenda</span>
+    </button>
+    <button class="nav-item" onclick="navGo('becas', this)">
+      <span class="nav-icon">🎓</span>
+      <span class="nav-label">Becas</span>
+    </button>
+  </nav>
+</div><!-- /app -->
+
+<!-- ============================================================
+     FIREBASE
+============================================================ -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
+/* ============================================================
+   FIREBASE INIT
+============================================================ */
 const firebaseConfig = {
-    apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
-    authDomain: "studix-83850.firebaseapp.com",
-    projectId: "studix-83850",
-    storageBucket: "studix-83850.appspot.com"
+  apiKey: "AIzaSyAB45cBeULcy0my_i02S5SiPR001SJnLxo",
+  authDomain: "studix-83850.firebaseapp.com",
+  projectId: "studix-83850",
+  storageBucket: "studix-83850.appspot.com"
 };
-
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const db      = firebase.firestore();
 const storage = firebase.storage();
 
+/* ============================================================
+   STATE
+============================================================ */
 const ADMIN_EMAIL = "62934146@trilce.edu.pe";
-let usuarioActual = null;
-let cursoActual = "";
-let tipoActual = "";
-let chatActual = "";
-let otroUID = "";
-let unsubscribeChat = null;
-let unsubscribeListaChats = null;
-let nombreOtroUsuario = "";
-let fechaActual = new Date();
+let usuarioActual        = null;
+let tipoActual           = "";
+let chatActual           = "";
+let otroUID              = "";
+let nombreOtroUsuario    = "";
+let fechaActual          = new Date();
 let fechaSeleccionadaGlobal = "";
-let notasCalendario = {};
-let seccionActual = "tareas";
+let notasCalendario      = {};
+let seccionActual        = "tareas";
+let unsubscribeChat      = null;
+let unsubscribeListaChats = null;
 let unsubscribeComunicados = null;
 
-// ==================== LOGIN ====================
-function login(){
-    showLoader();
+/* ============================================================
+   UTILS
+============================================================ */
+function showLoader()  { document.getElementById("loader").classList.remove("hidden"); }
+function hideLoader()  { document.getElementById("loader").classList.add("hidden"); }
 
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-    .catch(err => {
-        hideLoader();
-        alert("Error al iniciar sesión");
-    });
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-function logout(){
-    firebase.auth().signOut().then(() => {
-        location.reload(); // reinicia todo limpio
-    });
+// Iniciales para avatars
+function initials(name = "") {
+  return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
 }
 
-function guardarUsuario(user){
-    db.collection("usuarios").doc(user.uid).set({
+// Fecha segura sin problemas de timezone (YYYY-MM-DD → local)
+function parseFechaLocal(str) {
+  if (!str) return null;
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/* ============================================================
+   NAVEGACIÓN
+============================================================ */
+function go(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  const target = document.getElementById(id);
+  if (!target) return;
+  target.classList.add("active");
+  document.getElementById("pageArea").scrollTo({ top: 0, behavior: "smooth" });
+
+  if (id === "chat")        cargarListaChats();
+  if (id === "comunicados") cargarComunicados();
+  if (id === "horario")     cargarNotasCalendario();
+  if (id === "home")        cargarProximasTareas();
+  if (id === "becas")       mostrarBecas("peru");
+}
+
+function navGo(id, btn) {
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  btn.classList.add("active");
+  go(id);
+}
+
+/* ============================================================
+   AUTH
+============================================================ */
+function login() {
+  showLoader();
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider)
+    .catch(() => { hideLoader(); showToast("❌ Error al iniciar sesión"); });
+}
+
+function logout() {
+  firebase.auth().signOut().then(() => location.reload());
+}
+
+function guardarUsuario(user) {
+  db.collection("usuarios").doc(user.uid).set({
     nombre: user.displayName,
-    nombreLower: user.displayName.toLowerCase(),
+    nombreLower: (user.displayName || "").toLowerCase(),
     email: user.email
-}, {merge: true});
+  }, { merge: true });
 }
 
-// ==================== CURSOS ====================
-const cursos = ["Álgebra","Aritmética","Geometría","Física","Química","Razonamiento Matemático","Biología","Lenguaje","Razonamiento Verbal","Literatura","Historia Universal","Historia del Perú","Geografía"];
-
-function cargarCursos(){
-    const libros = document.getElementById("listaLibros");
-    const ejercicios = document.getElementById("listaEjercicios");
-
-    libros.innerHTML = "";
-    ejercicios.innerHTML = "";
-
-    cursos.forEach(curso => {
-        let c1 = document.createElement("div");
-        c1.className = "card";
-c1.style.cursor = "pointer";
-c1.style.fontWeight = "600";
-        c1.innerText = curso;
-        c1.onclick = () => abrirCurso(curso, "libro");
-        libros.appendChild(c1);
-
-        let c2 = document.createElement("div");
-        c2.className = "card";
-        c2.innerText = curso;
-        c2.onclick = () => abrirCurso(curso, "ejercicio");
-        ejercicios.appendChild(c2);
-    });
-}
-
-function showLoader(){
-    document.getElementById("loader").classList.remove("hidden");
-}
-
-function hideLoader(){
-    document.getElementById("loader").classList.add("hidden");
-}
-
-function abrirCurso(curso, tipo){
-    cursoActual = curso; 
-    tipoActual = tipo
-
-        go("cursoVista");
-        document.getElementById("tituloCurso").innerText = curso;
-        document.getElementById("contenidoCurso").innerHTML = `
-            <div class="card">
-                <p>Próximamente contenido de libros 📚</p>
-            </div>
-        `;
-    }
-
-function mostrarBecas(tipo){
-    const cont = document.getElementById("contenidoBecas");
-    cont.innerHTML = "";
-
-    // ================= PERÚ =================
-    if(tipo === "peru"){
-    cont.innerHTML = `
-
-    <!-- ================= UNI ================= -->
-    <div class="card">
-        <h3>🏛 Universidad Nacional de Ingeniería (UNI)</h3>
-        <p>
-        Cuna de los mejores ingenieros del país, la UNI destaca por su exigencia y excelencia académica, 
-        formando profesionales capaces de liderar los grandes proyectos del Perú.
-        </p>
-
-        <b>🟠 1. Beca 18 (PRONABEC)</b>
-        <p>Es la beca más importante del Estado peruano. Cubre matrícula, alimentación, transporte, laptop y más.</p>
-        <ul>
-            <li>5° secundaria o egresado</li>
-            <li>Alto rendimiento</li>
-            <li>Pobreza o pobreza extrema</li>
-            <li>Ingresar a la UNI</li>
-        </ul>
-
-        <b>🔵 2. Beca Permanencia</b>
-        <p>Apoyo económico mensual para estudiantes ya dentro de la UNI.</p>
-        <ul>
-            <li>Ser estudiante UNI</li>
-            <li>Buen rendimiento</li>
-            <li>Situación económica vulnerable</li>
-        </ul>
-
-        <b>🟢 3. Apoyos internos UNI</b>
-        <p>Comedor, residencia, atención médica y apoyo económico.</p>
-
-        <b>🟣 4. Becas preuniversitarias</b>
-        <p>Academias ofrecen becas para preparación intensiva.</p>
-
-        <br>
-        <a href="https://portal.uni.edu.pe/" target="_blank">🌐 Página oficial UNI</a>
-    </div>
-
-
-    <!-- ================= PUCP ================= -->
-    <div class="card">
-        <h3>🏛 Pontificia Universidad Católica del Perú (PUCP)</h3>
-        <p>
-        Una de las universidades más prestigiosas del Perú, reconocida por su innovación e investigación.
-        </p>
-
-        <b>🟠 1. Becas PRONABEC</b>
-        <p>Permite estudiar con todos los gastos cubiertos.</p>
-
-        <b>🔵 2. Escala diferenciada</b>
-        <p>Pensión ajustada según ingresos familiares.</p>
-
-        <b>🟢 3. Becas PUCP</b>
-        <p>Ayudas económicas y becas parciales.</p>
-
-        <b>🟣 4. Excelencia académica</b>
-        <p>Beneficios por alto rendimiento.</p>
-
-        <b>🟡 5. Becas externas</b>
-        <p>Convenios con empresas e instituciones.</p>
-
-        <br>
-        <a href="https://www.pucp.edu.pe/" target="_blank">🌐 Página oficial PUCP</a>
-    </div>
-
-
-    <!-- ================= SAN MARCOS ================= -->
-    <div class="card">
-        <h3>🏛 Universidad Nacional Mayor de San Marcos (UNMSM)</h3>
-        <p>
-        La universidad más antigua de América y símbolo de excelencia en el Perú.
-        </p>
-
-        <b>🥇 1. Beca 18</b>
-        <p>Estudia con todos los gastos cubiertos.</p>
-
-        <b>🥈 2. Becas internas</b>
-        <p>Apoyo económico para estudiantes.</p>
-
-        <b>🥉 3. Comedor y residencia</b>
-        <p>Alimentación y alojamiento subvencionado.</p>
-
-        <b>🌍 4. Intercambios</b>
-        <p>Programas internacionales.</p>
-
-        <br>
-        <a href="https://www.unmsm.edu.pe/" target="_blank">🌐 Página oficial UNMSM</a>
-    </div>
-
-    `;
-}
-
-    // ================= EXTRANJERO =================
-    if(tipo === "extranjero"){
-    cont.innerHTML = `
-
-    <!-- BICENTENARIO -->
-    <div class="beca-card">
-        <div class="beca-header">🟠 Beca Generación del Bicentenario</div>
-
-        <p>
-        Es la beca más importante del Perú para estudiar en el extranjero.
-        Permite hacer maestría o doctorado en universidades top con TODO cubierto.
-        </p>
-
-        <div class="beca-subtitle">🎯 Beneficios</div>
-        <ul class="beca-list">
-            <li>Matrícula completa</li>
-            <li>Pasajes internacionales</li>
-            <li>Alojamiento y manutención</li>
-            <li>Seguro médico</li>
-            <li>Materiales de estudio</li>
-        </ul>
-
-        <div class="beca-subtitle">📌 Requisitos</div>
-        <ul class="beca-list">
-            <li>Alto rendimiento académico</li>
-            <li>Haber sido admitido en universidad extranjera</li>
-            <li>Buen perfil académico o profesional</li>
-            <li>No contar con suficientes recursos económicos</li>
-        </ul>
-    </div>
-
-
-    <!-- COOPERACIÓN -->
-    <div class="beca-card">
-        <div class="beca-header">🔵 Becas de Cooperación Internacional</div>
-
-        <p>
-        Conjunto de becas ofrecidas por distintos países como Japón, Alemania,
-        Francia y otros. Incluyen múltiples oportunidades de estudio.
-        </p>
-
-        <div class="beca-subtitle">🎯 Beneficios</div>
-        <ul class="beca-list">
-            <li>Becas completas o parciales</li>
-            <li>Programas en varios países</li>
-            <li>Pregrado, maestría y cursos</li>
-        </ul>
-
-        <div class="beca-subtitle">📌 Requisitos</div>
-        <ul class="beca-list">
-            <li>Buen rendimiento académico</li>
-            <li>Dominio de idioma (inglés u otro)</li>
-            <li>Cumplir requisitos del país</li>
-            <li>Postulación a convocatorias específicas</li>
-        </ul>
-    </div>
-
-
-    <!-- CHEVENING -->
-    <div class="beca-card">
-        <div class="beca-header">🟢 Beca Chevening (Reino Unido)</div>
-
-        <p>
-        Una de las becas más prestigiosas del mundo. Forma líderes globales
-        mediante estudios en el Reino Unido.
-        </p>
-
-        <div class="beca-subtitle">🎯 Beneficios</div>
-        <ul class="beca-list">
-            <li>Maestría completa en Reino Unido</li>
-            <li>Pasajes internacionales</li>
-            <li>Estipendio mensual</li>
-            <li>Alojamiento</li>
-        </ul>
-
-        <div class="beca-subtitle">📌 Requisitos</div>
-        <ul class="beca-list">
-            <li>Título universitario</li>
-            <li>Experiencia de liderazgo</li>
-            <li>Buen nivel de inglés</li>
-            <li>Buen perfil académico</li>
-        </ul>
-    </div>
-
-
-    <!-- FULBRIGHT -->
-    <div class="beca-card">
-        <div class="beca-header">🟣 Beca Fulbright (Estados Unidos)</div>
-
-        <p>
-        Programa internacional financiado por EE.UU. para estudiar maestrías
-        o realizar investigación en universidades de alto nivel.
-        </p>
-
-        <div class="beca-subtitle">🎯 Beneficios</div>
-        <ul class="beca-list">
-            <li>Estudios en Estados Unidos</li>
-            <li>Manutención</li>
-            <li>Seguro médico</li>
-            <li>Pasajes</li>
-        </ul>
-
-        <div class="beca-subtitle">📌 Requisitos</div>
-        <ul class="beca-list">
-            <li>Alto rendimiento académico</li>
-            <li>Inglés avanzado</li>
-            <li>Perfil académico sólido</li>
-            <li>Liderazgo o impacto social</li>
-        </ul>
-    </div>
-
-    `;
-}
-}
-
-
-// ==================== CHAT (corregido) ====================
-function buscarUsuarios(){
-    const texto = document.getElementById("buscarInput").value.trim().toLowerCase();
-
-    // Si escribe poco, limpiar
-    if(texto.length < 2){
-        document.getElementById("resultados").innerHTML = "";
-        return;
-    }
-
-    db.collection("usuarios").get().then(snapshot => {
-        const cont = document.getElementById("resultados");
-        cont.innerHTML = "";
-
-        snapshot.forEach(doc => {
-            const u = doc.data();
-
-            // Evitar mostrarte a ti mismo
-            if(doc.id === usuarioActual.uid) return;
-
-            // Filtrar por nombre
-            if(u.nombre && u.nombre.toLowerCase().includes(texto)){
-                let div = document.createElement("div");
-                div.className = "card";
-                div.innerText = u.nombre;
-                div.onclick = () => abrirChat(doc.id);
-                cont.appendChild(div);
-            }
-        });
-    });
-}
-
-async function abrirChat(uid){
-    if(!usuarioActual) return alert("Debes iniciar sesión");
-    const uid1 = usuarioActual.uid;
-    otroUID = uid;
-    chatActual = uid1 < uid ? uid1 + "_" + uid : uid + "_" + uid1;
-
-    const docSnap = await db.collection("usuarios").doc(uid).get();
-    if(docSnap.exists) nombreOtroUsuario = docSnap.data().nombre;
-
-    document.getElementById("resultados").innerHTML = "";
-document.getElementById("buscarInput").value = "";
-    cargarChat();
-}
-
-function enviarMensaje(){
-    if(!usuarioActual) return alert("Debes iniciar sesión");
-    const msg = document.getElementById("msg").value.trim();
-    if(!msg || !chatActual) return;
-
-    db.collection("chats").doc(chatActual).set({
-        usuarios: [usuarioActual.uid, otroUID],
-        nombres: [
-    usuarioActual.displayName,
-    nombreOtroUsuario || "Usuario"
-],
-        ultimoMensaje: msg,
-        fecha: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-
-    db.collection("chats").doc(chatActual).collection("mensajes").add({
-        uid: usuarioActual.uid,
-        nombre: usuarioActual.displayName,
-        mensaje: msg,
-        fecha: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    document.getElementById("msg").value = "";
-}
-
-function cargarChat(){
-    if(unsubscribeChat) unsubscribeChat();
-    unsubscribeChat = db.collection("chats").doc(chatActual)
-        .collection("mensajes")
-        .orderBy("fecha", "asc")
-        .onSnapshot(snap => {
-    const box = document.getElementById("chatBox");
-    box.innerHTML = "";
-
-    if(snap.empty){
-        box.innerHTML = "<p>No hay mensajes aún</p>";
-        return;
-    }
-            snap.forEach(doc => {
-                const d = doc.data();
-                const esMio = d.uid === usuarioActual.uid;
-                box.innerHTML += `
-<div class="msg ${esMio ? 'me' : 'other'}">
-    ${d.mensaje}
-</div>
-`;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-}
-
-function cargarListaChats(){
-    if(!usuarioActual) return;
-    if(unsubscribeListaChats) unsubscribeListaChats();
-
-    unsubscribeListaChats = db.collection("chats")
-        .where("usuarios", "array-contains", usuarioActual.uid)
-        .orderBy("fecha", "desc")
-        .onSnapshot(snapshot => {
-            const lista = document.getElementById("listaChats");
-            lista.innerHTML = "";
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                let nombre = "Usuario";
-
-if(data.nombres && data.usuarios){
-    const index = data.usuarios.findIndex(u => u !== usuarioActual.uid);
-    nombre = data.nombres[index] || "Usuario";
-}
-
-                const div = document.createElement("div");
-                div.className = "card";
-                div.innerHTML = `<div style="font-weight:bold">${nombre}</div><div style="font-size:13px;color:gray;">${data.ultimoMensaje || "Sin mensajes"}</div>`;
-                div.onclick = async () => {
-                    chatActual = doc.id;
-                    otroUID = data.usuarios.find(u => u !== usuarioActual.uid);
-                    const userDoc = await db.collection("usuarios").doc(otroUID).get();
-                    if(userDoc.exists) nombreOtroUsuario = userDoc.data().nombre;
-                    cargarChat();
-                };
-                lista.appendChild(div);
-            });
-        });
-}
-
-// ==================== COMUNICADOS ====================
-function subirComunicado(){
-    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
-        return alert("No tienes permisos");
-    }
-
-    const txt = document.getElementById("nuevoComunicado").value.trim();
-    const tipo = document.getElementById("tipoComunicado").value;
-    const file = document.getElementById("archivoComunicado").files[0];
-
-    if(txt.length < 3 && !file) return alert("Escribe algo más completo o sube un archivo");
-
-    // Si hay archivo
-    if(file){
-        const ref = storage.ref("comunicados/" + Date.now() + "_" + file.name);
-
-        ref.put(file)
-        .then(() => ref.getDownloadURL())
-        .then(url => {
-            return db.collection("comunicados").add({
-                texto: txt,
-                tipo: tipo,
-                archivo: url,
-                nombreArchivo: file.name,
-                fecha: new Date()
-            });
-        })
-        .then(() => {
-            document.getElementById("nuevoComunicado").value = "";
-            document.getElementById("archivoComunicado").value = "";
-            cargarComunicados();
-        });
-
-    } else {
-        db.collection("comunicados").add({
-            texto: txt,
-            tipo: tipo,
-            fecha: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            document.getElementById("nuevoComunicado").value = "";
-            cargarComunicados();
-        });
-    }
-}
-
-function cambiarSeccion(tipo){
-    seccionActual = tipo;
-
-    document.getElementById("listaComunicados").innerHTML = "Cargando...";
-
-    cargarComunicados();
-}
-
-function cargarComunicados(){
-    if(unsubscribeComunicados) unsubscribeComunicados();
-
-    unsubscribeComunicados = db.collection("comunicados")
-      .where("tipo", "==", seccionActual)
-      .onSnapshot(snap => {
-
-        const lista = document.getElementById("listaComunicados");
-        lista.innerHTML = "";
-
-        if(snap.empty){
-            lista.innerHTML = "<p>No hay comunicados aún</p>";
-            return;
-        }
-
-        let docs = [];
-
-        snap.forEach(doc => {
-            docs.push({ id: doc.id, ...doc.data() });
-        });
-
-        // 🔥 ordenar manualmente (evita errores de Firestore)
-        docs.sort((a,b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-
-        docs.forEach(data => {
-
-            let html = `<div class="card">
-                <p>${data.texto || ""}</p>`;
-
-            // ADMIN
-            if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
-                html += `<br><button onclick="eliminarComunicado('${data.id}', '${data.archivo || ""}')"
-                style="margin-top:10px;background:#e74c3c;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;">
-                🗑 Eliminar
-                </button>`;
-            }
-
-            if(data.archivo){
-                html += `<br><a href="${data.archivo}" target="_blank">
-                📎 Ver archivo (${data.nombreArchivo})
-                </a>`;
-            }
-
-            html += `</div>`;
-
-            lista.innerHTML += html;
-        });
-    });
-}
-
-function eliminarComunicado(id, archivoURL){
-    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
-        return alert("No tienes permisos");
-    }
-
-    if(!confirm("¿Eliminar este comunicado?")) return;
-
-    // 🔥 eliminar de Firestore
-    db.collection("comunicados").doc(id).delete()
-    .then(() => {
-
-        // 🔥 eliminar archivo si existe
-        if(archivoURL){
-            const ref = storage.refFromURL(archivoURL);
-            ref.delete().catch(err => console.log("Error borrando archivo:", err));
-        }
-
-    })
-    .catch(err => alert("Error: " + err.message));
-}
-
-// ==================== RESOLUCIONES ====================
-function abrirResolucion(tipo){
-    tipoActual = tipo;
-    go("resolucionVista");
-    cargarResoluciones();
-}
-
-function subirResolucion(){
-    if(!usuarioActual || usuarioActual.email !== ADMIN_EMAIL){
-        return alert("No tienes permisos");
-    }
-
-    const file = document.getElementById("archivoResolucion").files[0];
-    if(!file) return alert("Selecciona un archivo");
-
-    const ref = storage.ref("resoluciones/" + Date.now() + "_" + file.name);
-
-    ref.put(file)
-    .then(() => ref.getDownloadURL())
-    .then(url => {
-        return db.collection("resoluciones").add({
-            tipo: tipoActual,
-            url: url,
-            nombre: file.name
-        });
-    })
-    .then(() => {
-        alert("✅ Subido");
-        cargarResoluciones();
-    })
-    .catch(err => alert("Error: " + err.message));
-}
-
-function cargarResoluciones(){
-    const cont = document.getElementById("contenidoResoluciones");
-    cont.innerHTML = "";
-
-    document.getElementById("tituloResolucion").innerText =
-        tipoActual === "tareas" ? "📚 Tareas Domiciliarias" :
-        tipoActual === "diarios" ? "📝 Exámenes diarios" :
-        "📅 Exámenes semanales";
-
-    if(usuarioActual && usuarioActual.email === ADMIN_EMAIL){
-        document.getElementById("adminResolucion").classList.remove("hidden");
-    } else {
-        document.getElementById("adminResolucion").classList.add("hidden");
-    }
-
-    db.collection("resoluciones")
-      .where("tipo","==",tipoActual)
-      .get()
-      .then(snap => {
-        if(snap.empty){
-            cont.innerHTML = "<p>No hay archivos aún</p>";
-            return;
-        }
-
-        snap.forEach(doc => {
-            const d = doc.data();
-            cont.innerHTML += `
-                <div class="card">
-                    ${d.nombre}<br>
-                    <a href="${d.url}" target="_blank">Ver archivo</a>
-                </div>
-            `;
-        });
-    });
-}
-
-// ==================== IA ====================
-function abrirAstra(){
-    window.open("https://astra-ai.co/", "_blank");
-}
-
-function generarCalendario(){
-    const cont = document.getElementById("calendario");
-    cont.innerHTML = "";
-    const diasSemana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-diasSemana.forEach(d => {
-    cont.innerHTML += `<div style="font-weight:bold;text-align:center;">${d}</div>`;
-});
-
-    const mes = fechaActual.getMonth();
-    const año = fechaActual.getFullYear();
-
-    let primerDia = new Date(año, mes, 1).getDay();
-primerDia = (primerDia === 0) ? 6 : primerDia - 1;
-    const diasMes = new Date(año, mes + 1, 0).getDate();
-
-    document.getElementById("mesActual").innerText =
-        fechaActual.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
-
-    // Espacios vacíos
-    for(let i=0; i<primerDia; i++){
-        cont.innerHTML += `<div style="visibility:hidden;"></div>`;
-    }
-
-    for(let d=1; d<=diasMes; d++){
-    let fechaStr = `${año}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-
-    let div = document.createElement("div");
-    div.className = "card";
-    div.style.cursor = "pointer";
-    div.style.minHeight = "80px";
-    div.style.display = "flex";
-    div.style.flexDirection = "column";
-    div.style.justifyContent = "flex-start";
-    div.style.borderRadius = "12px";
-    div.style.boxShadow = "0 5px 10px rgba(0,0,0,0.05)";
-
-    div.onclick = () => seleccionarFecha(fechaStr);
-
-    // Número del día
-    let numero = document.createElement("div");
-    numero.style.fontWeight = "bold";
-    numero.innerText = d;
-
-    // Texto de la tarea
-    let tarea = document.createElement("div");
-    tarea.style.fontSize = "12px";
-    tarea.style.marginTop = "5px";
-    tarea.style.color = "gray";
-
-    if(notasCalendario[fechaStr]){
-    tarea.innerText = notasCalendario[fechaStr];
-}
-
-    div.appendChild(numero);
-    div.appendChild(tarea);
-
-    if(fechaStr === fechaSeleccionadaGlobal){
-        div.style.background = "#ff4b2b";
-        div.style.color = "white";
-        tarea.style.color = "white";
-    }
-
-    cont.appendChild(div);
-}
-}
-
-function cargarNotasCalendario(){
-    if(!usuarioActual) return;
-
-    db.collection("calendarios")
-      .doc(usuarioActual.uid)
-      .collection("notas")
-      .get()
-      .then(snap => {
-          notasCalendario = {};
-          snap.forEach(doc => {
-              notasCalendario[doc.id] = doc.data().texto;
-          });
-
-          generarCalendario(); // 🔥 refresca calendario
-      });
-}
-
-function cambiarMes(valor){
-    fechaActual.setMonth(fechaActual.getMonth() + valor);
-    generarCalendario();
-}
-
-function seleccionarFecha(fecha){
-    if(!usuarioActual) return;
-    fechaSeleccionadaGlobal = fecha;
-    document.getElementById("fechaSeleccionada").innerText = "📅 " + fecha;
-
-    // Cargar nota
-    db.collection("calendarios")
-      .doc(usuarioActual.uid)
-      .collection("notas")
-      .doc(fecha)
-      .get()
-      .then(doc => {
-          document.getElementById("nota").value = doc.exists ? doc.data().texto : "";
-      });
-    generarCalendario();
-}
-
-function guardarNota(){
-    if(!usuarioActual) return;
-    if(!fechaSeleccionadaGlobal) return alert("Selecciona una fecha");
-
-    const texto = document.getElementById("nota").value;
-
-    db.collection("calendarios")
-      .doc(usuarioActual.uid)
-      .collection("notas")
-      .doc(fechaSeleccionadaGlobal)
-      .set({
-          texto: texto,
-          fecha: fechaSeleccionadaGlobal
-      });
-
-        notasCalendario[fechaSeleccionadaGlobal] = texto;
-    generarCalendario();
-
-cargarProximasTareas();
-
-    alert("✅ Guardado");
-}
-
-function cargarProximasTareas(){
-    if(!usuarioActual) return;
-
-    const hoy = new Date();
-hoy.setHours(0,0,0,0);
-
-    db.collection("calendarios")
-      .doc(usuarioActual.uid)
-      .collection("notas")
-      .get()
-      .then(snap => {
-
-        let tareas = [];
-
-        snap.forEach(doc => {
-            const data = doc.data();
-
-            if(!data.fecha || !data.texto) return;
-
-            const fechaTarea = new Date(data.fecha);
-fechaTarea.setHours(0,0,0,0);
-
-            // Solo futuras o hoy
-            if(fechaTarea >= hoy){
-                tareas.push({
-                    fecha: data.fecha,
-                    texto: data.texto
-                });
-            }
-        });
-
-        // Ordenar por fecha más cercana
-        tareas.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-
-        // Tomar solo 3
-        tareas = tareas.slice(0,3);
-
-        mostrarProximasTareas(tareas);
-    });
-}
-
-function mostrarProximasTareas(lista){
-    const cont = document.getElementById("proximasTareas");
-    cont.innerHTML = "";
-
-    if(lista.length === 0){
-        cont.innerHTML = "<p>No tienes tareas próximas 🎉</p>";
-        return;
-    }
-
-    lista.forEach(t => {
-    cont.innerHTML += `
-        <div style="padding:10px;border-bottom:1px solid #eee;">
-            <div style="font-size:12px;color:gray;">📅 ${t.fecha}</div>
-            <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${t.texto}
-            </div>
-        </div>
-    `;
-});
-}
-
-// ==================== NAVEGACIÓN ====================
-function go(id){
-
-    // 🔹 Ocultar todas las vistas (nuevo sistema)
-    document.querySelectorAll(".view").forEach(v => {
-        v.classList.remove("active");
-    });
-
-    // 🔹 Seleccionar vista destino
-    const target = document.getElementById(id);
-    if(!target) return;
-
-    // 🔹 Activar vista
-    target.classList.add("active");
-
-    // 🔹 Scroll arriba (lo mantenemos)
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-    // 🔹 Cargas dinámicas (TODO esto se mantiene igual)
-    if(id === "chat") cargarListaChats();
-    if(id === "comunicados") cargarComunicados();
-    if(id === "horario") cargarNotasCalendario();
-    if(id === "home") cargarProximasTareas();
-    if(id === "becas") mostrarBecas('peru');
-
-    // 🔹 CONTENIDO LIBROS (igual que tenías)
-    if(id === "books"){
-        document.getElementById("listaLibros").innerHTML = `
-            <div class="card">
-                <h3>📚 Biblioteca digital</h3>
-                <p>
-                Toda la información completa para exámenes y prácticas en tu nueva biblioteca virtual.
-                Material claro, directo y sin relleno para estudiar mejor y más rápido.
-                Incluye contenido preuniversitario actualizado para potenciar tu aprendizaje.
-                </p>
-            </div>
-
-            <div class="card" style="text-align:center;">
-                <a href="https://drive.google.com/drive/folders/1eXxS4Vk17GsCkOBwb5jtSyhhxMvUOIX_?usp=drive_link" target="_blank">
-                    <button class="btn">📂 Ver todos los libros</button>
-                </a>
-            </div>
-        `;
-    }
-
-    // 🔹 CONTENIDO EJERCICIOS (igual)
-    if(id === "practice"){
-        document.getElementById("listaEjercicios").innerHTML = `
-            <div class="card">
-                <h3>📝 Zona de práctica</h3>
-                <p>
-                Practica con ejercicios seleccionados de alto nivel para mejorar tu rendimiento.
-                Incluye problemas tipo examen de universidades exigentes.
-                Perfecto para reforzar y llevar tus conocimientos al siguiente nivel.
-                </p>
-            </div>
-
-            <div class="card" style="text-align:center;">
-                <a href="https://drive.google.com/drive/folders/1P0uoEeX9SSCH7mL7WF8daO_DnP4UfKVv?usp=drive_link" target="_blank">
-                    <button class="btn">📂 Ver todos los ejercicios</button>
-                </a>
-            </div>
-        `;
-    }
-}
-
-function volver(){
-    go(tipoActual === "libro" ? "books" : "practice");
-}
-
-// ==================== INICIO ====================
-cargarCursos();
-
-// ==================== MANTENER SESIÓN ====================
 firebase.auth().onAuthStateChanged(user => {
-    hideLoader();
-    if(user){
-        usuarioActual = user;
+  hideLoader();
+  if (user) {
+    usuarioActual = user;
+    guardarUsuario(user);
 
-        guardarUsuario(user);
+    document.getElementById("loginUI").classList.add("hidden");
+    const app = document.getElementById("app");
+    app.style.display = "flex";
 
-        document.getElementById("loginUI").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-        document.getElementById("userMini").innerText = user.displayName;
+    // Avatar
+    const av = document.getElementById("userAvatar");
+    av.textContent = initials(user.displayName);
 
-        document.getElementById("user").innerText = "Hola " + user.displayName;
-        cargarProximasTareas();
+    // Greeting
+    document.getElementById("greetingName").textContent = "¡Hola, " + (user.displayName || "").split(" ")[0] + "!";
+    const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    const hoy = new Date();
+    document.getElementById("greetingDate").textContent =
+      dias[hoy.getDay()] + ", " + hoy.getDate() + " de " + meses[hoy.getMonth()];
 
-        // Mostrar admin si corresponde
-        if(user.email === ADMIN_EMAIL){
-            document.getElementById("adminPanel").classList.remove("hidden");
-            document.getElementById("adminComunicado").classList.remove("hidden");
-        }
-    } else {
-        // Si no hay sesión
-        document.getElementById("loginUI").classList.remove("hidden");
-        document.getElementById("app").classList.add("hidden");
-        window.scrollTo({ top: 0 });
+    cargarProximasTareas();
+
+    if (user.email === ADMIN_EMAIL) {
+      document.getElementById("adminHomeBtn").style.display = "flex";
+      const adminCom = document.getElementById("adminComunicado");
+      if (adminCom) adminCom.classList.remove("hidden");
     }
+  } else {
+    document.getElementById("loginUI").classList.remove("hidden");
+    document.getElementById("app").style.display = "none";
+  }
 });
+
+/* ============================================================
+   CHAT
+============================================================ */
+function buscarUsuarios() {
+  const texto = (document.getElementById("buscarInput").value || "").trim().toLowerCase();
+  const cont = document.getElementById("resultados");
+  if (texto.length < 2) { cont.style.display = "none"; cont.innerHTML = ""; return; }
+
+  db.collection("usuarios").get().then(snapshot => {
+    cont.innerHTML = "";
+    let found = 0;
+    snapshot.forEach(doc => {
+      const u = doc.data();
+      if (doc.id === usuarioActual.uid) return;
+      if (u.nombre && u.nombre.toLowerCase().includes(texto)) {
+        found++;
+        const div = document.createElement("div");
+        div.className = "search-result-item";
+        div.innerHTML = `<div class="chat-avatar">${initials(u.nombre)}</div><div style="font-size:14px;font-weight:600;">${u.nombre}</div>`;
+        div.onclick = () => {
+          cont.style.display = "none";
+          cont.innerHTML = "";
+          document.getElementById("buscarInput").value = "";
+          abrirChat(doc.id);
+        };
+        cont.appendChild(div);
+      }
+    });
+    cont.style.display = found ? "block" : "none";
+  });
+}
+
+async function abrirChat(uid) {
+  if (!usuarioActual) return;
+  const uid1 = usuarioActual.uid;
+  otroUID = uid;
+  chatActual = uid1 < uid ? uid1 + "_" + uid : uid + "_" + uid1;
+
+  const docSnap = await db.collection("usuarios").doc(uid).get();
+  if (docSnap.exists) nombreOtroUsuario = docSnap.data().nombre;
+
+  // Mostrar panel
+  document.getElementById("chatPanel").style.display = "flex";
+  document.getElementById("chatAvatarHeader").textContent = initials(nombreOtroUsuario);
+  document.getElementById("chatNameHeader").textContent = nombreOtroUsuario || "Usuario";
+
+  cargarChat();
+}
+
+function enviarMensaje() {
+  if (!usuarioActual || !chatActual) return;
+  const msg = (document.getElementById("msg").value || "").trim();
+  if (!msg) return;
+
+  db.collection("chats").doc(chatActual).set({
+    usuarios: [usuarioActual.uid, otroUID],
+    nombres: [usuarioActual.displayName, nombreOtroUsuario || "Usuario"],
+    ultimoMensaje: msg,
+    fecha: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+
+  db.collection("chats").doc(chatActual).collection("mensajes").add({
+    uid: usuarioActual.uid,
+    nombre: usuarioActual.displayName,
+    mensaje: msg,
+    fecha: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  document.getElementById("msg").value = "";
+}
+
+function cargarChat() {
+  if (unsubscribeChat) unsubscribeChat();
+  unsubscribeChat = db.collection("chats").doc(chatActual)
+    .collection("mensajes")
+    .orderBy("fecha", "asc")
+    .onSnapshot(snap => {
+      const box = document.getElementById("chatBox");
+      box.innerHTML = "";
+      if (snap.empty) {
+        box.innerHTML = `<div class="empty-state"><div class="e-icon">💬</div><p>Empieza la conversación</p></div>`;
+        return;
+      }
+      snap.forEach(doc => {
+        const d = doc.data();
+        const esMio = d.uid === usuarioActual.uid;
+        const div = document.createElement("div");
+        div.className = "msg " + (esMio ? "me" : "other");
+        div.textContent = d.mensaje;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }, err => {
+      // Index no creado aún → mensaje amigable
+      const box = document.getElementById("chatBox");
+      box.innerHTML = `<div class="empty-state"><div class="e-icon">⏳</div><p>Activando chat... intenta en unos segundos</p></div>`;
+    });
+}
+
+function cargarListaChats() {
+  if (!usuarioActual) return;
+  if (unsubscribeListaChats) unsubscribeListaChats();
+
+  unsubscribeListaChats = db.collection("chats")
+    .where("usuarios", "array-contains", usuarioActual.uid)
+    .orderBy("fecha", "desc")
+    .onSnapshot(snapshot => {
+      const lista = document.getElementById("listaChats");
+      lista.innerHTML = "";
+      if (snapshot.empty) {
+        lista.innerHTML = `<div class="empty-state"><div class="e-icon">💬</div><p>Sin conversaciones</p></div>`;
+        return;
+      }
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        let nombre = "Usuario";
+        if (data.nombres && data.usuarios) {
+          const idx = data.usuarios.findIndex(u => u !== usuarioActual.uid);
+          nombre = data.nombres[idx] || "Usuario";
+        }
+        const div = document.createElement("div");
+        div.className = "chat-item";
+        div.innerHTML = `
+          <div class="chat-avatar">${initials(nombre)}</div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="chat-name">${nombre}</div>
+            <div class="chat-preview">${data.ultimoMensaje || "Sin mensajes"}</div>
+          </div>`;
+        div.onclick = async () => {
+          chatActual = doc.id;
+          otroUID = data.usuarios.find(u => u !== usuarioActual.uid);
+          const userDoc = await db.collection("usuarios").doc(otroUID).get();
+          if (userDoc.exists) nombreOtroUsuario = userDoc.data().nombre;
+          document.getElementById("chatPanel").style.display = "flex";
+          document.getElementById("chatAvatarHeader").textContent = initials(nombreOtroUsuario);
+          document.getElementById("chatNameHeader").textContent = nombreOtroUsuario;
+          cargarChat();
+        };
+        lista.appendChild(div);
+      });
+    }, () => {});
+}
+
+/* ============================================================
+   COMUNICADOS
+============================================================ */
+function cambiarSeccion(tipo) {
+  seccionActual = tipo;
+  document.querySelectorAll(".sec-tab").forEach((t, i) => {
+    t.classList.toggle("active", ["tareas","examenes","otros"][i] === tipo);
+  });
+  cargarComunicados();
+}
+
+function cargarComunicados() {
+  if (unsubscribeComunicados) unsubscribeComunicados();
+
+  const lista = document.getElementById("listaComunicados");
+  lista.innerHTML = `<div style="padding:20px;text-align:center;color:var(--hint);font-size:13px;">Cargando...</div>`;
+
+  unsubscribeComunicados = db.collection("comunicados")
+    .where("tipo", "==", seccionActual)
+    .onSnapshot(snap => {
+      lista.innerHTML = "";
+      if (snap.empty) {
+        lista.innerHTML = `<div class="empty-state"><div class="e-icon">📭</div><p>Sin comunicados aún</p></div>`;
+        return;
+      }
+      let docs = [];
+      snap.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+      docs.sort((a, b) => (b.fecha?.toDate?.() || new Date(b.fecha || 0)) - (a.fecha?.toDate?.() || new Date(a.fecha || 0)));
+
+      docs.forEach(data => {
+        const div = document.createElement("div");
+        div.className = "comunicado-card";
+
+        let fecha = "";
+        if (data.fecha) {
+          const d = data.fecha.toDate ? data.fecha.toDate() : new Date(data.fecha);
+          fecha = d.toLocaleDateString("es-PE", { day: "numeric", month: "short", year: "numeric" });
+        }
+
+        div.innerHTML = `
+          <div class="comunicado-fecha">${fecha}</div>
+          <div class="comunicado-texto">${data.texto || ""}</div>
+          ${data.archivo ? `<a class="comunicado-file" href="${data.archivo}" target="_blank">📎 ${data.nombreArchivo || "Ver archivo"}</a>` : ""}
+          ${usuarioActual?.email === ADMIN_EMAIL
+            ? `<br><button class="del-btn" onclick="eliminarComunicado('${data.id}','${data.archivo || ""}')">🗑 Eliminar</button>`
+            : ""}`;
+        lista.appendChild(div);
+      });
+    });
+}
+
+function subirComunicado() {
+  if (!usuarioActual || usuarioActual.email !== ADMIN_EMAIL) return;
+  const txt  = (document.getElementById("nuevoComunicado").value || "").trim();
+  const tipo = document.getElementById("tipoComunicado").value;
+  const file = document.getElementById("archivoComunicado").files[0];
+
+  if (txt.length < 3 && !file) { showToast("Escribe más o adjunta un archivo"); return; }
+
+  const datos = { texto: txt, tipo, fecha: firebase.firestore.FieldValue.serverTimestamp() };
+
+  if (file) {
+    const ref = storage.ref("comunicados/" + Date.now() + "_" + file.name);
+    ref.put(file)
+      .then(() => ref.getDownloadURL())
+      .then(url => db.collection("comunicados").add({ ...datos, archivo: url, nombreArchivo: file.name }))
+      .then(() => { document.getElementById("nuevoComunicado").value = ""; showToast("✅ Publicado"); });
+  } else {
+    db.collection("comunicados").add(datos)
+      .then(() => { document.getElementById("nuevoComunicado").value = ""; showToast("✅ Publicado"); });
+  }
+}
+
+function eliminarComunicado(id, archivoURL) {
+  if (!usuarioActual || usuarioActual.email !== ADMIN_EMAIL) return;
+  if (!confirm("¿Eliminar este comunicado?")) return;
+  db.collection("comunicados").doc(id).delete().then(() => {
+    if (archivoURL) storage.refFromURL(archivoURL).delete().catch(() => {});
+    showToast("🗑 Eliminado");
+  });
+}
+
+/* ============================================================
+   RESOLUCIONES
+============================================================ */
+function abrirResolucion(tipo) {
+  tipoActual = tipo;
+  go("resolucionVista");
+
+  document.getElementById("tituloResolucion").textContent =
+    tipo === "tareas"    ? "📚 Tareas Domiciliarias" :
+    tipo === "diarios"   ? "📝 Exámenes diarios"     :
+                           "📅 Exámenes semanales";
+
+  const adminBox = document.getElementById("adminResolucion");
+  if (usuarioActual?.email === ADMIN_EMAIL) adminBox.classList.remove("hidden");
+  else adminBox.classList.add("hidden");
+
+  cargarResoluciones();
+}
+
+function cargarResoluciones() {
+  const cont = document.getElementById("contenidoResoluciones");
+  cont.innerHTML = `<div style="padding:12px 0;color:var(--hint);font-size:13px;">Cargando...</div>`;
+
+  db.collection("resoluciones").where("tipo", "==", tipoActual).get().then(snap => {
+    cont.innerHTML = "";
+    if (snap.empty) {
+      cont.innerHTML = `<div class="empty-state"><div class="e-icon">📭</div><p>Sin archivos aún</p></div>`;
+      return;
+    }
+    snap.forEach(doc => {
+      const d = doc.data();
+      cont.innerHTML += `
+        <div class="archivo-row">
+          <span class="archivo-nombre">${d.nombre}</span>
+          <a class="archivo-link" href="${d.url}" target="_blank">👁 Ver</a>
+        </div>`;
+    });
+  });
+}
+
+function subirResolucion() {
+  if (!usuarioActual || usuarioActual.email !== ADMIN_EMAIL) return;
+  const file = document.getElementById("archivoResolucion").files[0];
+  if (!file) { showToast("Selecciona un archivo"); return; }
+
+  const ref = storage.ref("resoluciones/" + Date.now() + "_" + file.name);
+  ref.put(file)
+    .then(() => ref.getDownloadURL())
+    .then(url => db.collection("resoluciones").add({ tipo: tipoActual, url, nombre: file.name }))
+    .then(() => { showToast("✅ Subido"); cargarResoluciones(); })
+    .catch(() => showToast("❌ Error al subir"));
+}
+
+/* ============================================================
+   BECAS
+============================================================ */
+function mostrarBecas(tipo) {
+  const cont = document.getElementById("contenidoBecas");
+  cont.innerHTML = "";
+
+  if (tipo === "peru") {
+    const becas = [
+      {
+        name: "Universidad Nacional de Ingeniería (UNI)",
+        desc: "Cuna de los mejores ingenieros del país.",
+        link: "https://portal.uni.edu.pe/",
+        items: [
+          ["🟠 Beca 18 (PRONABEC)", "La beca más importante del Estado. Cubre todo: matrícula, alimentación, laptop y más."],
+          ["🔵 Beca Permanencia", "Apoyo mensual para estudiantes ya dentro de la UNI con buen rendimiento."],
+          ["🟢 Apoyos internos UNI", "Comedor, residencia, atención médica y apoyo económico."],
+        ]
+      },
+      {
+        name: "PUCP",
+        desc: "Una de las universidades más prestigiosas del Perú.",
+        link: "https://www.pucp.edu.pe/",
+        items: [
+          ["🟠 Becas PRONABEC", "Estudia con todos los gastos cubiertos."],
+          ["🔵 Escala diferenciada", "Pensión ajustada según ingresos familiares."],
+          ["🟣 Becas PUCP", "Ayudas económicas y becas parciales por excelencia."],
+        ]
+      },
+      {
+        name: "Universidad Nacional Mayor de San Marcos",
+        desc: "La universidad más antigua de América.",
+        link: "https://www.unmsm.edu.pe/",
+        items: [
+          ["🥇 Beca 18", "Estudia con todos los gastos cubiertos."],
+          ["🥈 Becas internas", "Apoyo económico para estudiantes destacados."],
+          ["🥉 Comedor y residencia", "Alimentación y alojamiento subvencionado."],
+        ]
+      }
+    ];
+    becas.forEach(b => {
+      cont.innerHTML += `
+        <div class="beca-card">
+          <div class="beca-card-header">
+            <h3>🏛 ${b.name}</h3>
+            <p>${b.desc}</p>
+          </div>
+          <div class="beca-card-body">
+            ${b.items.map(([t, d]) => `<div class="beca-section"><div class="beca-section-title">${t}</div><p style="font-size:14px;color:var(--sub);">${d}</p></div>`).join("")}
+            <a class="beca-link" href="${b.link}" target="_blank">🌐 Página oficial</a>
+          </div>
+        </div>`;
+    });
+  }
+
+  if (tipo === "extranjero") {
+    const becas = [
+      { tag: "🟠", name: "Beca Generación del Bicentenario", country: "Perú → extranjero",
+        ben: ["Matrícula completa","Pasajes internacionales","Alojamiento y manutención","Seguro médico"],
+        req: ["Alto rendimiento académico","Admisión en universidad extranjera","Perfil sólido"] },
+      { tag: "🟢", name: "Beca Chevening", country: "Reino Unido",
+        ben: ["Maestría completa en UK","Pasajes internacionales","Estipendio mensual"],
+        req: ["Título universitario","Liderazgo demostrable","Buen nivel de inglés"] },
+      { tag: "🟣", name: "Beca Fulbright", country: "Estados Unidos",
+        ben: ["Estudios en EE.UU.","Manutención","Seguro médico","Pasajes"],
+        req: ["Alto rendimiento","Inglés avanzado","Perfil de liderazgo"] },
+      { tag: "🔵", name: "Becas de Cooperación Internacional", country: "Japón, Alemania, Francia y más",
+        ben: ["Becas completas o parciales","Programas en varios países","Pregrado y maestría"],
+        req: ["Buen rendimiento académico","Dominio de idioma","Convocatoria específica"] },
+    ];
+    becas.forEach(b => {
+      cont.innerHTML += `
+        <div class="beca-card">
+          <div class="beca-card-header">
+            <h3>${b.tag} ${b.name}</h3>
+            <p>📍 ${b.country}</p>
+          </div>
+          <div class="beca-card-body">
+            <div class="beca-section"><div class="beca-section-title">Beneficios</div><ul>${b.ben.map(i => `<li>${i}</li>`).join("")}</ul></div>
+            <div class="beca-section"><div class="beca-section-title">Requisitos</div><ul>${b.req.map(i => `<li>${i}</li>`).join("")}</ul></div>
+          </div>
+        </div>`;
+    });
+  }
+}
+
+/* ============================================================
+   IA
+============================================================ */
+function abrirAstra() {
+  window.open("https://astra-ai.co/", "_blank");
+}
+
+/* ============================================================
+   CALENDARIO
+============================================================ */
+function generarCalendario() {
+  const cont  = document.getElementById("calendario");
+  cont.innerHTML = "";
+
+  const mes = fechaActual.getMonth();
+  const año = fechaActual.getFullYear();
+
+  document.getElementById("mesActual").textContent =
+    fechaActual.toLocaleDateString("es-PE", { month: "long", year: "numeric" });
+
+  let primerDia = new Date(año, mes, 1).getDay();
+  primerDia = primerDia === 0 ? 6 : primerDia - 1;
+  const diasMes = new Date(año, mes + 1, 0).getDate();
+
+  for (let i = 0; i < primerDia; i++) {
+    const empty = document.createElement("div");
+    empty.className = "cal-cell empty";
+    cont.appendChild(empty);
+  }
+
+  for (let d = 1; d <= diasMes; d++) {
+    const fechaStr = `${año}-${String(mes + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const cell = document.createElement("div");
+    cell.className = "cal-cell";
+    if (fechaStr === fechaSeleccionadaGlobal) cell.classList.add("selected");
+    if (notasCalendario[fechaStr])             cell.classList.add("has-note");
+    cell.onclick = () => seleccionarFecha(fechaStr);
+    cell.innerHTML = `<span class="cal-day-num">${d}</span>`;
+    cont.appendChild(cell);
+  }
+}
+
+function cargarNotasCalendario() {
+  if (!usuarioActual) return;
+  db.collection("calendarios").doc(usuarioActual.uid).collection("notas").get().then(snap => {
+    notasCalendario = {};
+    snap.forEach(doc => { notasCalendario[doc.id] = doc.data().texto; });
+    generarCalendario();
+  });
+}
+
+function cambiarMes(val) {
+  fechaActual.setMonth(fechaActual.getMonth() + val);
+  generarCalendario();
+}
+
+function seleccionarFecha(fecha) {
+  if (!usuarioActual) return;
+  fechaSeleccionadaGlobal = fecha;
+
+  const f = parseFechaLocal(fecha);
+  document.getElementById("fechaSeleccionada").textContent =
+    "📅 " + f.toLocaleDateString("es-PE", { weekday: "long", day: "numeric", month: "long" });
+
+  db.collection("calendarios").doc(usuarioActual.uid).collection("notas").doc(fecha).get()
+    .then(doc => { document.getElementById("nota").value = doc.exists ? doc.data().texto : ""; });
+
+  generarCalendario();
+}
+
+function guardarNota() {
+  if (!usuarioActual) return;
+  if (!fechaSeleccionadaGlobal) { showToast("Selecciona una fecha"); return; }
+  const texto = document.getElementById("nota").value;
+  db.collection("calendarios").doc(usuarioActual.uid).collection("notas")
+    .doc(fechaSeleccionadaGlobal).set({ texto, fecha: fechaSeleccionadaGlobal });
+
+  notasCalendario[fechaSeleccionadaGlobal] = texto;
+  generarCalendario();
+  cargarProximasTareas();
+  showToast("✅ Guardado");
+}
+
+function cargarProximasTareas() {
+  if (!usuarioActual) return;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+  db.collection("calendarios").doc(usuarioActual.uid).collection("notas").get().then(snap => {
+    let tareas = [];
+    snap.forEach(doc => {
+      const data = doc.data();
+      if (!data.fecha || !data.texto) return;
+      const f = parseFechaLocal(data.fecha);
+      if (f >= hoy) tareas.push({ fecha: data.fecha, texto: data.texto, dateObj: f });
+    });
+    tareas.sort((a, b) => a.dateObj - b.dateObj);
+    tareas = tareas.slice(0, 3);
+    mostrarProximasTareas(tareas);
+  });
+}
+
+function mostrarProximasTareas(lista) {
+  const cont = document.getElementById("proximasTareas");
+  if (!lista.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:12px 0;"><div class="e-icon">🎉</div><p>Sin tareas próximas</p></div>`;
+    return;
+  }
+  cont.innerHTML = lista.map(t => {
+    const f = parseFechaLocal(t.fecha);
+    const label = f.toLocaleDateString("es-PE", { day: "numeric", month: "short" });
+    return `
+      <div class="tarea-row">
+        <div class="tarea-dot"></div>
+        <div>
+          <div class="tarea-fecha">${label}</div>
+          <div class="tarea-texto">${t.texto}</div>
+        </div>
+      </div>`;
+  }).join("");
+}
 </script>
-
-<div id="loader" class="loader hidden">
-    <div class="spinner"></div>
-</div>
-
 </body>
 </html>
